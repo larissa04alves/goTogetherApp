@@ -1,0 +1,26 @@
+{
+  "name": "goTogheterApp",
+  "private": true,
+  "workspaces": ["backend", "frontend"],
+  "type": "module",
+  "scripts": {
+    "dev": "npm run dev --workspaces",
+    "dev:backend": "npm run dev --workspace backend",
+    "dev:frontend": "npm run dev --workspace frontend",
+    "build": "npm run build --workspaces",
+    "check-types": "npm run check-types --workspaces",
+    "db:push": "npm run db:push --workspace backend",
+    "db:studio": "npm run db:studio --workspace backend",
+    "db:generate": "npm run db:generate --workspace backend",
+    "db:migrate": "npm run db:migrate --workspace backend",
+    "db:start": "docker compose up -d",
+    "db:watch": "docker compose up",
+    "db:stop": "docker compose stop",
+    "db:down": "docker compose down"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.14",
+    "typescript": "^6"
+  },
+  "packageManager": "npm@11.12.1"
+}
