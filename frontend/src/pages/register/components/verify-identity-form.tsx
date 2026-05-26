@@ -2,12 +2,12 @@ import {
   ArrowLeft01Icon,
   Camera02Icon,
   DocumentValidationIcon,
-  InformationCircleIcon,
   ShieldUserIcon,
   Tick02Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useRef, useState } from "react";
+import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
 import { authClient } from "@/api/auth";
@@ -24,6 +24,7 @@ export function VerifyIdentityForm({
   basicData,
   onBack,
 }: VerifyIdentityFormProps) {
+  const navigate = useNavigate();
   const [idDoc, setIdDoc] = useState<File | null>(null);
   const [selfie, setSelfie] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -45,6 +46,7 @@ export function VerifyIdentityForm({
       {
         onSuccess: () => {
           toast.success("Conta criada. Verificação enviada para análise.");
+          navigate("/home");
         },
         onError: (error) => {
           toast.error(error.error.message || error.error.statusText);

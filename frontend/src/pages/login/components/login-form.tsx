@@ -37,6 +37,7 @@ export function LoginForm() {
         {
           onSuccess: () => {
             toast.success("Login realizado com sucesso");
+            navigate("/home");
           },
           onError: (error) => {
             toast.error(error.error.message || error.error.statusText);
