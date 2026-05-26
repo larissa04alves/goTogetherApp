@@ -1,7 +1,10 @@
 {
   "name": "goTogheterApp",
   "private": true,
-  "workspaces": ["backend", "frontend"],
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
   "type": "module",
   "scripts": {
     "dev": "npm run dev --workspaces",

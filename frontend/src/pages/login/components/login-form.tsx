@@ -1,7 +1,14 @@
+import {
+  ArrowRight01Icon,
+  Mail01Icon,
+  SquareLock01Icon,
+  ViewIcon,
+  ViewOffSlashIcon,
+} from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { useForm } from "@tanstack/react-form";
-import { ArrowRight, Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -10,13 +17,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { emailValidator, passwordValidator } from "@/lib/validators";
 
 const loginSchema = z.object({
-  email: z.email("Informe um e-mail válido"),
-  password: z.string().min(8, "A senha deve ter pelo menos 8 caracteres"),
+  email: emailValidator,
+  password: passwordValidator,
 });
 
 export function LoginForm() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm({
@@ -67,10 +76,12 @@ export function LoginForm() {
                 E-mail
               </Label>
               <div className="relative">
-                <Mail
-                  aria-hidden="true"
-                  className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-muted-foreground"
+                <HugeiconsIcon
+                  icon={Mail01Icon}
+                  size={20}
                   strokeWidth={1.5}
+                  aria-hidden="true"
+                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
                 />
                 <Input
                   id={field.name}
@@ -101,10 +112,12 @@ export function LoginForm() {
                 Senha
               </Label>
               <div className="relative">
-                <Lock
-                  aria-hidden="true"
-                  className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-muted-foreground"
+                <HugeiconsIcon
+                  icon={SquareLock01Icon}
+                  size={20}
                   strokeWidth={1.5}
+                  aria-hidden="true"
+                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
                 />
                 <Input
                   id={field.name}
@@ -124,11 +137,11 @@ export function LoginForm() {
                   aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
                   className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-2 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
-                  {showPassword ? (
-                    <EyeOff className="size-5" strokeWidth={1.5} />
-                  ) : (
-                    <Eye className="size-5" strokeWidth={1.5} />
-                  )}
+                  <HugeiconsIcon
+                    icon={showPassword ? ViewOffSlashIcon : ViewIcon}
+                    size={20}
+                    strokeWidth={1.5}
+                  />
                 </button>
               </div>
               <FieldErrors errors={field.state.meta.errors} />
@@ -158,10 +171,12 @@ export function LoginForm() {
             className="group h-13.5 w-full rounded-full text-[15px] font-bold"
           >
             {isSubmitting ? "Entrando…" : "Entrar"}
-            <ArrowRight
-              aria-hidden="true"
-              className="ml-2 size-4 transition-transform group-hover:translate-x-0.5"
+            <HugeiconsIcon
+              icon={ArrowRight01Icon}
+              size={16}
               strokeWidth={2}
+              aria-hidden="true"
+              className="ml-2 transition-transform group-hover:translate-x-0.5"
             />
           </Button>
         )}
@@ -174,11 +189,13 @@ export function LoginForm() {
       </div>
 
       <Button
+        type="button"
         variant="ghost"
         size="lg"
+        onClick={() => navigate("/register")}
         className="w-full text-sm bg-card py-6 rounded-full border border-border hover:bg-card-foreground"
       >
-        <Link to="/register">Criar conta</Link>
+        Criar conta
       </Button>
     </form>
   );
