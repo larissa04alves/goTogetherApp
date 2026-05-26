@@ -1,15 +1,18 @@
 import {
   Add01Icon,
+  Car03Icon,
   Home09Icon,
   Route01Icon,
   UserIcon,
 } from "@hugeicons/core-free-icons";
 import type { IconSvgElement } from "@hugeicons/react";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { useState } from "react";
 import { useNavigate } from "react-router";
-import { toast } from "sonner";
 
-type NavKey = "home" | "routes" | "profile";
+import { CreateHubSheet } from "./create-hub-sheet";
+
+type NavKey = "hubs" | "routes" | "rides" | "profile";
 
 type BottomNavProps = {
   active: NavKey;
@@ -19,12 +22,12 @@ type NavItem = {
   key: NavKey;
   label: string;
   icon: IconSvgElement;
-  href: string | null;
+  href: string;
 };
 
-const homeItem: NavItem = {
-  key: "home",
-  label: "Início",
+const hubsItem: NavItem = {
+  key: "hubs",
+  label: "Hubs",
   icon: Home09Icon,
   href: "/home",
 };
@@ -34,6 +37,12 @@ const routesItem: NavItem = {
   icon: Route01Icon,
   href: "/rotas",
 };
+const ridesItem: NavItem = {
+  key: "rides",
+  label: "Caronas",
+  icon: Car03Icon,
+  href: "/caronas",
+};
 const profileItem: NavItem = {
   key: "profile",
   label: "Perfil",
@@ -42,28 +51,34 @@ const profileItem: NavItem = {
 };
 
 export function BottomNav({ active }: BottomNavProps) {
+  const [sheetOpen, setSheetOpen] = useState(false);
+
   return (
-    <nav
-      aria-label="Navegação principal"
-      className="sticky bottom-0 left-0 right-0 mt-auto border-t border-border bg-card"
-    >
-      <div className="relative mx-auto flex h-16 max-w-100 items-center justify-around px-2 pb-[env(safe-area-inset-bottom)]">
-        <NavButton item={homeItem} active={active === homeItem.key} />
-        <NavButton item={routesItem} active={active === routesItem.key} />
+    <>
+      <nav
+        aria-label="Navegação principal"
+        className="sticky bottom-0 left-0 right-0 mt-auto border-t border-border bg-card"
+      >
+        <div className="relative mx-auto flex h-16 max-w-100 items-center justify-around gap-1 px-2 pb-[env(safe-area-inset-bottom)]">
+          <NavButton item={hubsItem} active={active === hubsItem.key} />
+          <NavButton item={routesItem} active={active === routesItem.key} />
 
-        <button
-          type="button"
-          aria-label="Criar nova carona"
-          onClick={() => toast.info("Em breve")}
-          className="grid size-13 -translate-y-4 place-items-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          <HugeiconsIcon icon={Add01Icon} size={22} strokeWidth={2.25} />
-        </button>
+          <button
+            type="button"
+            aria-label="Criar nova carona"
+            onClick={() => setSheetOpen(true)}
+            className="grid size-13 -translate-y-4 place-items-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <HugeiconsIcon icon={Add01Icon} size={22} strokeWidth={2.25} />
+          </button>
 
-        <NavButton item={profileItem} active={active === profileItem.key} />
-        <span className="w-10" aria-hidden="true" />
-      </div>
-    </nav>
+          <NavButton item={ridesItem} active={active === ridesItem.key} />
+          <NavButton item={profileItem} active={active === profileItem.key} />
+        </div>
+      </nav>
+
+      <CreateHubSheet open={sheetOpen} onOpenChange={setSheetOpen} />
+    </>
   );
 }
 
@@ -72,11 +87,7 @@ function NavButton({ item, active }: { item: NavItem; active: boolean }) {
 
   function handleClick() {
     if (active) return;
-    if (item.href) {
-      navigate(item.href);
-    } else {
-      toast.info("Em breve");
-    }
+    navigate(item.href);
   }
 
   return (
@@ -84,7 +95,7 @@ function NavButton({ item, active }: { item: NavItem; active: boolean }) {
       type="button"
       aria-current={active ? "page" : undefined}
       onClick={handleClick}
-      className={`flex flex-1 flex-col items-center gap-1 py-2 text-[11px] font-bold transition-colors focus-visible:outline-none ${
+      className={`flex flex-1 flex-col items-center gap-1 py-2 text-[10px] font-bold transition-colors focus-visible:outline-none ${
         active ? "text-primary" : "text-muted-foreground hover:text-foreground"
       }`}
     >

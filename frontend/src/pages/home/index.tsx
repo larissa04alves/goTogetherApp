@@ -17,7 +17,7 @@ export default function HomePage() {
         <RouteSelector route={mockRoute} />
         <RidesList rides={mockRides} />
       </div>
-      <BottomNav active="home" />
+      <BottomNav active="hubs" />
     </main>
   );
 }
