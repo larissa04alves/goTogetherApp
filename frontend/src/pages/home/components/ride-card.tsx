@@ -10,6 +10,7 @@ import type { Modality, Ride, Similarity } from "../types";
 
 type RideCardProps = {
   ride: Ride;
+  onClick?: () => void;
 };
 
 const similarityStyles: Record<Similarity, { label: string; className: string }> = {
@@ -39,12 +40,31 @@ function formatPrice(brl: number): string {
   });
 }
 
-export function RideCard({ ride }: RideCardProps) {
+export function RideCard({ ride, onClick }: RideCardProps) {
   const sim = similarityStyles[ride.similarity];
   const mod = modalityStyles[ride.modality];
 
   return (
-    <article className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4">
+    <article
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onClick={onClick}
+      onKeyDown={
+        onClick
+          ? (e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onClick();
+              }
+            }
+          : undefined
+      }
+      className={`flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 ${
+        onClick
+          ? "cursor-pointer transition-colors hover:border-primary/40 hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          : ""
+      }`}
+    >
       <div className="flex items-start gap-3">
         {ride.driver.imageUrl ? (
           <img
@@ -110,3 +130,4 @@ export function RideCard({ ride }: RideCardProps) {
     </article>
   );
 }
+

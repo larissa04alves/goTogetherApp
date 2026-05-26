@@ -7,6 +7,7 @@ import { useMemo, useState } from "react";
 
 import type { Modality, Ride, Similarity } from "../types";
 import { RideCard } from "./ride-card";
+import { RideDetailModal } from "./ride-detail-modal";
 
 type RidesListProps = {
   rides: Ride[];
@@ -27,6 +28,7 @@ export function RidesList({ rides }: RidesListProps) {
   const [filterOpen, setFilterOpen] = useState(false);
   const [similarities, setSimilarities] = useState<Similarity[]>([]);
   const [modalities, setModalities] = useState<Modality[]>([]);
+  const [selectedRide, setSelectedRide] = useState<Ride | null>(null);
 
   const filtered = useMemo(() => {
     return rides.filter((r) => {
@@ -136,9 +138,23 @@ export function RidesList({ rides }: RidesListProps) {
             Nenhuma carona com esses filtros.
           </p>
         ) : (
-          filtered.map((ride) => <RideCard key={ride.id} ride={ride} />)
+          filtered.map((ride) => (
+            <RideCard
+              key={ride.id}
+              ride={ride}
+              onClick={() => setSelectedRide(ride)}
+            />
+          ))
         )}
       </div>
+
+      <RideDetailModal
+        ride={selectedRide}
+        open={selectedRide !== null}
+        onOpenChange={(open) => {
+          if (!open) setSelectedRide(null);
+        }}
+      />
     </section>
   );
 }

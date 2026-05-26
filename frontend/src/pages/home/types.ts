@@ -8,9 +8,15 @@ export type Ride = {
     name: string;
     rating: number;
     ridesCount: number;
+    verified: boolean;
     imageUrl?: string;
   };
+  car?: {
+    model: string;
+    plate: string;
+  };
   similarity: Similarity;
+  similarityMatchPct: number;
   modality: Modality;
   time: string;
   seatsTaken: number;
