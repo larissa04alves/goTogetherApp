@@ -6,6 +6,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import type { IconSvgElement } from "@hugeicons/react";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
 type NavKey = "home" | "routes" | "profile";
@@ -14,11 +15,31 @@ type BottomNavProps = {
   active: NavKey;
 };
 
-type NavItem = { key: NavKey; label: string; icon: IconSvgElement };
+type NavItem = {
+  key: NavKey;
+  label: string;
+  icon: IconSvgElement;
+  href: string | null;
+};
 
-const homeItem: NavItem = { key: "home", label: "Início", icon: Home09Icon };
-const routesItem: NavItem = { key: "routes", label: "Rotas", icon: Route01Icon };
-const profileItem: NavItem = { key: "profile", label: "Perfil", icon: UserIcon };
+const homeItem: NavItem = {
+  key: "home",
+  label: "Início",
+  icon: Home09Icon,
+  href: "/home",
+};
+const routesItem: NavItem = {
+  key: "routes",
+  label: "Rotas",
+  icon: Route01Icon,
+  href: null,
+};
+const profileItem: NavItem = {
+  key: "profile",
+  label: "Perfil",
+  icon: UserIcon,
+  href: "/perfil",
+};
 
 export function BottomNav({ active }: BottomNavProps) {
   return (
@@ -47,11 +68,22 @@ export function BottomNav({ active }: BottomNavProps) {
 }
 
 function NavButton({ item, active }: { item: NavItem; active: boolean }) {
+  const navigate = useNavigate();
+
+  function handleClick() {
+    if (active) return;
+    if (item.href) {
+      navigate(item.href);
+    } else {
+      toast.info("Em breve");
+    }
+  }
+
   return (
     <button
       type="button"
       aria-current={active ? "page" : undefined}
-      onClick={active ? undefined : () => toast.info("Em breve")}
+      onClick={handleClick}
       className={`flex flex-1 flex-col items-center gap-1 py-2 text-[11px] font-bold transition-colors focus-visible:outline-none ${
         active ? "text-primary" : "text-muted-foreground hover:text-foreground"
       }`}
