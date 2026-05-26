@@ -115,34 +115,51 @@ export type AppTransporteHub = HubBase & {
 export type Hub = CaronaHub | AppTransporteHub;
 ```
 
-## Estado compartilhado
+## Estado compartilhado: localStorage como bridge
 
-`HubsProvider` em `root.tsx` (acima do `<Outlet/>`). API:
+Mantém o padrão atual de `useState` local em cada página. Para partilhar entre páginas, cada `useState` hidrata de `localStorage` no mount e grava no update.
+
+Helper único em `src/lib/storage.ts`:
 
 ```ts
-type HubsContextValue = {
-  hubs: Hub[];
-  add: (hub: Hub) => void;
-  remove: (id: string) => void;
-};
+export function loadJSON<T>(key: string, fallback: T): T {
+  if (typeof window === "undefined") return fallback;
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? (JSON.parse(raw) as T) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+export function saveJSON<T>(key: string, value: T): void {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(key, JSON.stringify(value));
+}
 ```
 
-Implementação: `useState<Hub[]>([])`. Sem persistência em disco nesta fase (mesmo padrão do `rotas/` e `configuracoes/` hoje).
+Uso em cada página:
 
-Para acessar rotas salvas e veículo, criar também:
+```ts
+const [hubs, setHubs] = useState<Hub[]>(() => loadJSON("hubs", []));
+useEffect(() => saveJSON("hubs", hubs), [hubs]);
+```
 
-- `RoutesProvider` em `root.tsx` movendo o `useState` que hoje está em `pages/rotas/index.tsx`.
-- `VehicleProvider` em `root.tsx` movendo o `useState` que hoje está em `pages/configuracoes/index.tsx`.
+Chaves:
 
-Sem isso a tela de criação não tem como ler as rotas/veículo. Os providers ficam em `src/lib/state/` (`hubs-context.tsx`, `routes-context.tsx`, `vehicle-context.tsx`).
+- `"hubs"` → `Hub[]`
+- `"routes"` → `SavedRoute[]` (substitui `mockSavedRoutes` em `rotas/index.tsx`; mock vira fallback inicial)
+- `"vehicle"` → `Vehicle | null` (substitui `useState(null)` em `configuracoes/index.tsx`)
+
+`/hubs/novo` faz `loadJSON("routes", [])` e `loadJSON("vehicle", null)` no mount — leitura síncrona, não precisa de subscribe (a página é montada do zero a cada navegação). Não há sincronização cross-tab nesta fase.
+
+Bônus: ganha persistência entre reloads naturalmente.
 
 ## Componentes novos
 
 ```
-frontend/src/lib/state/
-  hubs-context.tsx          ← provider + useHubs()
-  routes-context.tsx        ← provider + useRoutes() (lift do rotas/)
-  vehicle-context.tsx       ← provider + useVehicle() (lift do configuracoes/)
+frontend/src/lib/
+  storage.ts                ← loadJSON / saveJSON helpers
 
 frontend/src/components/
   bottom-nav.tsx            ← MODIFICADO (+ Caronas, rebrand Hubs, + abre sheet)
@@ -194,7 +211,8 @@ Adicionar tipo `NavKey`: `"hubs" | "routes" | "rides" | "profile"` (rides = caro
 - Modo carona sem `priceBRL > 0`: submit desabilitado.
 - Trocar de modo após preencher: state local descartado (URL muda).
 - Voltar sem submeter: descarta.
-- Reload da página: estado dos providers volta a vazio. Aceito nesta fase (mesmo comportamento de `rotas`/`vehicle` hoje).
+- Reload da página: estado persiste via `localStorage` (mudança de comportamento vs. hoje, onde rotas/vehicle voltam ao mock — aceito como ganho).
+- localStorage indisponível (modo privado restrito): helpers retornam fallback; app funciona sem persistência.
 - BottomNav em telas < 360px: avaliar visualmente; se quebrar, reduzir gap e font do label a 9px.
 
 ## Testes
@@ -220,6 +238,6 @@ Não há suíte de testes no frontend. Verificação manual via `agent-browser` 
 ## Decisões registradas
 
 - **5 itens na nav** (não compactar para 4) — usuário aprovou.
-- **Estado partilhado via Context em `root.tsx`** — usuário aprovou; alternativa `localStorage` adiada.
+- **Estado partilhado via `localStorage` + `useState` local** — manter o padrão atual sem introduzir Context.
 - **Sem helper de sugestão de valor** — usuário decidiu; helper removido do mockup.
 - **Mock local, sem backend** — alinha com o resto do app hoje.
