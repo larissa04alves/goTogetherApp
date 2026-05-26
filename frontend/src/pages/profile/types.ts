@@ -1,4 +1,4 @@
-export type Gender = "female" | "male";
+export type Gender = "Feminino" | "Masculino" | "Outro" | "Prefiro não dizer";
 
 export type Profile = {
   name: string;

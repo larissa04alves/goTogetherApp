@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { BottomNav } from "@/components/bottom-nav";
 import { loadJSON, saveJSON } from "@/lib/storage";
-import type { SavedRoute } from "@/pages/rotas/types";
+import type { SavedRoute } from "@/pages/route/types";
 
 import { EmptyHubs } from "./components/empty-hubs";
 import { HubCard } from "./components/hub-card";
@@ -11,7 +11,7 @@ import type { Hub } from "./types";
 const HUBS_KEY = "hubs";
 const ROUTES_KEY = "routes";
 
-export default function HistoricoPage() {
+export default function HistoryPage() {
   const [hubs, setHubs] = useState<Hub[]>(() => loadJSON<Hub[]>(HUBS_KEY, []));
   const [routes] = useState<SavedRoute[]>(() =>
     loadJSON<SavedRoute[]>(ROUTES_KEY, []),

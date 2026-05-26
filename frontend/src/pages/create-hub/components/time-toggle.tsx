@@ -1,5 +1,5 @@
 import { Checkbox } from "@/components/ui/checkbox";
-import type { SavedRoute } from "@/pages/rotas/types";
+import type { SavedRoute } from "@/pages/route/types";
 
 type TimeToggleProps = {
   useSaved: boolean;

@@ -1,4 +1,4 @@
-export type Gender = "female" | "male" | "other" | "prefer_not_to_say";
+export type Gender = "feminino" | "masculino" | "outro" | "prefiro nao dizer";
 
 export type RegisterStep1Data = {
   name: string;

@@ -2,7 +2,7 @@ import { ArrowRight01Icon, Car03Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useNavigate } from "react-router";
 
-import type { Vehicle } from "@/pages/configuracoes/types";
+import type { Vehicle } from "@/pages/settings/types";
 
 type VehicleCardProps = {
   vehicle: Vehicle;

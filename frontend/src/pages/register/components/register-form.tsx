@@ -37,15 +37,15 @@ import {
 import type { Gender, RegisterStep1Data } from "../types";
 
 const genderOptions: { value: Gender; label: string }[] = [
-  { value: "female", label: "Feminino" },
-  { value: "male", label: "Masculino" },
-  { value: "other", label: "Outro" },
-  { value: "prefer_not_to_say", label: "Prefiro não dizer" },
+  { value: "feminino", label: "Feminino" },
+  { value: "masculino", label: "Masculino" },
+  { value: "outro", label: "Outro" },
+  { value: "prefiro nao dizer", label: "Prefiro não dizer" },
 ];
 
 const registerSchema = z.object({
   name: nameValidator,
-  gender: z.enum(["female", "male", "other", "prefer_not_to_say"], {
+  gender: z.enum(["feminino", "masculino", "outro", "prefiro nao dizer"], {
     error: "Selecione uma opção",
   }),
   email: emailValidator,
@@ -137,7 +137,7 @@ export function RegisterForm({ defaultValues, onContinue }: RegisterFormProps) {
           {(field) => {
             const hasError = field.state.meta.errors.length > 0;
             return (
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 ">
                 <Label
                   htmlFor={field.name}
                   className="text-[11px] font-bold uppercase tracking-wide text-slate-400"
@@ -154,7 +154,7 @@ export function RegisterForm({ defaultValues, onContinue }: RegisterFormProps) {
                     id={field.name}
                     onBlur={field.handleBlur}
                     aria-invalid={hasError}
-                    className="h-13.5 w-full rounded-lg border-border bg-card pl-3 text-sm text-foreground"
+                    className="py-6 w-full rounded-lg border-border bg-card pl-3 text-sm text-foreground"
                   >
                     <SelectValue placeholder="Selecione…" />
                   </SelectTrigger>

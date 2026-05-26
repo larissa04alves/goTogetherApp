@@ -203,10 +203,10 @@ export function VerifyIdentityForm({
             selfie ? "border-2 border-[#2ddda8]" : "border-slate-300"
           }`}
         >
-          <div className="grid size-16 place-items-center rounded-md bg-muted">
+          <div className="grid size-12 place-items-center rounded-md bg-muted">
             <HugeiconsIcon
               icon={Camera02Icon}
-              size={32}
+              size={28}
               strokeWidth={1.8}
               className="text-muted-foreground"
             />

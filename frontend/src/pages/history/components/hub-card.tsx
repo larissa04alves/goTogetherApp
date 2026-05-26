@@ -1,7 +1,7 @@
 import { Car03Icon, SmartPhone01Icon, UserGroupIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
-import type { SavedRoute } from "@/pages/rotas/types";
+import type { SavedRoute } from "@/pages/route/types";
 
 import type { Hub } from "../types";
 

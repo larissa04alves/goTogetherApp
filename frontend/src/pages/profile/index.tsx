@@ -14,7 +14,7 @@ function getInitials(name: string): string {
   return (first + last).toUpperCase();
 }
 
-export default function PerfilPage() {
+export default function ProfilePage() {
   const { data } = authClient.useSession();
   const profile = data?.user
     ? {

@@ -1,13 +1,13 @@
 import { Alert01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
-type PrereqCTAProps = {
+type EmptyDataMessageProps = {
   message: string;
   ctaLabel: string;
   onClick: () => void;
 };
 
-export function PrereqCTA({ message, ctaLabel, onClick }: PrereqCTAProps) {
+export function EmptyDataMessage({ message, ctaLabel, onClick }: EmptyDataMessageProps) {
   return (
     <button
       type="button"

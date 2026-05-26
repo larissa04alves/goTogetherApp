@@ -9,5 +9,4 @@ export type SavedRoute = {
   origin: Endpoint;
   destination: Endpoint;
   departureTime: string;
-  distanceKm: number;
 };

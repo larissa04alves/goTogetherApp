@@ -9,15 +9,25 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import type { Gender, Profile } from "../types";
 
 const genderIcon: Record<Gender, { icon: typeof FemaleSymbolIcon; label: string; className: string }> = {
-  female: {
+  Feminino: {
     icon: FemaleSymbolIcon,
     label: "Feminino",
     className: "text-pink-500",
   },
-  male: {
+  Masculino: {
     icon: MaleSymbolIcon,
     label: "Masculino",
     className: "text-sky-500",
+  },
+  Outro: {
+    icon: FemaleSymbolIcon,
+    label: "Outro",
+    className: "text-gray-500",
+  },
+  "Prefiro não dizer": {
+    icon: FemaleSymbolIcon,
+    label: "Prefiro não dizer",
+    className: "text-gray-500",
   },
 };
 

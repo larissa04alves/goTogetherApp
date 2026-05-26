@@ -1,7 +1,6 @@
 import {
   Clock01Icon,
   Edit02Icon,
-  Route01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
@@ -47,10 +46,6 @@ export function RouteCard({ route, onEdit }: RouteCardProps) {
         <span className="inline-flex items-center gap-1">
           <HugeiconsIcon icon={Clock01Icon} size={12} strokeWidth={1.75} />
           Saída <span className="font-bold text-foreground">{route.departureTime}</span>
-        </span>
-        <span className="inline-flex items-center gap-1">
-          <HugeiconsIcon icon={Route01Icon} size={12} strokeWidth={1.75} />
-          <span className="font-bold text-foreground">{route.distanceKm} km</span>
         </span>
       </footer>
     </article>

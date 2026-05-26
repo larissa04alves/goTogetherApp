@@ -14,7 +14,6 @@ export const mockSavedRoutes: SavedRoute[] = [
       kind: "home",
     },
     departureTime: "23:00",
-    distanceKm: 10,
   },
   {
     id: "2",
@@ -29,6 +28,5 @@ export const mockSavedRoutes: SavedRoute[] = [
       kind: "work",
     },
     departureTime: "06:30",
-    distanceKm: 12,
   },
 ];

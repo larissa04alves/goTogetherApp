@@ -24,7 +24,7 @@ function inferKind(label: string, fallback: Endpoint["kind"]): Endpoint["kind"] 
   return fallback;
 }
 
-export default function RotasPage() {
+export default function RoutePage() {
   const [routes, setRoutes] = useState<SavedRoute[]>(() => loadJSON<SavedRoute[]>(STORAGE_KEY, mockSavedRoutes));
   const [modal, setModal] = useState<ModalState>({ mode: "closed" });
 
@@ -63,7 +63,6 @@ export default function RotasPage() {
           kind: inferKind(values.destinationLabel, "home"),
         },
         departureTime: values.departureTime,
-        distanceKm: 0,
       };
       setRoutes((curr) => [...curr, newRoute]);
       toast.success("Rota criada");

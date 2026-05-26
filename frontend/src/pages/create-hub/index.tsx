@@ -5,12 +5,12 @@ import { useNavigate, useSearchParams } from "react-router";
 import { toast } from "sonner";
 
 import { loadJSON, saveJSON } from "@/lib/storage";
-import type { Hub, HubMode } from "@/pages/historico/types";
-import type { Vehicle } from "@/pages/configuracoes/types";
-import type { SavedRoute } from "@/pages/rotas/types";
+import type { Hub, HubMode } from "@/pages/history/types";
+import type { Vehicle } from "@/pages/settings/types";
+import type { SavedRoute } from "@/pages/route/types";
 
 import { NotesTextarea } from "./components/notes-textarea";
-import { PrereqCTA } from "./components/prereq-cta";
+import { EmptyDataMessage } from "./components/empty-data-message";
 import { PriceInput } from "./components/price-input";
 import { RoutePicker } from "./components/route-picker";
 import { SeatsStepper } from "./components/seats-stepper";
@@ -21,7 +21,7 @@ function parseMode(raw: string | null): HubMode {
   return raw === "app" ? "app" : "carona";
 }
 
-export default function HubsNovoPage() {
+export default function CreateHubPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const mode = parseMode(searchParams.get("modo"));
@@ -116,7 +116,7 @@ export default function HubsNovoPage() {
               }}
             />
           ) : (
-            <PrereqCTA
+            <EmptyDataMessage
               message="Nenhuma rota cadastrada"
               ctaLabel="Criar rota"
               onClick={() => void navigate("/rotas")}
@@ -152,7 +152,7 @@ export default function HubsNovoPage() {
               {vehicle !== null ? (
                 <VehicleCard vehicle={vehicle} />
               ) : (
-                <PrereqCTA
+                <EmptyDataMessage
                   message="Nenhum veículo cadastrado"
                   ctaLabel="Cadastrar veículo"
                   onClick={() => void navigate("/configuracoes")}

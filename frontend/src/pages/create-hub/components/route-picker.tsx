@@ -5,7 +5,7 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useState } from "react";
 
-import type { SavedRoute } from "@/pages/rotas/types";
+import type { SavedRoute } from "@/pages/route/types";
 
 type RoutePickerProps = {
   routes: SavedRoute[];

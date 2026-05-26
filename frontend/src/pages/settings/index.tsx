@@ -11,7 +11,7 @@ import type { Vehicle } from "./types";
 
 const STORAGE_KEY = "vehicle";
 
-export default function ConfiguracoesPage() {
+export default function SettingsPage() {
   const navigate = useNavigate();
   const [vehicle, setVehicle] = useState<Vehicle | null>(() => loadJSON<Vehicle | null>(STORAGE_KEY, null));
   const [modalOpen, setModalOpen] = useState(false);
