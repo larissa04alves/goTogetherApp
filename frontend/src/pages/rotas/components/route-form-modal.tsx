@@ -146,6 +146,8 @@ export function RouteFormModal({
               id="departureTime"
               name="departureTime"
               type="time"
+              lang="pt-BR"
+              step={60}
               value={values.departureTime}
               onChange={(e) => update("departureTime", e.target.value)}
               className="h-11 rounded-lg border-border bg-card text-sm text-foreground"

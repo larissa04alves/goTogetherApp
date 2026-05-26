@@ -20,16 +20,34 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { maskBrPhone } from "@/lib/format-phone";
+import {
   emailValidator,
   nameValidator,
   passwordValidator,
   phoneValidator,
 } from "@/lib/validators";
 
-import type { RegisterStep1Data } from "../types";
+import type { Gender, RegisterStep1Data } from "../types";
+
+const genderOptions: { value: Gender; label: string }[] = [
+  { value: "female", label: "Feminino" },
+  { value: "male", label: "Masculino" },
+  { value: "other", label: "Outro" },
+  { value: "prefer_not_to_say", label: "Prefiro não dizer" },
+];
 
 const registerSchema = z.object({
   name: nameValidator,
+  gender: z.enum(["female", "male", "other", "prefer_not_to_say"], {
+    error: "Selecione uma opção",
+  }),
   email: emailValidator,
   phone: phoneValidator,
   password: passwordValidator,
@@ -49,6 +67,7 @@ export function RegisterForm({ defaultValues, onContinue }: RegisterFormProps) {
   const form = useForm({
     defaultValues: defaultValues ?? {
       name: "",
+      gender: "" as Gender,
       email: "",
       phone: "",
       password: "",
@@ -114,6 +133,56 @@ export function RegisterForm({ defaultValues, onContinue }: RegisterFormProps) {
           )}
         </form.Field>
 
+        <form.Field name="gender">
+          {(field) => {
+            const hasError = field.state.meta.errors.length > 0;
+            return (
+              <div className="flex flex-col gap-2">
+                <Label
+                  htmlFor={field.name}
+                  className="text-[11px] font-bold uppercase tracking-wide text-slate-400"
+                >
+                  Gênero
+                </Label>
+                <Select
+                  value={field.state.value}
+                  onValueChange={(value) =>
+                    field.handleChange(value as Gender)
+                  }
+                >
+                  <SelectTrigger
+                    id={field.name}
+                    onBlur={field.handleBlur}
+                    aria-invalid={hasError}
+                    className="h-13.5 w-full rounded-lg border-border bg-card pl-3 text-sm text-foreground"
+                  >
+                    <SelectValue placeholder="Selecione…" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {genderOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {hasError && (
+                  <ul className="flex flex-col gap-1">
+                    {field.state.meta.errors.map((error, i) => (
+                      <li
+                        key={error?.message ?? i}
+                        className="text-xs text-destructive"
+                      >
+                        {error?.message}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            );
+          }}
+        </form.Field>
+
         <form.Field name="email">
           {(field) => (
             <IconField
@@ -144,7 +213,7 @@ export function RegisterForm({ defaultValues, onContinue }: RegisterFormProps) {
               placeholder="(41) 99999-9999"
               value={field.state.value}
               onBlur={field.handleBlur}
-              onChange={(value) => field.handleChange(value)}
+              onChange={(value) => field.handleChange(maskBrPhone(value))}
               errors={field.state.meta.errors}
             />
           )}
@@ -217,7 +286,7 @@ export function RegisterForm({ defaultValues, onContinue }: RegisterFormProps) {
               placeholder="(41) 98888-8888"
               value={field.state.value}
               onBlur={field.handleBlur}
-              onChange={(value) => field.handleChange(value)}
+              onChange={(value) => field.handleChange(maskBrPhone(value))}
               errors={field.state.meta.errors}
             />
           )}

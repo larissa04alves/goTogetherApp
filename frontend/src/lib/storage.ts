@@ -1,4 +1,3 @@
-// frontend/src/lib/storage.ts
 export function loadJSON<T>(key: string, fallback: T): T {
   if (typeof window === "undefined") return fallback;
   try {

@@ -12,7 +12,7 @@ import { useNavigate } from "react-router";
 
 import { CreateHubSheet } from "./create-hub-sheet";
 
-type NavKey = "hubs" | "routes" | "rides" | "profile";
+type NavKey = "hubs" | "routes" | "history" | "profile";
 
 type BottomNavProps = {
   active: NavKey;
@@ -37,11 +37,11 @@ const routesItem: NavItem = {
   icon: Route01Icon,
   href: "/rotas",
 };
-const ridesItem: NavItem = {
-  key: "rides",
-  label: "Caronas",
+const historyItem: NavItem = {
+  key: "history",
+  label: "Histórico",
   icon: Car03Icon,
-  href: "/caronas",
+  href: "/historico",
 };
 const profileItem: NavItem = {
   key: "profile",
@@ -72,7 +72,7 @@ export function BottomNav({ active }: BottomNavProps) {
             <HugeiconsIcon icon={Add01Icon} size={22} strokeWidth={2.25} />
           </button>
 
-          <NavButton item={ridesItem} active={active === ridesItem.key} />
+          <NavButton item={historyItem} active={active === historyItem.key} />
           <NavButton item={profileItem} active={active === profileItem.key} />
         </div>
       </nav>

@@ -5,7 +5,7 @@ import { useNavigate, useSearchParams } from "react-router";
 import { toast } from "sonner";
 
 import { loadJSON, saveJSON } from "@/lib/storage";
-import type { Hub, HubMode } from "@/pages/caronas/types";
+import type { Hub, HubMode } from "@/pages/historico/types";
 import type { Vehicle } from "@/pages/configuracoes/types";
 import type { SavedRoute } from "@/pages/rotas/types";
 

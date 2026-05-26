@@ -1,4 +1,3 @@
-// frontend/src/pages/caronas/types.ts
 import type { Vehicle } from "@/pages/configuracoes/types";
 
 export type HubMode = "carona" | "app";
@@ -6,9 +5,9 @@ export type HubMode = "carona" | "app";
 export type HubBase = {
   id: string;
   routeId: string;
-  departureTime: string; // "HH:mm"
+  departureTime: string;
   seats: number;
-  createdAt: string; // ISO
+  createdAt: string;
 };
 
 export type CaronaHub = HubBase & {

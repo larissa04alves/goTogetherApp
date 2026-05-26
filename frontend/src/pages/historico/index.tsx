@@ -11,7 +11,7 @@ import type { Hub } from "./types";
 const HUBS_KEY = "hubs";
 const ROUTES_KEY = "routes";
 
-export default function CaronasPage() {
+export default function HistoricoPage() {
   const [hubs, setHubs] = useState<Hub[]>(() => loadJSON<Hub[]>(HUBS_KEY, []));
   const [routes] = useState<SavedRoute[]>(() =>
     loadJSON<SavedRoute[]>(ROUTES_KEY, []),
@@ -30,7 +30,7 @@ export default function CaronasPage() {
       <div className="mx-auto flex w-full max-w-100 flex-1 flex-col gap-4 px-5 pb-24 pt-8">
         <header className="flex flex-col gap-1">
           <h1 className="text-[22px] font-bold leading-tight text-foreground">
-            Minhas caronas
+            Histórico de caronas
           </h1>
           <p className="text-[11px] font-bold uppercase tracking-wide text-slate-400">
             {hubs.length} {hubs.length === 1 ? "criada" : "criadas"}
@@ -51,7 +51,7 @@ export default function CaronasPage() {
           </section>
         )}
       </div>
-      <BottomNav active="rides" />
+      <BottomNav active="history" />
     </main>
   );
 }
