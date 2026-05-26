@@ -8,5 +8,6 @@ export default [
   route("perfil", "pages/perfil/index.tsx"),
   route("rotas", "pages/rotas/index.tsx"),
   route("caronas", "pages/caronas/index.tsx"),
+  route("hubs/novo", "pages/hubs-novo/index.tsx"),
   route("configuracoes", "pages/configuracoes/index.tsx"),
 ] satisfies RouteConfig;
