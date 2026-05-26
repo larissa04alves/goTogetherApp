@@ -6,4 +6,5 @@ export default [
   route("register", "pages/register/index.tsx"),
   route("home", "pages/home/index.tsx"),
   route("perfil", "pages/perfil/index.tsx"),
+  route("rotas", "pages/rotas/index.tsx"),
 ] satisfies RouteConfig;

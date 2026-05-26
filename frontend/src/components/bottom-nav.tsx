@@ -32,7 +32,7 @@ const routesItem: NavItem = {
   key: "routes",
   label: "Rotas",
   icon: Route01Icon,
-  href: null,
+  href: "/rotas",
 };
 const profileItem: NavItem = {
   key: "profile",
