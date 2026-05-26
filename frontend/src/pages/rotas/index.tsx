@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import { loadJSON, saveJSON } from "@/lib/storage";
 import { BottomNav } from "../../components/bottom-nav";
 import { EmptyRouteCard } from "./components/empty-route-card";
 import { RotasHeader } from "./components/rotas-header";
@@ -8,6 +9,8 @@ import { RouteCard } from "./components/route-card";
 import { RouteFormModal } from "./components/route-form-modal";
 import { mockSavedRoutes } from "./mock";
 import type { Endpoint, SavedRoute } from "./types";
+
+const STORAGE_KEY = "routes";
 
 type ModalState =
   | { mode: "closed" }
@@ -22,8 +25,10 @@ function inferKind(label: string, fallback: Endpoint["kind"]): Endpoint["kind"] 
 }
 
 export default function RotasPage() {
-  const [routes, setRoutes] = useState<SavedRoute[]>(mockSavedRoutes);
+  const [routes, setRoutes] = useState<SavedRoute[]>(() => loadJSON<SavedRoute[]>(STORAGE_KEY, mockSavedRoutes));
   const [modal, setModal] = useState<ModalState>({ mode: "closed" });
+
+  useEffect(() => { saveJSON(STORAGE_KEY, routes); }, [routes]);
 
   function handleAdd() {
     setModal({ mode: "create" });

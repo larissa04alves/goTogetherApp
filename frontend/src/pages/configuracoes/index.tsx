@@ -1,17 +1,22 @@
 import { ArrowLeft01Icon, Car03Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
+import { loadJSON, saveJSON } from "@/lib/storage";
 import { SettingsItem } from "./components/settings-item";
 import { VehicleFormModal } from "./components/vehicle-form-modal";
 import type { Vehicle } from "./types";
 
+const STORAGE_KEY = "vehicle";
+
 export default function ConfiguracoesPage() {
   const navigate = useNavigate();
-  const [vehicle, setVehicle] = useState<Vehicle | null>(null);
+  const [vehicle, setVehicle] = useState<Vehicle | null>(() => loadJSON<Vehicle | null>(STORAGE_KEY, null));
   const [modalOpen, setModalOpen] = useState(false);
+
+  useEffect(() => { saveJSON(STORAGE_KEY, vehicle); }, [vehicle]);
 
   function handleSubmit(next: Vehicle) {
     setVehicle(next);
