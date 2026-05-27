@@ -1,37 +1,23 @@
-import type { Route } from "../../routes/+types/_index";
+import { authClient } from "@/api/auth";
 
-const TITLE_TEXT = `
- ██████╗ ███████╗████████╗████████╗███████╗██████╗
- ██╔══██╗██╔════╝╚══██╔══╝╚══██╔══╝██╔════╝██╔══██╗
- ██████╔╝█████╗     ██║      ██║   █████╗  ██████╔╝
- ██╔══██╗██╔══╝     ██║      ██║   ██╔══╝  ██╔══██╗
- ██████╔╝███████╗   ██║      ██║   ███████╗██║  ██║
- ╚═════╝ ╚══════╝   ╚═╝      ╚═╝   ╚══════╝╚═╝  ╚═╝
+import { BottomNav } from "../../components/bottom-nav";
+import { HomeHeader } from "./components/home-header";
+import { RidesList } from "./components/rides-list";
+import { RouteSelector } from "./components/route-selector";
+import { mockRides, mockRoute } from "./mock";
 
- ████████╗    ███████╗████████╗ █████╗  ██████╗██╗  ██╗
- ╚══██╔══╝    ██╔════╝╚══██╔══╝██╔══██╗██╔════╝██║ ██╔╝
-    ██║       ███████╗   ██║   ███████║██║     █████╔╝
-    ██║       ╚════██║   ██║   ██╔══██║██║     ██╔═██╗
-    ██║       ███████║   ██║   ██║  ██║╚██████╗██║  ██╗
-    ╚═╝       ╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝
- `;
+export default function HomePage() {
+  const { data } = authClient.useSession();
+  const userName = data?.user.name ?? "Visitante";
 
-export function meta({}: Route.MetaArgs) {
-  return [
-    { title: "goTogheterApp" },
-    { name: "description", content: "goTogheterApp is a web application" },
-  ];
-}
-
-export default function Home() {
   return (
-    <div className="container mx-auto max-w-3xl px-4 py-2">
-      <pre className="overflow-x-auto font-mono text-sm">{TITLE_TEXT}</pre>
-      <div className="grid gap-6">
-        <section className="rounded-lg border p-4">
-          <h2 className="mb-2 font-medium">API Status</h2>
-        </section>
+    <main className="bg-background flex min-h-svh w-full flex-col">
+      <div className="mx-auto flex w-full max-w-100 flex-1 flex-col gap-5 px-5 pb-24 pt-8">
+        <HomeHeader userName={userName} />
+        <RouteSelector route={mockRoute} />
+        <RidesList rides={mockRides} />
       </div>
-    </div>
+      <BottomNav active="hubs" />
+    </main>
   );
 }
