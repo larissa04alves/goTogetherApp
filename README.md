@@ -1,136 +1,143 @@
-# goTogheterApp
+# 🚗 goTogheterApp
 
-Monorepo TypeScript com **backend/** (Express + Drizzle + Postgres) e **frontend/** (React + React Router 7 + Tailwind 4 + shadcn/ui), autenticação via Better-Auth.
+Aplicação full-stack em monorepo TypeScript, com **backend/** em Express + Drizzle + PostgreSQL + Better-Auth e **frontend/** em React Router 7 + Tailwind 4 + shadcn/ui + PWA.
 
-## Features
+## 🚀 Subindo o projeto local
 
-- **TypeScript** — type safety em todo o stack
-- **React Router 7** — file-based routing, SSR off (SPA mode)
-- **Tailwind CSS 4** — utility-first styling
-- **shadcn/ui** — primitives em `frontend/src/components/ui/`
-- **Express 5** — backend HTTP
-- **Drizzle ORM + PostgreSQL** — database layer
-- **Better-Auth** — autenticação email/password
-- **PWA** — Progressive Web App via `vite-plugin-pwa`
-
-## Getting Started
-
-Instalar deps:
+Para iniciar o ambiente local completo, rode na raiz do projeto:
 
 ```bash
-npm install
+npm start
 ```
 
-## Database Setup
+Esse comando faz duas coisas:
 
-Postgres roda via Docker Compose.
+- 🐳 sobe o PostgreSQL pelo Docker Compose;
+- ⚡ inicia backend e frontend em modo desenvolvimento.
 
-1. Subir o container:
+Depois que os serviços iniciarem:
 
-```bash
-npm run db:start
+- 🌐 Frontend: [http://localhost:5173](http://localhost:5173)
+- 🔌 Backend: [http://localhost:3000](http://localhost:3000)
+
+## 🧩 O que tem no projeto
+
+- 🟦 **TypeScript** em todo o stack
+- ⚛️ **React Router 7** no frontend em modo SPA
+- 🎨 **Tailwind CSS 4** para estilos
+- 🧱 **shadcn/ui** em `frontend/src/components/ui/`
+- 🚀 **Express 5** no backend
+- 🐘 **PostgreSQL** com Docker Compose
+- 🌿 **Drizzle ORM** para schema, migrations e queries
+- 🔐 **Better-Auth** para autenticação
+- 📱 **PWA** com `vite-plugin-pwa`
+
+## 🐳 Banco de dados
+
+O PostgreSQL local roda via Docker Compose.
+
+Scripts úteis:
+
+| Script | O que faz |
+|---|---|
+| `npm run db:start` | Sobe o PostgreSQL em background |
+| `npm run db:watch` | Sobe o PostgreSQL mostrando logs no terminal |
+| `npm run db:stop` | Para o container, mantendo os dados |
+| `npm run db:down` | Remove o container |
+| `npm run db:push` | Aplica o schema atual no banco de dev |
+| `npm run db:generate` | Gera uma migration a partir do schema |
+| `npm run db:migrate` | Aplica migrations pendentes |
+| `npm run db:studio` | Abre o Drizzle Studio |
+
+Variáveis do backend ficam em `backend/.env`. Para desenvolvimento local, confira principalmente:
+
+- `DATABASE_URL`
+- `BETTER_AUTH_SECRET`
+- `BETTER_AUTH_URL`
+
+Variáveis do frontend ficam em `frontend/.env`, sempre com prefixo `VITE_`.
+
+## 🛠️ Scripts principais
+
+| Script | O que faz |
+|---|---|
+| `npm start` | Sobe Docker, backend e frontend |
+| `npm run dev` | Sobe backend e frontend, sem mexer no Docker |
+| `npm run dev:backend` | Sobe apenas a API Express na porta 3000 |
+| `npm run dev:frontend` | Sobe apenas o frontend na porta 5173 |
+| `npm run build` | Gera build de produção dos dois workspaces |
+| `npm run check-types` | Roda checagem TypeScript nos dois workspaces |
+| `cd frontend && npm run generate-pwa-assets` | Gera os assets da PWA |
+
+## 📁 Estrutura do projeto
+
+```text
+goTogheterApp/
+├── backend/                    # API Express
+│   ├── src/
+│   │   ├── index.ts            # bootstrap da API
+│   │   ├── routes/             # rotas HTTP
+│   │   ├── controllers/        # request/response
+│   │   ├── db/
+│   │   │   ├── client.ts       # conexão Drizzle
+│   │   │   ├── schema/         # tabelas Drizzle
+│   │   │   ├── migrations/     # migrations geradas
+│   │   │   └── seeds/          # seeds SQL
+│   │   ├── auth/               # Better-Auth no servidor
+│   │   └── env.ts              # env vars validadas
+│   ├── drizzle.config.ts
+│   └── .env
+├── frontend/                   # App React
+│   ├── src/
+│   │   ├── root.tsx            # shell da aplicação
+│   │   ├── routes.ts           # configuração de rotas
+│   │   ├── routes/             # arquivos de rota
+│   │   ├── pages/              # telas por feature
+│   │   ├── api/                # clientes HTTP e auth-client
+│   │   ├── components/
+│   │   │   ├── ui/             # primitives shadcn/ui
+│   │   │   └── *.tsx           # componentes compartilhados
+│   │   ├── lib/                # utilitários
+│   │   ├── styles/             # CSS global
+│   │   ├── assets/
+│   │   └── env.ts              # env vars do client
+│   ├── components.json         # config shadcn
+│   ├── vite.config.ts
+│   ├── react-router.config.ts
+│   └── .env
+├── docker-compose.yml          # PostgreSQL local
+├── tsconfig.base.json          # TypeScript compartilhado
+└── package.json                # npm workspaces
 ```
 
-2. Conferir/ajustar `backend/.env` (`DATABASE_URL`, `BETTER_AUTH_SECRET`, etc.).
+O alias `@/*` aponta para `src/*` tanto no backend quanto no frontend.
 
-3. Aplicar schema:
+## 🎨 UI e shadcn
 
-```bash
-npm run db:push
-```
+Os componentes shadcn ficam em `frontend/src/components/ui/`.
 
-Rodar tudo em dev:
-
-```bash
-npm run dev
-```
-
-- Front: [http://localhost:5173](http://localhost:5173)
-- Back: [http://localhost:3000](http://localhost:3000)
-
-## UI / shadcn
-
-Primitives ficam em `frontend/src/components/ui/`. Para adicionar mais componentes shadcn:
+Para adicionar novos componentes:
 
 ```bash
 cd frontend && npx shadcn@latest add accordion dialog popover sheet
 ```
 
-`frontend/components.json` já está configurado com `aliases.ui = @/components/ui`, então o CLI escreve nos caminhos corretos.
-
-Imports:
+Exemplo de import:
 
 ```tsx
 import { Button } from "@/components/ui/button";
 ```
 
-## PWA + React Router 7
+## 📱 PWA + React Router 7
 
-Há um issue conhecido de compatibilidade entre VitePWA e React Router v7:
+Existe um issue conhecido de compatibilidade entre VitePWA e React Router 7:
+
 https://github.com/vite-pwa/vite-plugin-pwa/issues/809
 
-## Project Structure
+## 🧯 Problemas comuns
 
-```
-goTogheterApp/
-├── backend/                       # API Express
-│   ├── src/
-│   │   ├── index.ts            # bootstrap
-│   │   ├── routes/             # wiring de rotas (auth.routes.ts...)
-│   │   ├── controllers/        # lógica de request/response
-│   │   ├── db/
-│   │   │   ├── client.ts       # conexão Drizzle
-│   │   │   ├── schema/         # tabelas Drizzle
-│   │   │   ├── migrations/     # geradas pelo drizzle-kit
-│   │   │   └── seeds/          # scripts SQL de seed
-│   │   ├── auth/               # config better-auth (server)
-│   │   └── env.ts              # env vars validadas (t3-oss)
-│   ├── drizzle.config.ts
-│   └── .env
-├── frontend/                      # React app
-│   ├── src/
-│   │   ├── root.tsx            # shell
-│   │   ├── routes.ts           # flatRoutes()
-│   │   ├── routes/             # finas, só reexportam de pages/
-│   │   ├── pages/              # organização por feature
-│   │   │   ├── home/
-│   │   │   ├── login/
-│   │   │   │   ├── index.tsx
-│   │   │   │   └── components/
-│   │   │   └── dashboard/
-│   │   ├── api/                # auth-client e clients HTTP
-│   │   ├── components/
-│   │   │   ├── ui/             # shadcn primitives
-│   │   │   └── *.tsx           # compartilhados (header, theme...)
-│   │   ├── lib/                # utils (cn)
-│   │   ├── styles/             # globals.css
-│   │   ├── assets/
-│   │   └── env.ts              # env client (VITE_*)
-│   ├── components.json         # shadcn config
-│   ├── vite.config.ts
-│   ├── react-router.config.ts
-│   └── .env
-├── docker-compose.yml          # Postgres
-├── tsconfig.base.json          # config compartilhado
-└── package.json                # npm workspaces: [backend, frontend]
-```
+Se `npm start` falhar porque a porta do banco já está ocupada, verifique se outro PostgreSQL está rodando localmente na porta `5432`.
 
-Path alias `@/*` aponta para `src/*` em ambos workspaces.
+Se o backend reclamar de env vars, confira `backend/.env`.
 
-## Scripts
-
-| Script | O que faz |
-|---|---|
-| `npm run dev` | Sobe backend e frontend em paralelo |
-| `npm run dev:backend` | Só Express (porta 3000) |
-| `npm run dev:frontend` | Só Vite + React Router (porta 5173) |
-| `npm run build` | Build de ambos workspaces |
-| `npm run check-types` | tsc em ambos workspaces |
-| `npm run db:start` | Sobe Postgres via Docker |
-| `npm run db:stop` | Para Postgres (mantém volume) |
-| `npm run db:down` | Remove container Postgres |
-| `npm run db:push` | Aplica schema no banco |
-| `npm run db:generate` | Gera migrations |
-| `npm run db:migrate` | Roda migrations |
-| `npm run db:studio` | Abre Drizzle Studio |
-| `cd frontend && npm run generate-pwa-assets` | Gera assets PWA |
+Se o frontend não conseguir falar com a API, confira `frontend/.env` e o valor de `VITE_SERVER_URL`.
