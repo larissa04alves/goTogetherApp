@@ -1,4 +1,4 @@
-# 🚗 goTogheterApp
+# 🚗 goTogetherApp
 
 Aplicação full-stack em monorepo TypeScript, com **backend/** em Express + Drizzle + PostgreSQL + Better-Auth e **frontend/** em React Router 7 + Tailwind 4 + shadcn/ui + PWA.
 
@@ -72,7 +72,7 @@ Variáveis do frontend ficam em `frontend/.env`, sempre com prefixo `VITE_`.
 ## 📁 Estrutura do projeto
 
 ```text
-goTogheterApp/
+goTogetherApp/
 ├── backend/                    # API Express
 │   ├── src/
 │   │   ├── index.ts            # bootstrap da API
