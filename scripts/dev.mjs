@@ -12,7 +12,6 @@ const children = services.map((service) => {
   return spawn(npmCommand, service.args, {
     stdio: "inherit",
     env: process.env,
-    shell: true,
   });
 });
 
