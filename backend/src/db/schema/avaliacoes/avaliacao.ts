@@ -10,13 +10,13 @@ export const avaliacao = pgTable(
     id: text("id").primaryKey(),
     caronaId: text("carona_id")
       .notNull()
-      .references(() => carona.id),
+      .references(() => carona.id, { onDelete: "cascade" }),
     avaliadorId: text("avaliador_id")
       .notNull()
-      .references(() => user.id),
+      .references(() => user.id, { onDelete: "cascade" }),
     avaliadoId: text("avaliado_id")
       .notNull()
-      .references(() => user.id),
+      .references(() => user.id, { onDelete: "cascade" }),
     nota: integer("nota").notNull(),
     comentario: text("comentario"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
