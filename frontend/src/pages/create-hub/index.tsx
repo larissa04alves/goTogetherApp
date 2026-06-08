@@ -77,7 +77,7 @@ export default function CreateHubPage() {
     const current = loadJSON<Hub[]>("hubs", []);
     saveJSON("hubs", [...current, hub]);
     toast.success("Carona criada");
-    void navigate("/caronas");
+    void navigate("/historico");
   }
 
   return (
