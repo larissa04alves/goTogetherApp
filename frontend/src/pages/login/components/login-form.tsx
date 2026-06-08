@@ -8,7 +8,7 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useForm } from "@tanstack/react-form";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -150,12 +150,6 @@ export function LoginForm() {
           )}
         </form.Field>
 
-        <Link
-          to="/forgot-password"
-          className="self-end text-xs font-bold text-primary hover:underline"
-        >
-          Esqueceu a senha?
-        </Link>
       </div>
 
       <form.Subscribe
