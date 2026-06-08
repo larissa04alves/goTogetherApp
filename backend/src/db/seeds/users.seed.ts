@@ -10,14 +10,12 @@ const users = [
     id: "seed-user-joao",
     name: "João Teste",
     email: "joao.teste@email.com",
-    genero: "masculino" as const,
     emailVerified: true,
   },
   {
     id: "seed-user-maria",
     name: "Maria Teste",
     email: "maria.teste@email.com",
-    genero: "feminino" as const,
     emailVerified: false,
   },
 ];
@@ -32,7 +30,6 @@ export async function seedUsers() {
         id: u.id,
         name: u.name,
         email: u.email,
-        genero: u.genero,
         emailVerified: u.emailVerified,
         createdAt: new Date(),
         updatedAt: new Date(),
