@@ -6,6 +6,7 @@ import { registerAuthRoutes } from "@/routes/auth.routes";
 import { registerAvaliacoesRoutes } from "@/routes/avaliacoes.routes";
 import { registerSolicitacoesRoutes } from "@/routes/solicitacoes.routes";
 import { registerVeiculosRoutes } from "@/routes/veiculos.routes";
+import { errorMiddleware } from "@/middlewares/error.middleware";
 
 const app = express();
 
@@ -29,6 +30,8 @@ app.get("/", (_req, res) => {
 registerAvaliacoesRoutes(app);
 registerSolicitacoesRoutes(app);
 registerVeiculosRoutes(app);
+
+app.use(errorMiddleware);
 
 app.listen(3000, () => {
   console.log("Server is running on http://localhost:3000");
