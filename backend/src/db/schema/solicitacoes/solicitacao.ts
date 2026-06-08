@@ -8,7 +8,7 @@ export const solicitacao = pgTable(
   "solicitacao",
   {
     id: text("id").primaryKey(),
-    hubId: text("hub_id")
+    caronaId: text("carona_id")
       .notNull()
       .references(() => carona.id, { onDelete: "cascade" }),
     solicitanteId: text("solicitante_id")
@@ -19,21 +19,18 @@ export const solicitacao = pgTable(
     })
       .notNull()
       .default("pendente"),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at")
-      .defaultNow()
-      .$onUpdate(() => new Date())
-      .notNull(),
+    criadoEm: timestamp("criado_em").defaultNow().notNull(),
+    respondidoEm: timestamp("respondido_em"),
   },
   (table) => [
-    index("solicitacao_hubId_idx").on(table.hubId),
+    index("solicitacao_caronaId_idx").on(table.caronaId),
     index("solicitacao_solicitanteId_idx").on(table.solicitanteId),
   ],
 );
 
 export const solicitacaoRelations = relations(solicitacao, ({ one }) => ({
-  hub: one(carona, {
-    fields: [solicitacao.hubId],
+  carona: one(carona, {
+    fields: [solicitacao.caronaId],
     references: [carona.id],
   }),
   solicitante: one(user, {
