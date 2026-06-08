@@ -4,25 +4,59 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
-import { loadJSON, saveJSON } from "@/lib/storage";
+import {
+  createVehicle,
+  fetchVehicles,
+  updateVehicle,
+  type Vehicle,
+  type VehicleInput,
+} from "@/api/vehicles";
 import { SettingsItem } from "./components/settings-item";
 import { VehicleFormModal } from "./components/vehicle-form-modal";
-import type { Vehicle } from "./types";
-
-const STORAGE_KEY = "vehicle";
 
 export default function SettingsPage() {
   const navigate = useNavigate();
-  const [vehicle, setVehicle] = useState<Vehicle | null>(() => loadJSON<Vehicle | null>(STORAGE_KEY, null));
+  const [vehicle, setVehicle] = useState<Vehicle | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
 
-  useEffect(() => { saveJSON(STORAGE_KEY, vehicle); }, [vehicle]);
+  useEffect(() => {
+    let active = true;
+    fetchVehicles()
+      .then((list) => {
+        if (active) setVehicle(list[0] ?? null);
+      })
+      .catch((err) => {
+        if (active) toast.error(err instanceof Error ? err.message : "Erro ao carregar veículo");
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
-  function handleSubmit(next: Vehicle) {
-    setVehicle(next);
-    setModalOpen(false);
-    toast.success(vehicle ? "Veículo atualizado" : "Veículo cadastrado");
+  async function handleSubmit(input: VehicleInput) {
+    setSaving(true);
+    try {
+      const saved = vehicle ? await updateVehicle(vehicle.id, input) : await createVehicle(input);
+      setVehicle(saved);
+      setModalOpen(false);
+      toast.success(vehicle ? "Veículo atualizado" : "Veículo cadastrado");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao salvar veículo");
+    } finally {
+      setSaving(false);
+    }
   }
+
+  const description = loading
+    ? "Carregando…"
+    : vehicle
+      ? `${vehicle.modelo} · ${vehicle.cor} · ${vehicle.placa}`
+      : "Informe marca, modelo, cor, placa e lugares do seu carro";
 
   return (
     <main className="bg-background flex min-h-svh w-full flex-col">
@@ -48,12 +82,10 @@ export default function SettingsPage() {
           <SettingsItem
             icon={Car03Icon}
             title={vehicle ? "Editar veículo" : "Cadastrar veículo"}
-            description={
-              vehicle
-                ? `${vehicle.model} · ${vehicle.color} · ${vehicle.plate}`
-                : "Informe modelo, cor e placa do seu carro"
-            }
-            onClick={() => setModalOpen(true)}
+            description={description}
+            onClick={() => {
+              if (!loading) setModalOpen(true);
+            }}
           />
         </section>
       </div>
@@ -61,6 +93,7 @@ export default function SettingsPage() {
       <VehicleFormModal
         open={modalOpen}
         initialVehicle={vehicle}
+        submitting={saving}
         onOpenChange={setModalOpen}
         onSubmit={handleSubmit}
       />

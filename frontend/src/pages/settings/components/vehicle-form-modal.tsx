@@ -2,6 +2,7 @@ import { Cancel01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useEffect, useState } from "react";
 
+import type { Vehicle, VehicleInput } from "@/api/vehicles";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,47 +13,75 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import type { Vehicle } from "../types";
-
 type VehicleFormModalProps = {
   open: boolean;
   initialVehicle: Vehicle | null;
+  submitting?: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (vehicle: Vehicle) => void;
+  onSubmit: (vehicle: VehicleInput) => void;
 };
 
-const empty: Vehicle = { model: "", color: "", plate: "" };
+type FormState = {
+  marca: string;
+  modelo: string;
+  placa: string;
+  cor: string;
+  capacidade: string;
+};
+
+const empty: FormState = { marca: "", modelo: "", placa: "", cor: "", capacidade: "" };
+
+function toFormState(vehicle: Vehicle | null): FormState {
+  if (vehicle === null) return empty;
+  return {
+    marca: vehicle.marca,
+    modelo: vehicle.modelo,
+    placa: vehicle.placa,
+    cor: vehicle.cor,
+    capacidade: String(vehicle.capacidade),
+  };
+}
 
 export function VehicleFormModal({
   open,
   initialVehicle,
+  submitting = false,
   onOpenChange,
   onSubmit,
 }: VehicleFormModalProps) {
   const isEditing = initialVehicle !== null;
-  const [values, setValues] = useState<Vehicle>(initialVehicle ?? empty);
+  const [values, setValues] = useState<FormState>(() => toFormState(initialVehicle));
 
   useEffect(() => {
-    if (open) setValues(initialVehicle ?? empty);
+    if (open) setValues(toFormState(initialVehicle));
   }, [open, initialVehicle]);
 
-  function update<K extends keyof Vehicle>(key: K, value: Vehicle[K]) {
+  function update<K extends keyof FormState>(key: K, value: string) {
     setValues((curr) => ({ ...curr, [key]: value }));
   }
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    onSubmit({
-      model: values.model.trim(),
-      color: values.color.trim(),
-      plate: values.plate.trim().toUpperCase(),
-    });
-  }
+  const capacidade = Number.parseInt(values.capacidade, 10);
+  const capacidadeValid = Number.isInteger(capacidade) && capacidade >= 1 && capacidade <= 7;
 
   const canSubmit =
-    values.model.trim() !== "" &&
-    values.color.trim() !== "" &&
-    values.plate.trim() !== "";
+    values.marca.trim() !== "" &&
+    values.modelo.trim() !== "" &&
+    values.placa.trim() !== "" &&
+    values.cor.trim() !== "" &&
+    capacidadeValid &&
+    !submitting;
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!canSubmit) return;
+    onSubmit({
+      marca: values.marca.trim(),
+      modelo: values.modelo.trim(),
+      placa: values.placa.trim().toUpperCase(),
+      cor: values.cor.trim(),
+      capacidade,
+    });
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -84,26 +113,42 @@ export function VehicleFormModal({
           className="flex flex-col gap-4 px-4 pb-4"
         >
           <Field
-            id="model"
+            id="marca"
+            label="Marca"
+            value={values.marca}
+            placeholder="Ex.: Honda"
+            onChange={(v) => update("marca", v)}
+          />
+          <Field
+            id="modelo"
             label="Modelo"
-            value={values.model}
-            placeholder="Ex.: Honda Fit"
-            onChange={(v) => update("model", v)}
+            value={values.modelo}
+            placeholder="Ex.: Fit"
+            onChange={(v) => update("modelo", v)}
           />
           <Field
-            id="color"
+            id="cor"
             label="Cor"
-            value={values.color}
+            value={values.cor}
             placeholder="Ex.: Prata"
-            onChange={(v) => update("color", v)}
+            onChange={(v) => update("cor", v)}
           />
           <Field
-            id="plate"
+            id="placa"
             label="Placa"
-            value={values.plate}
+            value={values.placa}
             placeholder="ABC-1D23"
             autoCapitalize="characters"
-            onChange={(v) => update("plate", v.toUpperCase())}
+            onChange={(v) => update("placa", v.toUpperCase())}
+          />
+          <Field
+            id="capacidade"
+            label="Lugares"
+            type="number"
+            inputMode="numeric"
+            value={values.capacidade}
+            placeholder="Ex.: 4"
+            onChange={(v) => update("capacidade", v)}
           />
 
           <div className="flex gap-2 pt-1">
@@ -137,6 +182,8 @@ type FieldProps = {
   label: string;
   value: string;
   placeholder: string;
+  type?: string;
+  inputMode?: "none" | "text" | "numeric" | "decimal" | "tel" | "search" | "email" | "url";
   autoCapitalize?: "none" | "sentences" | "words" | "characters";
   onChange: (value: string) => void;
 };
@@ -146,6 +193,8 @@ function Field({
   label,
   value,
   placeholder,
+  type = "text",
+  inputMode,
   autoCapitalize,
   onChange,
 }: FieldProps) {
@@ -160,7 +209,8 @@ function Field({
       <Input
         id={id}
         name={id}
-        type="text"
+        type={type}
+        inputMode={inputMode}
         value={value}
         autoCapitalize={autoCapitalize}
         placeholder={placeholder}
