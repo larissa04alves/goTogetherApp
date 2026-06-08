@@ -2,6 +2,7 @@ import { relations } from "drizzle-orm";
 import { boolean, index, integer, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 import { user } from "@/db/schema/auth";
+import { veiculo } from "@/db/schema/veiculos/veiculo";
 
 export const carona = pgTable(
   "carona",
@@ -12,7 +13,7 @@ export const carona = pgTable(
       .references(() => user.id, { onDelete: "cascade" }),
     rotaId: text("rota_id").notNull(),
     tipo: text("tipo", { enum: ["carro_proprio", "rachar_app"] }).notNull(),
-    veiculoId: text("veiculo_id"),
+    veiculoId: text("veiculo_id").references(() => veiculo.id, { onDelete: "set null" }),
     horarioSaida: text("horario_saida").notNull(),
     vagasMax: integer("vagas_max").notNull(),
     vagasDisponiveis: integer("vagas_disponiveis").notNull(),
@@ -30,4 +31,5 @@ export const carona = pgTable(
 
 export const caronaRelations = relations(carona, ({ one }) => ({
   ofertante: one(user, { fields: [carona.ofertanteId], references: [user.id] }),
+  veiculo: one(veiculo, { fields: [carona.veiculoId], references: [veiculo.id] }),
 }));
