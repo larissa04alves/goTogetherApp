@@ -5,19 +5,19 @@ import { user } from "@/db/schema/auth";
 import { carona } from "@/db/schema/caronas/carona";
 import { solicitacao } from "@/db/schema/solicitacoes/solicitacao";
 
-async function solicitar(hubId: string, solicitanteId: string) {
+async function solicitar(caronaId: string, solicitanteId: string) {
   const hub = await db.query.carona.findFirst({
-    where: eq(carona.id, hubId),
+    where: eq(carona.id, caronaId),
   });
 
   if (!hub) throw new Error("HUB_NAO_ENCONTRADO");
-  if (hub.status !== "ativa") throw new Error("HUB_NAO_ABERTO");
+  if (hub.status !== "aberta") throw new Error("HUB_NAO_ABERTO");
   if (hub.vagasDisponiveis <= 0) throw new Error("HUB_SEM_VAGAS");
-  if (hub.driverId === solicitanteId) throw new Error("SOLICITACAO_PROPRIA_CARONA");
+  if (hub.ofertanteId === solicitanteId) throw new Error("SOLICITACAO_PROPRIA_CARONA");
 
   const pendente = await db.query.solicitacao.findFirst({
     where: and(
-      eq(solicitacao.hubId, hubId),
+      eq(solicitacao.caronaId, caronaId),
       eq(solicitacao.solicitanteId, solicitanteId),
       eq(solicitacao.status, "pendente"),
     ),
@@ -27,7 +27,7 @@ async function solicitar(hubId: string, solicitanteId: string) {
 
   const aprovada = await db.query.solicitacao.findFirst({
     where: and(
-      eq(solicitacao.hubId, hubId),
+      eq(solicitacao.caronaId, caronaId),
       eq(solicitacao.solicitanteId, solicitanteId),
       eq(solicitacao.status, "aprovada"),
     ),
@@ -49,7 +49,7 @@ async function solicitar(hubId: string, solicitanteId: string) {
     .insert(solicitacao)
     .values({
       id: crypto.randomUUID(),
-      hubId,
+      caronaId,
       solicitanteId,
       status: "pendente",
     })
@@ -58,19 +58,20 @@ async function solicitar(hubId: string, solicitanteId: string) {
   return nova;
 }
 
-async function listar(hubId: string, userId: string) {
+async function listar(caronaId: string, userId: string) {
   const hub = await db.query.carona.findFirst({
-    where: eq(carona.id, hubId),
+    where: eq(carona.id, caronaId),
   });
 
   if (!hub) throw new Error("HUB_NAO_ENCONTRADO");
-  if (hub.driverId !== userId) throw new Error("NAO_AUTORIZADO");
+  if (hub.ofertanteId !== userId) throw new Error("NAO_AUTORIZADO");
 
   return db
     .select({
       id: solicitacao.id,
       status: solicitacao.status,
-      createdAt: solicitacao.createdAt,
+      criadoEm: solicitacao.criadoEm,
+      respondidoEm: solicitacao.respondidoEm,
       solicitante: {
         id: user.id,
         name: user.name,
@@ -80,8 +81,8 @@ async function listar(hubId: string, userId: string) {
     })
     .from(solicitacao)
     .innerJoin(user, eq(user.id, solicitacao.solicitanteId))
-    .where(eq(solicitacao.hubId, hubId))
-    .orderBy(solicitacao.createdAt);
+    .where(eq(solicitacao.caronaId, caronaId))
+    .orderBy(solicitacao.criadoEm);
 }
 
 async function aprovar(solicitacaoId: string, userId: string) {
@@ -92,24 +93,24 @@ async function aprovar(solicitacaoId: string, userId: string) {
   if (!sol) throw new Error("SOLICITACAO_NAO_ENCONTRADA");
 
   const hub = await db.query.carona.findFirst({
-    where: eq(carona.id, sol.hubId),
+    where: eq(carona.id, sol.caronaId),
   });
 
   if (!hub) throw new Error("HUB_NAO_ENCONTRADO");
-  if (hub.driverId !== userId) throw new Error("NAO_AUTORIZADO");
+  if (hub.ofertanteId !== userId) throw new Error("NAO_AUTORIZADO");
   if (sol.status !== "pendente") throw new Error("STATUS_INVALIDO");
 
   return db.transaction(async (tx) => {
     const [atualizada] = await tx
       .update(solicitacao)
-      .set({ status: "aprovada" })
+      .set({ status: "aprovada", respondidoEm: new Date() })
       .where(eq(solicitacao.id, solicitacaoId))
       .returning();
 
     await tx
       .update(carona)
       .set({ vagasDisponiveis: sql`${carona.vagasDisponiveis} - 1` })
-      .where(eq(carona.id, sol.hubId));
+      .where(eq(carona.id, sol.caronaId));
 
     return atualizada;
   });
@@ -123,16 +124,16 @@ async function rejeitar(solicitacaoId: string, userId: string) {
   if (!sol) throw new Error("SOLICITACAO_NAO_ENCONTRADA");
 
   const hub = await db.query.carona.findFirst({
-    where: eq(carona.id, sol.hubId),
+    where: eq(carona.id, sol.caronaId),
   });
 
   if (!hub) throw new Error("HUB_NAO_ENCONTRADO");
-  if (hub.driverId !== userId) throw new Error("NAO_AUTORIZADO");
+  if (hub.ofertanteId !== userId) throw new Error("NAO_AUTORIZADO");
   if (sol.status !== "pendente") throw new Error("STATUS_INVALIDO");
 
   const [atualizada] = await db
     .update(solicitacao)
-    .set({ status: "rejeitada" })
+    .set({ status: "rejeitada", respondidoEm: new Date() })
     .where(eq(solicitacao.id, solicitacaoId))
     .returning();
 

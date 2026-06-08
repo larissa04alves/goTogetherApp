@@ -7,25 +7,27 @@ export const carona = pgTable(
   "carona",
   {
     id: text("id").primaryKey(),
-    driverId: text("driver_id")
+    ofertanteId: text("ofertante_id")
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
+    rotaId: text("rota_id").notNull(),
+    tipo: text("tipo", { enum: ["carro_proprio", "rachar_app"] }).notNull(),
+    veiculoId: text("veiculo_id"),
+    horarioSaida: text("horario_saida").notNull(),
+    vagasMax: integer("vagas_max").notNull(),
+    vagasDisponiveis: integer("vagas_disponiveis").notNull(),
+    valorPorPessoa: integer("valor_por_pessoa"),
+    soMulheres: boolean("so_mulheres").notNull().default(false),
     status: text("status", {
-      enum: ["pendente", "ativa", "concluida", "cancelada"],
+      enum: ["aberta", "fechada", "cancelada", "concluida"],
     })
       .notNull()
-      .default("ativa"),
-    vagasDisponiveis: integer("vagas_disponiveis").notNull().default(1),
-    soMulheres: boolean("so_mulheres").notNull().default(false),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at")
-      .defaultNow()
-      .$onUpdate(() => new Date())
-      .notNull(),
+      .default("aberta"),
+    criadoEm: timestamp("criado_em").defaultNow().notNull(),
   },
-  (table) => [index("carona_driverId_idx").on(table.driverId)],
+  (table) => [index("carona_ofertanteId_idx").on(table.ofertanteId)],
 );
 
 export const caronaRelations = relations(carona, ({ one }) => ({
-  driver: one(user, { fields: [carona.driverId], references: [user.id] }),
+  ofertante: one(user, { fields: [carona.ofertanteId], references: [user.id] }),
 }));
