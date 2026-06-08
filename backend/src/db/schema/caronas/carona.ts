@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { index, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, index, integer, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 import { user } from "@/db/schema/auth";
 
@@ -14,7 +14,9 @@ export const carona = pgTable(
       enum: ["pendente", "ativa", "concluida", "cancelada"],
     })
       .notNull()
-      .default("pendente"),
+      .default("ativa"),
+    vagasDisponiveis: integer("vagas_disponiveis").notNull().default(1),
+    soMulheres: boolean("so_mulheres").notNull().default(false),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
       .defaultNow()
