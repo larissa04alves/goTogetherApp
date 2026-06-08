@@ -3,6 +3,7 @@ import express from "express";
 
 import { env } from "@/env";
 import { registerAuthRoutes } from "@/routes/auth.routes";
+import { registerAvaliacoesRoutes } from "@/routes/avaliacoes.routes";
 
 const app = express();
 
@@ -22,6 +23,8 @@ app.use(express.json());
 app.get("/", (_req, res) => {
   res.status(200).send("OK");
 });
+
+registerAvaliacoesRoutes(app);
 
 app.listen(3000, () => {
   console.log("Server is running on http://localhost:3000");
