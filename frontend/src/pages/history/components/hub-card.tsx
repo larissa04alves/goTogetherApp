@@ -49,7 +49,7 @@ export function HubCard({ hub, route }: HubCardProps) {
 
       {isCarona ? (
         <p className="text-[11px] text-muted-foreground">
-          {hub.vehicle.model} · {hub.vehicle.plate}
+          {hub.vehicle.modelo} · {hub.vehicle.placa}
         </p>
       ) : null}
     </article>

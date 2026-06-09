@@ -187,7 +187,7 @@ export function LoginForm() {
         type="button"
         variant="ghost"
         size="lg"
-        onClick={() => navigate("/register")}
+        onClick={() => navigate("/registro")}
         className="w-full text-sm bg-card py-6 rounded-full border border-border hover:bg-card-foreground"
       >
         Criar conta
