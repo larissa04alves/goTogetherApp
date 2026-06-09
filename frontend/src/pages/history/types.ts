@@ -1,4 +1,4 @@
-import type { Vehicle } from "@/pages/settings/types";
+import type { Vehicle } from "@/api/vehicles";
 
 export type HubMode = "carona" | "app";
 
