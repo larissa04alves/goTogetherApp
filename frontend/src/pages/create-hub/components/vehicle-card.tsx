@@ -2,7 +2,7 @@ import { ArrowRight01Icon, Car03Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useNavigate } from "react-router";
 
-import type { Vehicle } from "@/pages/settings/types";
+import type { Vehicle } from "@/api/vehicles";
 
 type VehicleCardProps = {
   vehicle: Vehicle;
@@ -22,9 +22,9 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
       </span>
       <span className="flex flex-1 flex-col">
         <span className="text-sm font-bold text-foreground">
-          {vehicle.model}
+          {vehicle.marca} {vehicle.modelo}
         </span>
-        <span className="text-xs text-muted-foreground">{vehicle.plate}</span>
+        <span className="text-xs text-muted-foreground">{vehicle.placa}</span>
       </span>
       <HugeiconsIcon icon={ArrowRight01Icon} size={16} strokeWidth={1.75} />
     </button>

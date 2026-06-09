@@ -1,12 +1,12 @@
 import { ArrowLeft01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { toast } from "sonner";
 
+import { fetchVehicles, type Vehicle } from "@/api/vehicles";
 import { loadJSON, saveJSON } from "@/lib/storage";
 import type { Hub, HubMode } from "@/pages/history/types";
-import type { Vehicle } from "@/pages/settings/types";
 import type { SavedRoute } from "@/pages/route/types";
 
 import { NotesTextarea } from "./components/notes-textarea";
@@ -29,9 +29,21 @@ export default function CreateHubPage() {
   const [routes] = useState<SavedRoute[]>(() =>
     loadJSON<SavedRoute[]>("routes", []),
   );
-  const [vehicle] = useState<Vehicle | null>(() =>
-    loadJSON<Vehicle | null>("vehicle", null),
-  );
+  const [vehicle, setVehicle] = useState<Vehicle | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    fetchVehicles()
+      .then((list) => {
+        if (active) setVehicle(list[0] ?? null);
+      })
+      .catch((err) => {
+        if (active) toast.error(err instanceof Error ? err.message : "Erro ao carregar veículo");
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const [selectedRoute, setSelectedRoute] = useState<SavedRoute | null>(null);
   const [useSavedTime, setUseSavedTime] = useState(true);
