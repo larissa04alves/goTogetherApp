@@ -1,9 +1,10 @@
-import { ArrowLeft01Icon, Car03Icon } from "@hugeicons/core-free-icons";
+import { ArrowLeft01Icon, Car03Icon, Logout03Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
+import { authClient } from "@/api/auth";
 import {
   createVehicle,
   fetchVehicles,
@@ -19,6 +20,7 @@ export default function SettingsPage() {
   const [vehicle, setVehicle] = useState<Vehicle | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
@@ -49,6 +51,17 @@ export default function SettingsPage() {
       toast.error(err instanceof Error ? err.message : "Erro ao salvar veículo");
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleLogout() {
+    setSigningOut(true);
+    try {
+      await authClient.signOut();
+      navigate("/login", { replace: true });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao sair");
+      setSigningOut(false);
     }
   }
 
@@ -87,6 +100,18 @@ export default function SettingsPage() {
               if (!loading) setModalOpen(true);
             }}
           />
+        </section>
+
+        <section className="mt-auto flex flex-col gap-3">
+          <button
+            type="button"
+            onClick={handleLogout}
+            disabled={signingOut}
+            className="flex w-full items-center justify-center gap-2 rounded-2xl border border-red-200 bg-card p-4 text-[13px] font-bold text-red-600 transition-colors hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
+          >
+            <HugeiconsIcon icon={Logout03Icon} size={18} strokeWidth={1.75} />
+            {signingOut ? "Saindo…" : "Sair da conta"}
+          </button>
         </section>
       </div>
 
