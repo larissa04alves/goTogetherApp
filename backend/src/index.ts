@@ -15,9 +15,9 @@ app.use(
   }),
 );
 
-registerAuthRoutes(app);
-
 app.use(express.json());
+
+registerAuthRoutes(app);
 
 app.get("/", (_req, res) => {
   res.status(200).send("OK");
