@@ -11,5 +11,6 @@ export default [
     route("historico", "pages/history/index.tsx"),
     route("hubs/novo", "pages/create-hub/index.tsx"),
     route("configuracoes", "pages/settings/index.tsx"),
+    route("chat/:hubId", "pages/chat/index.tsx"),
   ]),
 ] satisfies RouteConfig;

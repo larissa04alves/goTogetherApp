@@ -8,15 +8,35 @@ import type { Hub } from "../types";
 type HubCardProps = {
   hub: Hub;
   route: SavedRoute | undefined;
+  onClick?: () => void;
 };
 
-export function HubCard({ hub, route }: HubCardProps) {
+export function HubCard({ hub, route, onClick }: HubCardProps) {
   const isCarona = hub.mode === "carona";
   const ModeIcon = isCarona ? Car03Icon : SmartPhone01Icon;
   const modeLabel = isCarona ? "Carona" : "App de transporte";
 
   return (
-    <article className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4">
+    <article
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onClick={onClick}
+      onKeyDown={
+        onClick
+          ? (e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onClick();
+              }
+            }
+          : undefined
+      }
+      className={`flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 ${
+        onClick
+          ? "cursor-pointer transition-colors hover:border-primary/40 hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          : ""
+      }`}
+    >
       <header className="flex items-center justify-between gap-2">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-2.5 py-1 text-[11px] font-bold text-primary">
           <HugeiconsIcon icon={ModeIcon} size={12} strokeWidth={2} />
