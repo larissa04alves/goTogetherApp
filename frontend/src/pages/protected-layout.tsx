@@ -1,6 +1,7 @@
 import { Navigate, Outlet } from "react-router";
 
 import { authClient } from "@/api/auth";
+import { ChatProvider } from "@/components/chat-provider";
 
 export default function ProtectedLayout() {
   const { data, isPending } = authClient.useSession();
@@ -17,5 +18,9 @@ export default function ProtectedLayout() {
     return <Navigate to="/login" replace />;
   }
 
-  return <Outlet />;
+  return (
+    <ChatProvider>
+      <Outlet />
+    </ChatProvider>
+  );
 }

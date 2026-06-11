@@ -4,10 +4,35 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router";
+import { toast } from "sonner";
+
+import { joinHubChannel } from "@/api/chat";
+import { RideDetailModal } from "@/components/ride-detail-modal";
+import type { HubDetail } from "@/components/ride-detail-modal";
 
 import type { Modality, Ride, Similarity } from "../types";
 import { RideCard } from "./ride-card";
-import { RideDetailModal } from "./ride-detail-modal";
+
+function toHubDetail(ride: Ride): HubDetail {
+  return {
+    id: ride.id,
+    time: ride.time,
+    seatsTaken: ride.seatsTaken,
+    seatsTotal: ride.seatsTotal,
+    priceBRL: ride.priceBRL,
+    driver: {
+      initials: ride.driver.initials,
+      name: ride.driver.name,
+      rating: ride.driver.rating,
+      ridesCount: ride.driver.ridesCount,
+      verified: ride.driver.verified,
+      imageUrl: ride.driver.imageUrl,
+    },
+    car: ride.car,
+    similarity: { kind: ride.similarity, matchPct: ride.similarityMatchPct },
+  };
+}
 
 type RidesListProps = {
   rides: Ride[];
@@ -25,10 +50,28 @@ const modalityOptions: { value: Modality; label: string }[] = [
 ];
 
 export function RidesList({ rides }: RidesListProps) {
+  const navigate = useNavigate();
   const [filterOpen, setFilterOpen] = useState(false);
   const [similarities, setSimilarities] = useState<Similarity[]>([]);
   const [modalities, setModalities] = useState<Modality[]>([]);
   const [selectedRide, setSelectedRide] = useState<Ride | null>(null);
+  const [joining, setJoining] = useState(false);
+
+  async function handleEnterHub(hubId: string) {
+    setJoining(true);
+    try {
+      const name = selectedRide
+        ? `Carona de ${selectedRide.driver.name}`
+        : undefined;
+      await joinHubChannel(hubId, name);
+      navigate(`/chat/${hubId}`);
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Não foi possível entrar no hub",
+      );
+      setJoining(false);
+    }
+  }
 
   const filtered = useMemo(() => {
     return rides.filter((r) => {
@@ -149,11 +192,14 @@ export function RidesList({ rides }: RidesListProps) {
       </div>
 
       <RideDetailModal
-        ride={selectedRide}
+        detail={selectedRide ? toHubDetail(selectedRide) : null}
         open={selectedRide !== null}
         onOpenChange={(open) => {
           if (!open) setSelectedRide(null);
         }}
+        actionLabel="Entrar no hub"
+        onAction={handleEnterHub}
+        actionPending={joining}
       />
     </section>
   );

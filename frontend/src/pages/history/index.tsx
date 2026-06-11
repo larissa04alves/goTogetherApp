@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 
 import { BottomNav } from "@/components/bottom-nav";
+import { RideDetailModal } from "@/components/ride-detail-modal";
+import type { HubDetail } from "@/components/ride-detail-modal";
 import { loadJSON, saveJSON } from "@/lib/storage";
 import type { SavedRoute } from "@/pages/route/types";
 
@@ -11,11 +14,29 @@ import type { Hub } from "./types";
 const HUBS_KEY = "hubs";
 const ROUTES_KEY = "routes";
 
+function toHubDetail(hub: Hub, route: SavedRoute | undefined): HubDetail {
+  return {
+    id: hub.id,
+    title: route
+      ? `${route.origin.label} → ${route.destination.label}`
+      : "Rota removida",
+    time: hub.departureTime,
+    seatsTotal: hub.seats,
+    priceBRL: hub.mode === "carona" ? hub.priceBRL : undefined,
+    car:
+      hub.mode === "carona"
+        ? { model: hub.vehicle.modelo, plate: hub.vehicle.placa }
+        : undefined,
+  };
+}
+
 export default function HistoryPage() {
+  const navigate = useNavigate();
   const [hubs, setHubs] = useState<Hub[]>(() => loadJSON<Hub[]>(HUBS_KEY, []));
   const [routes] = useState<SavedRoute[]>(() =>
     loadJSON<SavedRoute[]>(ROUTES_KEY, []),
   );
+  const [selectedHub, setSelectedHub] = useState<Hub | null>(null);
 
   useEffect(() => {
     saveJSON(HUBS_KEY, hubs);
@@ -46,11 +67,30 @@ export default function HistoryPage() {
                 key={hub.id}
                 hub={hub}
                 route={routes.find((r) => r.id === hub.routeId)}
+                onClick={() => setSelectedHub(hub)}
               />
             ))}
           </section>
         )}
       </div>
+
+      <RideDetailModal
+        detail={
+          selectedHub
+            ? toHubDetail(
+                selectedHub,
+                routes.find((r) => r.id === selectedHub.routeId),
+              )
+            : null
+        }
+        open={selectedHub !== null}
+        onOpenChange={(open) => {
+          if (!open) setSelectedHub(null);
+        }}
+        actionLabel="Chat do hub"
+        onAction={(hubId) => navigate(`/chat/${hubId}`)}
+      />
+
       <BottomNav active="history" />
     </main>
   );

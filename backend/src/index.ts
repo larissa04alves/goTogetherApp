@@ -5,6 +5,7 @@ import { env } from "@/env";
 import { registerAuthRoutes } from "@/routes/auth.routes";
 import { registerAvaliacoesRoutes } from "@/routes/avaliacoes.routes";
 import { registerSolicitacoesRoutes } from "@/routes/solicitacoes.routes";
+import { registerChatRoutes } from "@/routes/chat.routes";
 import { registerVeiculosRoutes } from "@/routes/veiculos.routes";
 import { errorMiddleware } from "@/middlewares/error.middleware";
 
@@ -30,6 +31,7 @@ app.get("/", (_req, res) => {
 registerAvaliacoesRoutes(app);
 registerSolicitacoesRoutes(app);
 registerVeiculosRoutes(app);
+registerChatRoutes(app);
 
 app.use(errorMiddleware);
 
