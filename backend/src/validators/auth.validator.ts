@@ -1,60 +1,76 @@
-import { z, type ZodError } from "zod";
+import type { Request, Response, NextFunction } from 'express';
+import { z } from 'zod';
 
-import { isValidCpf, normalizeCpf } from "@/utils/cpf";
+import { cpfValido, limparCpf } from '@/utils/cpf';
 
-function normalizeOptionalString(value: unknown) {
-  if (typeof value !== "string") {
-    return value;
-  }
+const textoOpcional = z
+  .string()
+  .trim()
+  .optional()
+  .transform((valor) => (valor === '' ? undefined : valor));
 
-  const trimmedValue = value.trim();
-
-  return trimmedValue === "" ? undefined : trimmedValue;
-}
-
-const optionalTextField = z.preprocess(normalizeOptionalString, z.string().max(255).optional());
-
-export const registerPayloadSchema = z.object({
+export const registerSchema = z.object({
   nome_completo: z
     .string()
     .trim()
-    .min(1, "nome_completo e obrigatorio.")
+    .min(1, 'Nome completo é obrigatório.')
     .refine(
-      (value) => value.split(/\s+/).filter(Boolean).length >= 2,
-      "nome_completo deve conter pelo menos duas palavras.",
+      (valor) => valor.split(/\s+/).length >= 2,
+      'Nome completo deve conter pelo menos duas palavras.'
     ),
+
   email: z
     .string()
     .trim()
-    .min(1, "email e obrigatorio.")
-    .email("email deve ter um formato valido.")
-    .transform((value) => value.toLowerCase()),
+    .min(1, 'E-mail é obrigatório.')
+    .email('Formato de e-mail inválido.')
+    .toLowerCase(),
+
   senha: z
     .string()
-    .min(1, "senha e obrigatoria.")
-    .min(8, "senha deve ter no minimo 8 caracteres.")
-    .refine(
-      (value) => /[A-Za-z]/.test(value) && /\d/.test(value),
-      "senha deve conter letras e numeros.",
-    ),
+    .min(1, 'Senha é obrigatória.')
+    .min(8, 'Senha deve conter no mínimo 8 caracteres.')
+    .regex(/[A-Za-z]/, 'Senha deve conter pelo menos uma letra.')
+    .regex(/[0-9]/, 'Senha deve conter pelo menos um número.'),
+
   cpf: z
     .string()
     .trim()
-    .min(1, "cpf e obrigatorio.")
-    .transform(normalizeCpf)
-    .refine((value) => isValidCpf(value), "cpf invalido."),
-  telefone: z.preprocess(normalizeOptionalString, z.string().max(20).optional()),
-  genero: z.preprocess(normalizeOptionalString, z.string().max(50).optional()),
-  instituicao: optionalTextField,
-  curso: optionalTextField,
-  periodo: optionalTextField,
+    .min(1, 'CPF é obrigatório.')
+    .transform((valor) => limparCpf(valor))
+    .refine((valor) => cpfValido(valor), 'CPF inválido.'),
+
+  telefone: textoOpcional,
+
+  genero: textoOpcional,
+
+  instituicao: textoOpcional,
+
+  curso: textoOpcional,
+
+  periodo: textoOpcional,
 });
 
-export type RegisterPayload = z.infer<typeof registerPayloadSchema>;
+export type RegisterPayload = z.infer<typeof registerSchema>;
 
-export function formatValidationErrors(error: ZodError) {
-  return error.issues.map((issue) => ({
-    field: issue.path.join("."),
-    message: issue.message,
-  }));
+export function formatValidationErrors(error: z.ZodError) {
+  return error.flatten().fieldErrors;
+}
+
+export function validateRegister(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const result = registerSchema.safeParse(req.body);
+
+  if (!result.success) {
+    return res.status(400).json({
+      message: 'Erro de validação.',
+      errors: formatValidationErrors(result.error),
+    });
+  }
+
+  req.body = result.data;
+  return next();
 }

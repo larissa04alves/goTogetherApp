@@ -2,9 +2,12 @@ import cors from "cors";
 import express from "express";
 
 import { env } from "@/env";
-import { registerAuthRoutes } from "@/routes/auth.routes";
+import authRoutes from './routes/auth.routes';
+
 
 const app = express();
+
+app.use(express.json());
 
 app.use(
   cors({
@@ -15,9 +18,7 @@ app.use(
   }),
 );
 
-app.use(express.json());
-
-registerAuthRoutes(app);
+app.use('/auth', authRoutes);
 
 app.get("/", (_req, res) => {
   res.status(200).send("OK");

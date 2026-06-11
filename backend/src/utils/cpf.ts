@@ -1,30 +1,34 @@
-export function normalizeCpf(value: string) {
-  return value.replace(/\D/g, "");
+export function limparCpf(cpf: string): string {
+  return cpf.replace(/\D/g, '');
 }
 
-export function isValidCpf(value: string) {
-  const cpf = normalizeCpf(value);
+export function cpfValido(cpf: string): boolean {
+  const cpfLimpo = limparCpf(cpf);
 
-  if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) {
+  if (cpfLimpo.length !== 11) {
     return false;
   }
 
-  const calculateCheckDigit = (baseDigits: string) => {
-    const sum = baseDigits
-      .split("")
-      .reduce(
-        (accumulator, digit, index) =>
-          accumulator + Number(digit) * (baseDigits.length + 1 - index),
-        0,
-      );
+  if (/^(\d)\1{10}$/.test(cpfLimpo)) {
+    return false;
+  }
 
-    const remainder = 11 - (sum % 11);
+  const calcularDigito = (base: string, fatorInicial: number): number => {
+    let soma = 0;
 
-    return remainder > 9 ? "0" : String(remainder);
+    for (let i = 0; i < base.length; i++) {
+      soma += Number(base[i]) * (fatorInicial - i);
+    }
+
+    const resto = soma % 11;
+    return resto < 2 ? 0 : 11 - resto;
   };
 
-  const firstCheckDigit = calculateCheckDigit(cpf.slice(0, 9));
-  const secondCheckDigit = calculateCheckDigit(cpf.slice(0, 9) + firstCheckDigit);
+  const primeiroDigito = calcularDigito(cpfLimpo.substring(0, 9), 10);
+  const segundoDigito = calcularDigito(cpfLimpo.substring(0, 10), 11);
 
-  return cpf.endsWith(firstCheckDigit + secondCheckDigit);
+  return (
+    primeiroDigito === Number(cpfLimpo[9]) &&
+    segundoDigito === Number(cpfLimpo[10])
+  );
 }

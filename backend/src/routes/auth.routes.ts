@@ -1,10 +1,9 @@
-import { toNodeHandler } from "better-auth/node";
-import type { Express } from "express";
+import { Router } from 'express';
+import { register } from '@/controllers/auth.controller';
+import { validateRegister } from '@/validators/auth.validator';
 
-import { auth } from "@/auth";
-import { registerUser } from "@/controllers/auth.controller";
+const router = Router();
 
-export function registerAuthRoutes(app: Express) {
-  app.post("/auth/register", registerUser);
-  app.all("/api/auth{/*path}", toNodeHandler(auth));
-}
+router.post('/register', validateRegister, register);
+
+export default router;
