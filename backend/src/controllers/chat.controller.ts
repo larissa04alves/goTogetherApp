@@ -44,8 +44,12 @@ async function joinHub(req: Request, res: Response): Promise<void> {
   const session = res.locals["session"] as Session;
 
   const channel = await chatService.ensureHubChannel(
+    {
+      id: session.user.id,
+      name: session.user.name,
+      image: session.user.image ?? undefined,
+    },
     hubId,
-    session.user.id,
     parsed.data.name,
   );
 
