@@ -9,6 +9,7 @@ import {
 
 import { Toaster } from "@/components/ui/sonner";
 
+import "stream-chat-react/dist/css/index.css";
 import "./index.css";
 import type { Route } from "./+types/root";
 

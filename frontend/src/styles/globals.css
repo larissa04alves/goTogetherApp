@@ -128,3 +128,30 @@
     @apply font-sans;
   }
 }
+
+/* GetStream chat — mapeia os tokens da lib para o design do app.
+   Como apontamos para as CSS vars do projeto (que comutam em .dark),
+   claro e escuro saem de graça. */
+.str-chat {
+  --str-chat__font-family: "Inter", "Inter Variable", sans-serif;
+  --str-chat__border-radius-circle: var(--radius);
+  --str-chat__primary-color: var(--primary);
+  --str-chat__active-primary-color: var(--primary);
+  --str-chat__primary-color-low-emphasis: color-mix(in srgb, var(--primary) 70%, transparent);
+  --str-chat__background-color: var(--background);
+  --str-chat__secondary-background-color: var(--card);
+  --str-chat__primary-surface-color: color-mix(in srgb, var(--primary) 14%, transparent);
+  --str-chat__primary-surface-color-low-emphasis: color-mix(in srgb, var(--primary) 8%, transparent);
+  --str-chat__surface-color: var(--muted);
+  --str-chat__text-color: var(--foreground);
+  --str-chat__text-low-emphasis-color: var(--muted-foreground);
+  --str-chat__disabled-color: var(--muted-foreground);
+  --str-chat__border-color: var(--border);
+  --str-chat__message-bubble-color: var(--foreground);
+  --str-chat__own-message-bubble-background-color: var(--primary);
+  --str-chat__own-message-bubble-color: var(--primary-foreground);
+  --str-chat__message-bubble-background-color: var(--card);
+  --str-chat__message-textarea-background-color: var(--card);
+  --str-chat__message-input-background-color: var(--background);
+  --str-chat__message-send-color: var(--primary);
+}
