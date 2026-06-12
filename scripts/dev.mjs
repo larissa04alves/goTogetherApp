@@ -1,10 +1,54 @@
 import { spawn } from "node:child_process";
 
 const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
+
+const setupSteps = [
+  { name: "docker", cmd: "docker", args: ["compose", "up", "-d", "--wait"] },
+  {
+    name: "db:push",
+    cmd: npmCommand,
+    args: ["run", "db:push", "--workspace", "backend"],
+  },
+  {
+    name: "db:seed",
+    cmd: npmCommand,
+    args: ["run", "db:seed", "--workspace", "backend"],
+  },
+];
+
 const services = [
   { name: "backend", args: ["run", "dev:backend"] },
   { name: "frontend", args: ["run", "dev:frontend"] },
 ];
+
+function run(cmd, args) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(cmd, args, {
+      stdio: "inherit",
+      env: process.env,
+      shell: true,
+    });
+
+    child.on("error", reject);
+    child.on("exit", (code) => {
+      if (code === 0) {
+        resolve();
+      } else {
+        reject(new Error(`"${cmd} ${args.join(" ")}" saiu com código ${code}`));
+      }
+    });
+  });
+}
+
+for (const step of setupSteps) {
+  console.log(`\n[setup] ${step.name}...`);
+  try {
+    await run(step.cmd, step.args);
+  } catch (err) {
+    console.error(`[setup] Falha em "${step.name}":`, err.message);
+    process.exit(1);
+  }
+}
 
 let isShuttingDown = false;
 

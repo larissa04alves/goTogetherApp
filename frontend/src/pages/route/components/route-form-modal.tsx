@@ -86,7 +86,7 @@ export function RouteFormModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className="max-w-90! rounded-3xl bg-card p-0 ring-0"
+        className="max-w-80! rounded-3xl bg-card p-0 ring-0"
       >
         <header className="flex items-center justify-between border-b border-border px-4 py-3">
           <DialogClose
