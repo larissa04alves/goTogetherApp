@@ -8,7 +8,7 @@ import {
   MapMarker,
   MapRoute,
   MarkerContent,
-} from "@/components/ui/map";
+} from "@/components/map";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import {

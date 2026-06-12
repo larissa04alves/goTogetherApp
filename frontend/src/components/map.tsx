@@ -233,6 +233,7 @@ const Map = forwardRef<MapRef, MapProps>(function Map(
       setIsStyleLoaded(false);
       setMapInstance(null);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -396,7 +397,7 @@ function MapMarker({
     markerInstance.on("dragend", handleDragEnd);
 
     return markerInstance;
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -407,7 +408,7 @@ function MapMarker({
     return () => {
       marker.remove();
     };
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [map]);
 
   if (
@@ -1106,15 +1107,7 @@ function MapRoute({
       map.off("mouseenter", layerId, handleMouseEnter);
       map.off("mouseleave", layerId, handleMouseLeave);
     };
-  }, [
-    isLoaded,
-    map,
-    layerId,
-    onClick,
-    onMouseEnter,
-    onMouseLeave,
-    interactive,
-  ]);
+  }, [isLoaded, map, layerId, onClick, onMouseEnter, onMouseLeave, interactive]);
 
   return null;
 }
@@ -1242,8 +1235,7 @@ function buildArcCoordinates(
   // longitudes may fall outside [-180, 180]; MapLibre renders them correctly
   // on the globe projection, and on mercator when world copies are enabled.
   const rawDx = xTo - x0;
-  const x2 =
-    rawDx > 180 ? xTo - 360 : rawDx < -180 ? xTo + 360 : xTo;
+  const x2 = rawDx > 180 ? xTo - 360 : rawDx < -180 ? xTo + 360 : xTo;
   const dx = x2 - x0;
   const dy = y2 - y0;
   const distance = Math.hypot(dx, dy);
