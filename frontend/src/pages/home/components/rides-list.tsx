@@ -31,6 +31,7 @@ function toHubDetail(ride: Ride): HubDetail {
     },
     car: ride.car,
     similarity: { kind: ride.similarity, matchPct: ride.similarityMatchPct },
+    route: ride.route,
   };
 }
 

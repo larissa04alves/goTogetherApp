@@ -5,6 +5,11 @@ export const mockRoute: Route = {
   destination: "Casa",
 };
 
+const PUCPR = {
+  label: "PUCPR",
+  address: "Rua Imaculada Conceição, 1155, Prado Velho, Curitiba, PR",
+};
+
 export const mockRides: Ride[] = [
   {
     id: "1",
@@ -23,6 +28,13 @@ export const mockRides: Ride[] = [
     seatsTaken: 2,
     seatsTotal: 5,
     priceBRL: 5.9,
+    route: {
+      origin: {
+        label: "Batel",
+        address: "Avenida do Batel, 1230, Batel, Curitiba, PR",
+      },
+      destination: PUCPR,
+    },
   },
   {
     id: "2",
@@ -41,6 +53,13 @@ export const mockRides: Ride[] = [
     seatsTaken: 4,
     seatsTotal: 5,
     priceBRL: 4.5,
+    route: {
+      origin: {
+        label: "Centro",
+        address: "Rua XV de Novembro, 500, Centro, Curitiba, PR",
+      },
+      destination: PUCPR,
+    },
   },
   {
     id: "3",
@@ -58,5 +77,12 @@ export const mockRides: Ride[] = [
     seatsTaken: 1,
     seatsTotal: 3,
     priceBRL: 2.5,
+    route: {
+      origin: {
+        label: "Centro Cívico",
+        address: "Avenida Cândido de Abreu, 200, Centro Cívico, Curitiba, PR",
+      },
+      destination: PUCPR,
+    },
   },
 ];
