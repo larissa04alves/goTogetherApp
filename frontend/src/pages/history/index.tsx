@@ -27,6 +27,15 @@ function toHubDetail(hub: Hub, route: SavedRoute | undefined): HubDetail {
       hub.mode === "carona"
         ? { model: hub.vehicle.modelo, plate: hub.vehicle.placa }
         : undefined,
+    route: route
+      ? {
+          origin: { label: route.origin.label, address: route.origin.address },
+          destination: {
+            label: route.destination.label,
+            address: route.destination.address,
+          },
+        }
+      : undefined,
   };
 }
 
