@@ -17,6 +17,7 @@ import {
   DialogContent,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { RouteMap } from "@/components/route-map";
 
 export type HubDetailSimilarity = "alta" | "media" | "baixa";
 
@@ -42,6 +43,10 @@ export type HubDetail = {
   similarity?: {
     kind: HubDetailSimilarity;
     matchPct: number;
+  };
+  route?: {
+    origin: { label: string; address: string };
+    destination: { label: string; address: string };
   };
 };
 
@@ -117,19 +122,26 @@ export function RideDetailModal({
         </header>
 
         <div className="flex flex-col gap-3 px-4 pb-4">
-          <div
-            aria-label="Mapa do trajeto"
-            className="grid h-36 w-full place-items-center rounded-2xl bg-slate-100 text-muted-foreground"
-          >
-            <div className="flex flex-col items-center gap-1 text-[11px]">
-              <HugeiconsIcon
-                icon={MapsCircle01Icon}
-                size={28}
-                strokeWidth={1.5}
-              />
-              Google Maps
+          {detail.route ? (
+            <RouteMap
+              origin={detail.route.origin}
+              destination={detail.route.destination}
+            />
+          ) : (
+            <div
+              aria-label="Mapa do trajeto"
+              className="grid h-36 w-full place-items-center rounded-2xl bg-slate-100 text-muted-foreground"
+            >
+              <div className="flex flex-col items-center gap-1 text-[11px]">
+                <HugeiconsIcon
+                  icon={MapsCircle01Icon}
+                  size={28}
+                  strokeWidth={1.5}
+                />
+                Google Maps
+              </div>
             </div>
-          </div>
+          )}
 
           {detail.driver ? (
             <div className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3">
