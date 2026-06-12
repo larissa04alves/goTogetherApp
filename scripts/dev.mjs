@@ -13,6 +13,7 @@ const setupSteps = [
     name: "db:seed",
     cmd: npmCommand,
     args: ["run", "db:seed", "--workspace", "backend"],
+    optional: true,
   },
 ];
 
@@ -45,8 +46,12 @@ for (const step of setupSteps) {
   try {
     await run(step.cmd, step.args);
   } catch (err) {
-    console.error(`[setup] Falha em "${step.name}":`, err.message);
-    process.exit(1);
+    if (step.optional) {
+      console.warn(`[setup] Aviso: "${step.name}" falhou (não obrigatório):`, err.message);
+    } else {
+      console.error(`[setup] Falha em "${step.name}":`, err.message);
+      process.exit(1);
+    }
   }
 }
 

@@ -10,6 +10,9 @@ export const user = pgTable("user", {
   genero: text("genero", {
     enum: ["feminino", "masculino", "outro", "prefiro nao dizer"],
   }),
+  phone: text("phone"),
+  emergencyContactName: text("emergency_contact_name"),
+  emergencyContactPhone: text("emergency_contact_phone"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()
