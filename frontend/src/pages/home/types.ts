@@ -22,6 +22,10 @@ export type Ride = {
   seatsTaken: number;
   seatsTotal: number;
   priceBRL: number;
+  route: {
+    origin: { label: string; address: string };
+    destination: { label: string; address: string };
+  };
 };
 
 export type Route = {
