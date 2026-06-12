@@ -29,7 +29,13 @@ type FormState = {
   capacidade: string;
 };
 
-const empty: FormState = { marca: "", modelo: "", placa: "", cor: "", capacidade: "" };
+const empty: FormState = {
+  marca: "",
+  modelo: "",
+  placa: "",
+  cor: "",
+  capacidade: "",
+};
 
 function toFormState(vehicle: Vehicle | null): FormState {
   if (vehicle === null) return empty;
@@ -50,7 +56,9 @@ export function VehicleFormModal({
   onSubmit,
 }: VehicleFormModalProps) {
   const isEditing = initialVehicle !== null;
-  const [values, setValues] = useState<FormState>(() => toFormState(initialVehicle));
+  const [values, setValues] = useState<FormState>(() =>
+    toFormState(initialVehicle),
+  );
 
   useEffect(() => {
     if (open) setValues(toFormState(initialVehicle));
@@ -61,7 +69,8 @@ export function VehicleFormModal({
   }
 
   const capacidade = Number.parseInt(values.capacidade, 10);
-  const capacidadeValid = Number.isInteger(capacidade) && capacidade >= 1 && capacidade <= 7;
+  const capacidadeValid =
+    Number.isInteger(capacidade) && capacidade >= 1 && capacidade <= 7;
 
   const canSubmit =
     values.marca.trim() !== "" &&
@@ -87,7 +96,7 @@ export function VehicleFormModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className="max-w-90! rounded-3xl bg-card p-0 ring-0"
+        className="max-w-80! rounded-3xl bg-card p-0 ring-0"
       >
         <header className="flex items-center justify-between border-b border-border px-4 py-3">
           <DialogClose
@@ -183,7 +192,15 @@ type FieldProps = {
   value: string;
   placeholder: string;
   type?: string;
-  inputMode?: "none" | "text" | "numeric" | "decimal" | "tel" | "search" | "email" | "url";
+  inputMode?:
+    | "none"
+    | "text"
+    | "numeric"
+    | "decimal"
+    | "tel"
+    | "search"
+    | "email"
+    | "url";
   autoCapitalize?: "none" | "sentences" | "words" | "characters";
   onChange: (value: string) => void;
 };
