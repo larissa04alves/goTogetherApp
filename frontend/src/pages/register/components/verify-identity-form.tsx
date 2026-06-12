@@ -37,23 +37,28 @@ export function VerifyIdentityForm({
   async function handleSubmit() {
     if (!canSubmit) return;
     setIsSubmitting(true);
-    await authClient.signUp.email(
-      {
-        name: basicData.name,
-        email: basicData.email,
-        password: basicData.password,
-      },
-      {
-        onSuccess: () => {
-          toast.success("Conta criada. Verificação enviada para análise.");
-          navigate("/home");
+    try {
+      await authClient.signUp.email(
+        {
+          name: basicData.name,
+          email: basicData.email,
+          password: basicData.password,
         },
-        onError: (error) => {
-          toast.error(error.error.message || error.error.statusText);
-          setIsSubmitting(false);
+        {
+          onSuccess: () => {
+            toast.success("Conta criada. Verificação enviada para análise.");
+            navigate("/home");
+          },
+          onError: (error) => {
+            toast.error(error.error.message || error.error.statusText);
+          },
         },
-      },
-    );
+      );
+    } catch {
+      toast.error("Não foi possível concluir o cadastro. Tente novamente.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (

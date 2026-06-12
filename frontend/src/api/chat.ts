@@ -37,7 +37,7 @@ async function extractErrorMessage(response: Response): Promise<string> {
 }
 
 export function fetchStreamToken(): Promise<StreamCredentials> {
-  return request<StreamCredentials>("/stream/token", { method: "POST" });
+  return request<StreamCredentials>("/chat/token", { method: "POST" });
 }
 
 export function joinHubChannel(hubId: string, name?: string): Promise<HubChannel> {
