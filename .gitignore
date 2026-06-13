@@ -3,9 +3,6 @@ node_modules
 .pnp
 .pnp.js
 
-# Agent skills (regenerated from skills-lock.json)
-.agents/skills/
-
 # Build outputs
 dist
 build
