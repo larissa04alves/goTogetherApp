@@ -1,14 +1,25 @@
-import { useState } from "react";
+import { authClient } from "@/api/auth";
+import Loader from "@/components/loader";
 
-import SignInForm from "./components/sign-in-form";
-import SignUpForm from "./components/sign-up-form";
+import { LoginForm } from "./components/login-form";
 
-export default function Login() {
-  const [showSignIn, setShowSignIn] = useState(false);
+export default function LoginPage() {
+  const { isPending } = authClient.useSession();
 
-  return showSignIn ? (
-    <SignInForm onSwitchToSignUp={() => setShowSignIn(false)} />
-  ) : (
-    <SignUpForm onSwitchToSignIn={() => setShowSignIn(true)} />
+  if (isPending) {
+    return <Loader />;
+  }
+
+  return (
+    <main className="bg-background flex min-h-svh w-full flex-col px-5 pb-8 pt-16">
+      <div className="flex w-full max-w-100 flex-col gap-20">
+        <img
+          src="/logo-goTogheter.png"
+          alt="goTogether"
+          className="mx-auto h-32 w-auto"
+        />
+        <LoginForm />
+      </div>
+    </main>
   );
 }
