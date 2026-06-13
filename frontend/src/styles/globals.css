@@ -7,72 +7,72 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.58 0.22 27);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.809 0.105 251.813);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.546 0.245 262.881);
-  --chart-4: oklch(0.488 0.243 264.376);
-  --chart-5: oklch(0.424 0.199 265.638);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --background: #f4f7fa;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #0d9479;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  --muted: #f1f5f9;
+  --muted-foreground: #475569;
+  --accent: #e8edf2;
+  --accent-foreground: #0f172a;
+  --destructive: #ef4444;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #2ddda8;
+  --chart-1: #2ddda8;
+  --chart-2: #0d9479;
+  --chart-3: #f59e0b;
+  --chart-4: #475569;
+  --chart-5: #94a3b8;
+  --radius: 0.5rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0f172a;
+  --sidebar-primary: #0d9479;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f1f5f9;
+  --sidebar-accent-foreground: #0f172a;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #2ddda8;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.87 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.371 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.809 0.105 251.813);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.546 0.245 262.881);
-  --chart-4: oklch(0.488 0.243 264.376);
-  --chart-5: oklch(0.424 0.199 265.638);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #0f172a;
+  --foreground: #e8edf2;
+  --card: #1e293b;
+  --card-foreground: #e8edf2;
+  --popover: #1e293b;
+  --popover-foreground: #e8edf2;
+  --primary: #2ddda8;
+  --primary-foreground: #0f172a;
+  --secondary: #1e293b;
+  --secondary-foreground: #e8edf2;
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+  --accent: #334155;
+  --accent-foreground: #e8edf2;
+  --destructive: #ef4444;
+  --border: #ffffff1a;
+  --input: #ffffff26;
+  --ring: #2ddda8;
+  --chart-1: #2ddda8;
+  --chart-2: #0d9479;
+  --chart-3: #f59e0b;
+  --chart-4: #94a3b8;
+  --chart-5: #475569;
+  --sidebar: #1e293b;
+  --sidebar-foreground: #e8edf2;
+  --sidebar-primary: #2ddda8;
+  --sidebar-primary-foreground: #0f172a;
+  --sidebar-accent: #334155;
+  --sidebar-accent-foreground: #e8edf2;
+  --sidebar-border: #ffffff1a;
+  --sidebar-ring: #2ddda8;
 }
 
 @theme inline {
@@ -127,4 +127,31 @@
   html {
     @apply font-sans;
   }
+}
+
+/* GetStream chat — mapeia os tokens da lib para o design do app.
+   Como apontamos para as CSS vars do projeto (que comutam em .dark),
+   claro e escuro saem de graça. */
+.str-chat {
+  --str-chat__font-family: "Inter", "Inter Variable", sans-serif;
+  --str-chat__border-radius-circle: var(--radius);
+  --str-chat__primary-color: var(--primary);
+  --str-chat__active-primary-color: var(--primary);
+  --str-chat__primary-color-low-emphasis: color-mix(in srgb, var(--primary) 70%, transparent);
+  --str-chat__background-color: var(--background);
+  --str-chat__secondary-background-color: var(--card);
+  --str-chat__primary-surface-color: color-mix(in srgb, var(--primary) 14%, transparent);
+  --str-chat__primary-surface-color-low-emphasis: color-mix(in srgb, var(--primary) 8%, transparent);
+  --str-chat__surface-color: var(--muted);
+  --str-chat__text-color: var(--foreground);
+  --str-chat__text-low-emphasis-color: var(--muted-foreground);
+  --str-chat__disabled-color: var(--muted-foreground);
+  --str-chat__border-color: var(--border);
+  --str-chat__message-bubble-color: var(--foreground);
+  --str-chat__own-message-bubble-background-color: var(--primary);
+  --str-chat__own-message-bubble-color: var(--primary-foreground);
+  --str-chat__message-bubble-background-color: var(--card);
+  --str-chat__message-textarea-background-color: var(--card);
+  --str-chat__message-input-background-color: var(--background);
+  --str-chat__message-send-color: var(--primary);
 }

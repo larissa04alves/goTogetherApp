@@ -23,14 +23,21 @@ export function createAuth() {
         verify: async ({ password, hash }) => compare(password, hash),
       },
     },
+    user: {
+      additionalFields: {
+        genero: { type: "string", required: false, input: true },
+        phone: { type: "string", required: false, input: true },
+        emergencyContactName: { type: "string", required: false, input: true },
+        emergencyContactPhone: { type: "string", required: false, input: true },
+      },
+    },
     secret: env.BETTER_AUTH_SECRET,
     baseURL: env.BETTER_AUTH_URL,
     advanced: {
-      defaultCookieAttributes: {
-        sameSite: "none",
-        secure: true,
-        httpOnly: true,
-      },
+      defaultCookieAttributes:
+        env.NODE_ENV === "production"
+          ? { sameSite: "none", secure: true, httpOnly: true }
+          : { sameSite: "lax", secure: false, httpOnly: true },
     },
     plugins: [],
   });
