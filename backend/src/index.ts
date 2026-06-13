@@ -7,6 +7,7 @@ import { registerAvaliacoesRoutes } from "@/routes/avaliacoes.routes";
 import { registerSolicitacoesRoutes } from "@/routes/solicitacoes.routes";
 import { registerChatRoutes } from "@/routes/chat.routes";
 import { registerVeiculosRoutes } from "@/routes/veiculos.routes";
+import { registerDocumentsRoutes } from "@/routes/documents.routes";
 import { errorMiddleware } from "@/middlewares/error.middleware";
 
 const app = express();
@@ -32,6 +33,7 @@ registerAvaliacoesRoutes(app);
 registerSolicitacoesRoutes(app);
 registerVeiculosRoutes(app);
 registerChatRoutes(app);
+registerDocumentsRoutes(app);
 
 app.use(errorMiddleware);
 
