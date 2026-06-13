@@ -7,10 +7,9 @@ import {
   ScrollRestoration,
 } from "react-router";
 
-import Header from "@/components/header";
-import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 
+import "stream-chat-react/dist/css/index.css";
 import "./index.css";
 import type { Route } from "./+types/root";
 
@@ -25,14 +24,14 @@ export const links: Route.LinksFunction = () => [
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <head>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="bg-background text-foreground antialiased">
         {children}
         <ScrollRestoration />
         <Scripts />
@@ -43,39 +42,31 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="dark"
-      disableTransitionOnChange
-      storageKey="vite-ui-theme"
-    >
-      <div className="grid grid-rows-[auto_1fr] h-svh">
-        <Header />
-        <Outlet />
-      </div>
-      <Toaster richColors />
-    </ThemeProvider>
+    <>
+      <Outlet />
+      <Toaster richColors position="top-center" />
+    </>
   );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = "Oops!";
-  let details = "An unexpected error occurred.";
+  let message = "Ops!";
+  let details = "Um erro inesperado aconteceu.";
   let stack: string | undefined;
   if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? "404" : "Error";
+    message = error.status === 404 ? "404" : "Erro";
     details =
-      error.status === 404 ? "The requested page could not be found." : error.statusText || details;
+      error.status === 404 ? "A página solicitada não foi encontrada." : error.statusText || details;
   } else if (import.meta.env.DEV && error && error instanceof Error) {
     details = error.message;
     stack = error.stack;
   }
   return (
-    <main className="pt-16 p-4 container mx-auto">
-      <h1>{message}</h1>
-      <p>{details}</p>
+    <main className="container mx-auto p-4 pt-16">
+      <h1 className="text-2xl font-bold">{message}</h1>
+      <p className="text-muted-foreground">{details}</p>
       {stack && (
-        <pre className="w-full p-4 overflow-x-auto">
+        <pre className="w-full overflow-x-auto p-4">
           <code>{stack}</code>
         </pre>
       )}
