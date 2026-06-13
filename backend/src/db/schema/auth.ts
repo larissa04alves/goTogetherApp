@@ -13,7 +13,7 @@ export const user = pgTable(
     institution: text("institution"),
     course: text("course"),
     period: text("period"),
-    passwordHash: text('password_hash').notNull(),
+    passwordHash: text("password_hash"),
     role: text("role").default("student").notNull(),
     emailVerified: boolean("email_verified").default(false).notNull(),
     identityVerified: boolean("identity_verified").default(false).notNull(),
