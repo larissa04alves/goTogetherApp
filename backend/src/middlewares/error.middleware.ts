@@ -1,4 +1,5 @@
 import type { ErrorRequestHandler } from "express";
+import multer from "multer";
 import { ZodError } from "zod";
 
 import { env } from "@/env";
@@ -13,6 +14,12 @@ export const errorMiddleware: ErrorRequestHandler = (err, _req, res, _next) => {
 
   if (err instanceof ZodError) {
     res.status(400).json(errorBody(400, "Dados inválidos", err.flatten()));
+    return;
+  }
+
+  if (err instanceof multer.MulterError) {
+    const message = err.code === "LIMIT_FILE_SIZE" ? "Arquivo muito grande (máximo 10 MB)" : err.message;
+    res.status(400).json(errorBody(400, message));
     return;
   }
 
