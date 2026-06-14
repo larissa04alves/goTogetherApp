@@ -1,19 +1,3 @@
-export type Gender = "Feminino" | "Masculino" | "Outro" | "Prefiro não dizer";
-
-export type Profile = {
-  name: string;
-  initials: string;
-  job: string;
-  gender: Gender;
-  imageUrl?: string;
-  identityVerified: boolean;
-  stats: {
-    rating: number;
-    given: number;
-    taken: number;
-  };
-};
-
 export type Review = {
   id: string;
   author: {

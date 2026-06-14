@@ -46,6 +46,7 @@ export function VerifyIdentityForm({
           name: basicData.name,
           email: basicData.email,
           password: basicData.password,
+          phone: basicData.phone,
         },
         {
           onSuccess: async () => {

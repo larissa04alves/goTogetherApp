@@ -4,7 +4,7 @@ import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
-  resolve: { tsconfigPaths: true },
+  resolve: { tsconfigPaths: true, dedupe: ["react", "react-dom"] },
   plugins: [
     {
       name: "ignore-well-known",

@@ -1,48 +1,28 @@
-import {
-  CheckmarkBadge01Icon,
-  FemaleSymbolIcon,
-  MaleSymbolIcon,
-  Tick02Icon,
-} from "@hugeicons/core-free-icons";
+import { StarIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
-import type { Gender, Profile } from "../types";
-
-const genderIcon: Record<Gender, { icon: typeof FemaleSymbolIcon; label: string; className: string }> = {
-  Feminino: {
-    icon: FemaleSymbolIcon,
-    label: "Feminino",
-    className: "text-pink-500",
-  },
-  Masculino: {
-    icon: MaleSymbolIcon,
-    label: "Masculino",
-    className: "text-sky-500",
-  },
-  Outro: {
-    icon: FemaleSymbolIcon,
-    label: "Outro",
-    className: "text-gray-500",
-  },
-  "Prefiro não dizer": {
-    icon: FemaleSymbolIcon,
-    label: "Prefiro não dizer",
-    className: "text-gray-500",
-  },
-};
-
 type ProfileCardProps = {
-  profile: Profile;
+  name: string;
+  initials: string;
+  imageUrl?: string;
+  rating: number | null;
+  reviewCount: number;
 };
 
-export function ProfileCard({ profile }: ProfileCardProps) {
+export function ProfileCard({
+  name,
+  initials,
+  imageUrl,
+  rating,
+  reviewCount,
+}: ProfileCardProps) {
   return (
     <article className="flex flex-col items-center gap-3 rounded-3xl border border-border bg-card px-4 pb-5 pt-6">
       <div className="relative">
-        {profile.imageUrl ? (
+        {imageUrl ? (
           <img
-            src={profile.imageUrl}
-            alt={profile.name}
+            src={imageUrl}
+            alt={name}
             className="size-20 rounded-2xl object-cover"
           />
         ) : (
@@ -50,52 +30,32 @@ export function ProfileCard({ profile }: ProfileCardProps) {
             aria-hidden="true"
             className="grid size-20 place-items-center rounded-2xl bg-primary text-xl font-bold text-primary-foreground"
           >
-            {profile.initials}
+            {initials}
           </div>
-        )}
-        {profile.identityVerified && (
-          <span
-            aria-hidden="true"
-            className="absolute -bottom-1 -right-1 grid size-6 place-items-center rounded-full border-2 border-card bg-primary"
-          >
-            <HugeiconsIcon
-              icon={CheckmarkBadge01Icon}
-              size={14}
-              strokeWidth={2.25}
-              className="text-primary-foreground"
-            />
-          </span>
         )}
       </div>
 
       <div className="flex flex-col items-center gap-1 text-center">
-        <h2 className="flex items-center gap-1.5 text-[18px] font-bold leading-tight text-foreground">
-          {profile.name}
-          <HugeiconsIcon
-            icon={genderIcon[profile.gender].icon}
-            size={16}
-            strokeWidth={2}
-            aria-label={genderIcon[profile.gender].label}
-            className={genderIcon[profile.gender].className}
-          />
+        <h2 className="text-[18px] font-bold leading-tight text-foreground">
+          {name}
         </h2>
-        <p className="text-[12px] text-muted-foreground">{profile.job}</p>
-      </div>
-
-      <div className="flex flex-wrap justify-center gap-2">
-        {profile.identityVerified && (
-          <VerifiedPill label="Identidade verificada" />
+        {rating !== null && reviewCount > 0 ? (
+          <p className="inline-flex items-center gap-1 text-[12px] text-muted-foreground">
+            <HugeiconsIcon
+              icon={StarIcon}
+              size={13}
+              strokeWidth={2}
+              className="text-amber-500"
+            />
+            {rating.toFixed(1)} · {reviewCount}{" "}
+            {reviewCount === 1 ? "avaliação" : "avaliações"}
+          </p>
+        ) : (
+          <p className="text-[12px] text-muted-foreground">
+            Sem avaliações ainda
+          </p>
         )}
       </div>
     </article>
-  );
-}
-
-function VerifiedPill({ label }: { label: string }) {
-  return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-700">
-      <HugeiconsIcon icon={Tick02Icon} size={11} strokeWidth={2.5} />
-      {label}
-    </span>
   );
 }
