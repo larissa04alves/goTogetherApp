@@ -25,10 +25,11 @@ export function createAuth() {
     },
     user: {
       additionalFields: {
-        genero: { type: "string", required: false, input: true },
+        gender: { type: "string", required: false, input: true },
         phone: { type: "string", required: false, input: true },
         emergencyContactName: { type: "string", required: false, input: true },
         emergencyContactPhone: { type: "string", required: false, input: true },
+        identityVerified: { type: "boolean", required: false, input: false },
       },
     },
     secret: env.BETTER_AUTH_SECRET,
