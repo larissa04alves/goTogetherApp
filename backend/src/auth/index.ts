@@ -1,9 +1,10 @@
+import { compare, hash as hashPassword } from "bcryptjs";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 
 import { createDb } from "@/db/client";
-import { env } from "@/env";
 import * as schema from "@/db/schema/auth";
+import { env } from "@/env";
 
 export function createAuth() {
   const db = createDb();
@@ -16,6 +17,11 @@ export function createAuth() {
     trustedOrigins: [env.CORS_ORIGIN],
     emailAndPassword: {
       enabled: true,
+      minPasswordLength: 8,
+      password: {
+        hash: async (password) => hashPassword(password, 12),
+        verify: async ({ password, hash }) => compare(password, hash),
+      },
     },
     user: {
       additionalFields: {
