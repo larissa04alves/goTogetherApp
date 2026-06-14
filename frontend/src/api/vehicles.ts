@@ -63,3 +63,7 @@ export function updateVehicle(id: string, input: VehicleInput): Promise<Vehicle>
     body: JSON.stringify(input),
   });
 }
+
+export function deleteVehicle(id: string): Promise<void> {
+  return request<void>(`/veiculos/${id}`, { method: "DELETE" });
+}

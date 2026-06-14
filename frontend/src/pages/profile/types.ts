@@ -22,7 +22,7 @@ export type Review = {
     imageUrl?: string;
   };
   when: string;
-  route: string;
+  route?: string;
   rating: number;
   text: string;
 };

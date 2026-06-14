@@ -31,7 +31,7 @@ export function ReviewCard({ review }: ReviewCardProps) {
             {review.author.name}
           </p>
           <p className="text-[11px] text-muted-foreground">
-            {review.when} · {review.route}
+            {review.route ? `${review.when} · ${review.route}` : review.when}
           </p>
         </div>
 
