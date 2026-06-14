@@ -1,4 +1,4 @@
-import { hashPassword } from "@better-auth/utils/password";
+import { hash } from "bcryptjs";
 
 import { db } from "@/db/client";
 import { account, user } from "@/db/schema";
@@ -61,7 +61,7 @@ const users: SeedUser[] = [
 ];
 
 export async function seedUsers() {
-  const hashedPassword = await hashPassword(DEV_PASSWORD);
+  const hashedPassword = await hash(DEV_PASSWORD, 12);
 
   for (const u of users) {
     await db

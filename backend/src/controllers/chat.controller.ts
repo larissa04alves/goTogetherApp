@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { env } from "@/env";
 import { chatService } from "@/services/chat.service";
+import { AppError } from "@/utils/app-error";
 
 type Session = { user: { id: string; name: string; image?: string | null } };
 
@@ -27,18 +28,15 @@ async function token(_req: Request, res: Response): Promise<void> {
 }
 
 async function joinHub(req: Request, res: Response): Promise<void> {
-  const hubId = Array.isArray(req.params["id"])
-    ? req.params["id"][0]
-    : req.params["id"];
+  const raw = req.params["id"];
+  const hubId = Array.isArray(raw) ? raw[0] : raw;
   if (!hubId) {
-    res.status(400).json({ error: "ID do hub obrigatório" });
-    return;
+    throw new AppError(400, "ID do hub obrigatório");
   }
 
   const parsed = joinHubSchema.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ error: "Dados inválidos" });
-    return;
+    throw new AppError(400, "Dados inválidos", parsed.error.flatten());
   }
 
   const session = res.locals["session"] as Session;

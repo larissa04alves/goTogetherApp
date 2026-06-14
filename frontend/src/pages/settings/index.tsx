@@ -7,11 +7,13 @@ import { toast } from "sonner";
 import { authClient } from "@/api/auth";
 import {
   createVehicle,
+  deleteVehicle,
   fetchVehicles,
   updateVehicle,
   type Vehicle,
   type VehicleInput,
 } from "@/api/vehicles";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { SettingsItem } from "./components/settings-item";
 import { VehicleFormModal } from "./components/vehicle-form-modal";
 
@@ -22,6 +24,7 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -49,6 +52,26 @@ export default function SettingsPage() {
       toast.success(vehicle ? "Veículo atualizado" : "Veículo cadastrado");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Erro ao salvar veículo");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  function requestDelete() {
+    setModalOpen(false);
+    setConfirmDeleteOpen(true);
+  }
+
+  async function confirmDelete() {
+    if (!vehicle) return;
+    setSaving(true);
+    try {
+      await deleteVehicle(vehicle.id);
+      setVehicle(null);
+      setConfirmDeleteOpen(false);
+      toast.success("Veículo removido");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao remover veículo");
     } finally {
       setSaving(false);
     }
@@ -121,6 +144,19 @@ export default function SettingsPage() {
         submitting={saving}
         onOpenChange={setModalOpen}
         onSubmit={handleSubmit}
+        onDelete={vehicle ? requestDelete : undefined}
+      />
+
+      <ConfirmDialog
+        open={confirmDeleteOpen}
+        title="Remover veículo"
+        description="Tem certeza que deseja remover este veículo? Esta ação não pode ser desfeita."
+        confirmLabel="Remover"
+        cancelLabel="Cancelar"
+        destructive
+        loading={saving}
+        onOpenChange={setConfirmDeleteOpen}
+        onConfirm={confirmDelete}
       />
     </main>
   );
