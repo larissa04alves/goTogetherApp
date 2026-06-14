@@ -27,7 +27,7 @@ function run(cmd, args) {
     const child = spawn(cmd, args, {
       stdio: "inherit",
       env: process.env,
-      shell: true,
+      shell: process.platform === "win32",
     });
 
     child.on("error", reject);
@@ -47,7 +47,10 @@ for (const step of setupSteps) {
     await run(step.cmd, step.args);
   } catch (err) {
     if (step.optional) {
-      console.warn(`[setup] Aviso: "${step.name}" falhou (não obrigatório):`, err.message);
+      console.warn(
+        `[setup] Aviso: "${step.name}" falhou (não obrigatório):`,
+        err.message,
+      );
     } else {
       console.error(`[setup] Falha em "${step.name}":`, err.message);
       process.exit(1);

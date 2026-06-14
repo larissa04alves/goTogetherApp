@@ -1,11 +1,17 @@
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+
 import { authClient } from "@/api/auth";
+import { fetchReceivedReviews } from "@/api/reviews";
+import { formatRelativeTime } from "@/lib/format-relative-time";
 
 import { BottomNav } from "../../components/bottom-nav";
 import { ProfileCard } from "./components/profile-card";
 import { ProfileHeader } from "./components/profile-header";
 import { ProfileStats } from "./components/profile-stats";
 import { ReviewsSection } from "./components/reviews-section";
-import { mockProfile, mockReviews } from "./mock";
+import { mockProfile } from "./mock";
+import type { Review } from "./types";
 
 function getInitials(name: string): string {
   const parts = name.trim().split(/\s+/);
@@ -16,12 +22,57 @@ function getInitials(name: string): string {
 
 export default function ProfilePage() {
   const { data } = authClient.useSession();
+  const userId = data?.user?.id;
+  const [reviews, setReviews] = useState<Review[]>([]);
+
+  useEffect(() => {
+    if (!userId) return;
+    let active = true;
+    fetchReceivedReviews(userId)
+      .then((received) => {
+        if (!active) return;
+        setReviews(
+          received.map((r) => ({
+            id: r.id,
+            author: {
+              initials: getInitials(r.avaliador.name),
+              name: r.avaliador.name,
+              imageUrl: r.avaliador.image ?? undefined,
+            },
+            when: formatRelativeTime(r.createdAt),
+            rating: r.nota,
+            text: r.comentario ?? "",
+          })),
+        );
+      })
+      .catch((err) => {
+        if (active)
+          toast.error(
+            err instanceof Error ? err.message : "Erro ao carregar avaliações",
+          );
+      });
+    return () => {
+      active = false;
+    };
+  }, [userId]);
+
+  const averageRating =
+    reviews.length > 0
+      ? Math.round(
+          (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length) * 10,
+        ) / 10
+      : mockProfile.stats.rating;
+
   const profile = data?.user
     ? {
         ...mockProfile,
         name: data.user.name,
         initials: getInitials(data.user.name),
         imageUrl: data.user.image ?? undefined,
+        stats: {
+          ...mockProfile.stats,
+          rating: averageRating,
+        },
       }
     : mockProfile;
 
@@ -31,7 +82,7 @@ export default function ProfilePage() {
         <ProfileHeader />
         <ProfileCard profile={profile} />
         <ProfileStats stats={profile.stats} />
-        <ReviewsSection reviews={mockReviews} />
+        <ReviewsSection reviews={reviews} />
       </div>
       <BottomNav active="profile" />
     </main>

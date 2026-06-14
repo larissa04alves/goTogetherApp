@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { authClient } from "@/api/auth";
 import {
   createVehicle,
+  deleteVehicle,
   fetchVehicles,
   updateVehicle,
   type Vehicle,
@@ -49,6 +50,22 @@ export default function SettingsPage() {
       toast.success(vehicle ? "Veículo atualizado" : "Veículo cadastrado");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Erro ao salvar veículo");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleDelete() {
+    if (!vehicle) return;
+    if (!window.confirm("Remover este veículo?")) return;
+    setSaving(true);
+    try {
+      await deleteVehicle(vehicle.id);
+      setVehicle(null);
+      setModalOpen(false);
+      toast.success("Veículo removido");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao remover veículo");
     } finally {
       setSaving(false);
     }
@@ -121,6 +138,7 @@ export default function SettingsPage() {
         submitting={saving}
         onOpenChange={setModalOpen}
         onSubmit={handleSubmit}
+        onDelete={vehicle ? handleDelete : undefined}
       />
     </main>
   );

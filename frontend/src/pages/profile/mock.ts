@@ -1,4 +1,4 @@
-import type { Profile, Review } from "./types";
+import type { Profile } from "./types";
 
 export const mockProfile: Profile = {
   name: "Visitante",
@@ -12,22 +12,3 @@ export const mockProfile: Profile = {
     taken: 28,
   },
 };
-
-export const mockReviews: Review[] = [
-  {
-    id: "1",
-    author: { initials: "CR", name: "Carlos Ronaldo" },
-    when: "há 2 dias",
-    route: "PUCPR · Casa",
-    rating: 5,
-    text: "Pontual, super tranquila no trajeto. Recomendo demais!",
-  },
-  {
-    id: "2",
-    author: { initials: "JM", name: "Júlia Mendes" },
-    when: "há 1 semana",
-    route: "PUCPR · Casa",
-    rating: 5,
-    text: "Carona super segura, dirige com calma. Já virou rotina!",
-  },
-];

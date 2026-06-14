@@ -23,11 +23,17 @@ export function ReviewsSection({ reviews }: ReviewsSectionProps) {
         </button>
       </div>
 
-      <div className="flex flex-col gap-3">
-        {reviews.map((review) => (
-          <ReviewCard key={review.id} review={review} />
-        ))}
-      </div>
+      {reviews.length > 0 ? (
+        <div className="flex flex-col gap-3">
+          {reviews.map((review) => (
+            <ReviewCard key={review.id} review={review} />
+          ))}
+        </div>
+      ) : (
+        <p className="rounded-2xl border border-dashed border-border bg-card p-4 text-center text-[12px] text-muted-foreground">
+          Nenhuma avaliação ainda.
+        </p>
+      )}
     </section>
   );
 }
