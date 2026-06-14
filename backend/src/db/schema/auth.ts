@@ -15,7 +15,6 @@ export const user = pgTable(
     period: text("period"),
     emergencyContactName: text("emergency_contact_name"),
     emergencyContactPhone: text("emergency_contact_phone"),
-    passwordHash: text("password_hash"),
     role: text("role").default("student").notNull(),
     emailVerified: boolean("email_verified").default(false).notNull(),
     identityVerified: boolean("identity_verified").default(false).notNull(),

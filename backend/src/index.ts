@@ -3,7 +3,7 @@ import express from "express";
 
 import { env } from "@/env";
 import { errorMiddleware } from "@/middlewares/error.middleware";
-import authRoutes, { registerAuthRoutes } from "@/routes/auth.routes";
+import { registerAuthRoutes } from "@/routes/auth.routes";
 import { registerAvaliacoesRoutes } from "@/routes/avaliacoes.routes";
 import { registerChatRoutes } from "@/routes/chat.routes";
 import { registerDocumentsRoutes } from "@/routes/documents.routes";
@@ -25,8 +25,6 @@ app.use(
 registerAuthRoutes(app);
 
 app.use(express.json());
-
-app.use("/auth", authRoutes);
 
 app.get("/", (_req, res) => {
   res.status(200).send("OK");

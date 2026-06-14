@@ -45,5 +45,4 @@ export function createAuth() {
 }
 
 export const auth = createAuth();
-export { default as authRoutes } from "../routes/auth.routes";
 export { authMiddleware } from "../middlewares/auth.middleware";

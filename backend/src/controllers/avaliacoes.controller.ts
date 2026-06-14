@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 
 import { avaliacoesService } from "@/services/avaliacoes.service";
+import { AppError } from "@/utils/app-error";
 import { criarAvaliacaoSchema } from "@/validators/avaliacoes.validator";
 
 type Session = { user: { id: string } };
@@ -14,11 +15,19 @@ const SERVICE_ERRORS: Record<string, { status: number; message: string }> = {
   AVALIACAO_DUPLICADA: { status: 409, message: "Você já avaliou este participante nesta carona" },
 };
 
+function mapServiceError(err: unknown): never {
+  const key = err instanceof Error ? err.message : "";
+  const mapped = SERVICE_ERRORS[key];
+  if (mapped) {
+    throw new AppError(mapped.status, mapped.message);
+  }
+  throw err;
+}
+
 async function criar(req: Request, res: Response): Promise<void> {
   const parsed = criarAvaliacaoSchema.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ error: "Dados inválidos", details: parsed.error.flatten() });
-    return;
+    throw new AppError(400, "Dados inválidos", parsed.error.flatten());
   }
 
   const session = res.locals["session"] as Session;
@@ -27,13 +36,7 @@ async function criar(req: Request, res: Response): Promise<void> {
     const nova = await avaliacoesService.criar(session.user.id, parsed.data);
     res.status(201).json(nova);
   } catch (err) {
-    const key = err instanceof Error ? err.message : "";
-    const mapped = SERVICE_ERRORS[key];
-    if (mapped) {
-      res.status(mapped.status).json({ error: mapped.message });
-      return;
-    }
-    throw err;
+    mapServiceError(err);
   }
 }
 
@@ -44,10 +47,10 @@ async function listarPendentes(_req: Request, res: Response): Promise<void> {
 }
 
 async function listarDoUsuario(req: Request, res: Response): Promise<void> {
-  const id = Array.isArray(req.params["id"]) ? req.params["id"][0] : req.params["id"];
+  const raw = req.params["id"];
+  const id = Array.isArray(raw) ? raw[0] : raw;
   if (!id) {
-    res.status(400).json({ error: "ID obrigatório" });
-    return;
+    throw new AppError(400, "ID obrigatório");
   }
   const avaliacoes = await avaliacoesService.listarDoUsuario(id);
   res.json(avaliacoes);
