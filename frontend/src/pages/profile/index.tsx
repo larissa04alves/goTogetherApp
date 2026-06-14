@@ -71,6 +71,8 @@ export default function ProfilePage() {
           name={name}
           initials={getInitials(name)}
           imageUrl={data?.user?.image ?? undefined}
+          gender={data?.user?.gender}
+          identityVerified={data?.user?.identityVerified ?? false}
           rating={rating}
           reviewCount={reviews.length}
         />

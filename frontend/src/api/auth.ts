@@ -8,7 +8,11 @@ export const authClient = createAuthClient({
   plugins: [
     inferAdditionalFields({
       user: {
+        gender: { type: "string", required: false },
         phone: { type: "string", required: false },
+        emergencyContactName: { type: "string", required: false },
+        emergencyContactPhone: { type: "string", required: false },
+        identityVerified: { type: "boolean", required: false },
       },
     }),
   ],

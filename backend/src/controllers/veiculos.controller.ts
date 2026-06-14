@@ -10,6 +10,7 @@ const SERVICE_ERRORS: Record<string, { status: number; message: string }> = {
   VEICULO_NAO_ENCONTRADO: { status: 404, message: "Veículo não encontrado" },
   NAO_AUTORIZADO: { status: 403, message: "Acesso não autorizado" },
   VEICULO_EM_CARONA_ATIVA: { status: 422, message: "Veículo está em uma carona ativa" },
+  PLACA_DUPLICADA: { status: 409, message: "Placa já cadastrada" },
 };
 
 function throwServiceError(err: unknown): never {
@@ -39,7 +40,7 @@ async function criar(req: Request, res: Response): Promise<void> {
   if (!parsed.success) throw new AppError(400, "Dados inválidos", parsed.error.flatten());
 
   const session = res.locals["session"] as Session;
-  const novo = await veiculosService.criar(session.user.id, parsed.data);
+  const novo = await veiculosService.criar(session.user.id, parsed.data).catch(throwServiceError);
   res.status(201).json(novo);
 }
 
