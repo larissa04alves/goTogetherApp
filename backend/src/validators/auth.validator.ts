@@ -74,3 +74,35 @@ export function validateRegister(
   req.body = result.data;
   return next();
 }
+
+const loginSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .min(1, "E-mail é obrigatório.")
+    .email("E-mail inválido."),
+
+  senha: z
+    .string()
+    .trim()
+    .min(1, "Senha é obrigatória."),
+});
+
+export function validateLogin(req: Request, res: Response, next: NextFunction) {
+  const result = loginSchema.safeParse(req.body);
+
+  if (!result.success) {
+    const errors = result.error.flatten();
+
+    return res.status(400).json({
+      message: "Erro de validação.",
+      errors: {
+        formErrors: errors.formErrors,
+        fieldErrors: errors.fieldErrors,
+      },
+    });
+  }
+
+  req.body = result.data;
+  next();
+}

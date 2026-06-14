@@ -2,12 +2,16 @@ import cors from "cors";
 import express from "express";
 
 import { env } from "@/env";
-import authRoutes from './routes/auth.routes';
+import { errorMiddleware } from "@/middlewares/error.middleware";
+import authRoutes, { registerAuthRoutes } from "@/routes/auth.routes";
+import { registerAvaliacoesRoutes } from "@/routes/avaliacoes.routes";
+import { registerChatRoutes } from "@/routes/chat.routes";
+import { registerDocumentsRoutes } from "@/routes/documents.routes";
+import { registerSolicitacoesRoutes } from "@/routes/solicitacoes.routes";
+import { registerVeiculosRoutes } from "@/routes/veiculos.routes";
 
 
 const app = express();
-
-app.use(express.json());
 
 app.use(
   cors({
@@ -18,7 +22,11 @@ app.use(
   }),
 );
 
-app.use('/auth', authRoutes);
+registerAuthRoutes(app);
+
+app.use(express.json());
+
+app.use("/auth", authRoutes);
 
 app.get("/", (_req, res) => {
   res.status(200).send("OK");
@@ -35,3 +43,5 @@ app.use(errorMiddleware);
 app.listen(3000, () => {
   console.log("Server is running on http://localhost:3000");
 });
+
+
