@@ -1,15 +1,8 @@
 import { fromNodeHeaders } from "better-auth/node";
 import type { NextFunction, Request, Response } from "express";
-import jwt from "jsonwebtoken";
 
 import { auth } from "@/auth";
-import { findAuthenticatedUserById } from "@/services/auth.service";
-
-type AuthTokenPayload = {
-  userId: string;
-  email: string;
-  role: string;
-};
+import { AppError } from "@/utils/app-error";
 
 type SessionContext = {
   user: {
@@ -47,32 +40,6 @@ declare global {
   }
 }
 
-function getJwtSecret() {
-  const secret = process.env.JWT_SECRET || process.env.BETTER_AUTH_SECRET;
-
-  if (!secret) {
-    throw new Error("JWT_SECRET não configurado.");
-  }
-
-  return secret;
-}
-
-function getBearerToken(req: Request): string | null {
-  const authorization = req.headers.authorization;
-
-  if (!authorization) {
-    return null;
-  }
-
-  const [type, token] = authorization.split(" ");
-
-  if (type !== "Bearer" || !token) {
-    return null;
-  }
-
-  return token;
-}
-
 function buildLegacyUserFromSession(session: SessionContext): AuthenticatedUser {
   const now = new Date();
 
@@ -95,18 +62,6 @@ function buildLegacyUserFromSession(session: SessionContext): AuthenticatedUser 
   };
 }
 
-function buildSessionContext(user: AuthenticatedUser): SessionContext {
-  return {
-    user: {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      emailVerified: user.emailVerified,
-      image: user.image,
-    },
-  };
-}
-
 function storeAuthenticatedContext(
   req: Request,
   res: Response,
@@ -122,55 +77,16 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
     headers: fromNodeHeaders(req.headers),
   });
 
-  if (betterAuthSession) {
-    storeAuthenticatedContext(
-      req,
-      res,
-      buildLegacyUserFromSession(betterAuthSession),
-      betterAuthSession,
-    );
-    next();
+  if (!betterAuthSession) {
+    next(new AppError(401, "Não autenticado."));
     return;
   }
 
-  const token = getBearerToken(req);
-
-  if (!token) {
-    res.status(401).json({
-      error: "Nao autenticado.",
-    });
-    return;
-  }
-
-  try {
-    const decoded = jwt.verify(token, getJwtSecret()) as AuthTokenPayload;
-
-    if (!decoded.userId) {
-      res.status(401).json({
-        error: "Token invalido.",
-      });
-      return;
-    }
-
-    const authenticatedUser = await findAuthenticatedUserById(decoded.userId);
-
-    if (!authenticatedUser) {
-      res.status(401).json({
-        error: "Usuario autenticado nao encontrado.",
-      });
-      return;
-    }
-
-    storeAuthenticatedContext(
-      req,
-      res,
-      authenticatedUser,
-      buildSessionContext(authenticatedUser),
-    );
-    next();
-  } catch {
-    res.status(401).json({
-      error: "Token invalido ou expirado.",
-    });
-  }
+  storeAuthenticatedContext(
+    req,
+    res,
+    buildLegacyUserFromSession(betterAuthSession),
+    betterAuthSession,
+  );
+  next();
 }

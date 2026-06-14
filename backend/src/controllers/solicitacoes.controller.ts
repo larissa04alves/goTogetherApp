@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 
 import { solicitacoesService } from "@/services/solicitacoes.service";
+import { AppError } from "@/utils/app-error";
 
 type Session = { user: { id: string } };
 
@@ -17,98 +18,81 @@ const SERVICE_ERRORS: Record<string, { status: number; message: string }> = {
   STATUS_INVALIDO: { status: 422, message: "Solicitação não está em status pendente" },
 };
 
-function handleServiceError(err: unknown, res: Response): void {
+function mapServiceError(err: unknown): never {
   const key = err instanceof Error ? err.message : "";
   const mapped = SERVICE_ERRORS[key];
   if (mapped) {
-    res.status(mapped.status).json({ error: mapped.message });
-    return;
+    throw new AppError(mapped.status, mapped.message);
   }
   throw err;
 }
 
-async function solicitar(req: Request, res: Response): Promise<void> {
-  const hubId = Array.isArray(req.params["id"]) ? req.params["id"][0] : req.params["id"];
-  if (!hubId) {
-    res.status(400).json({ error: "ID do hub obrigatório" });
-    return;
+function requireParam(req: Request, name: string, message: string): string {
+  const raw = req.params[name];
+  const value = Array.isArray(raw) ? raw[0] : raw;
+  if (!value) {
+    throw new AppError(400, message);
   }
+  return value;
+}
 
+async function solicitar(req: Request, res: Response): Promise<void> {
+  const hubId = requireParam(req, "id", "ID do hub obrigatório");
   const session = res.locals["session"] as Session;
 
   try {
     const nova = await solicitacoesService.solicitar(hubId, session.user.id);
     res.status(201).json(nova);
   } catch (err) {
-    handleServiceError(err, res);
+    mapServiceError(err);
   }
 }
 
 async function listar(req: Request, res: Response): Promise<void> {
-  const hubId = Array.isArray(req.params["id"]) ? req.params["id"][0] : req.params["id"];
-  if (!hubId) {
-    res.status(400).json({ error: "ID do hub obrigatório" });
-    return;
-  }
-
+  const hubId = requireParam(req, "id", "ID do hub obrigatório");
   const session = res.locals["session"] as Session;
 
   try {
     const solicitacoes = await solicitacoesService.listar(hubId, session.user.id);
     res.json(solicitacoes);
   } catch (err) {
-    handleServiceError(err, res);
+    mapServiceError(err);
   }
 }
 
 async function aprovar(req: Request, res: Response): Promise<void> {
-  const id = Array.isArray(req.params["id"]) ? req.params["id"][0] : req.params["id"];
-  if (!id) {
-    res.status(400).json({ error: "ID da solicitação obrigatório" });
-    return;
-  }
-
+  const id = requireParam(req, "id", "ID da solicitação obrigatório");
   const session = res.locals["session"] as Session;
 
   try {
     const atualizada = await solicitacoesService.aprovar(id, session.user.id);
     res.json(atualizada);
   } catch (err) {
-    handleServiceError(err, res);
+    mapServiceError(err);
   }
 }
 
 async function rejeitar(req: Request, res: Response): Promise<void> {
-  const id = Array.isArray(req.params["id"]) ? req.params["id"][0] : req.params["id"];
-  if (!id) {
-    res.status(400).json({ error: "ID da solicitação obrigatório" });
-    return;
-  }
-
+  const id = requireParam(req, "id", "ID da solicitação obrigatório");
   const session = res.locals["session"] as Session;
 
   try {
     const atualizada = await solicitacoesService.rejeitar(id, session.user.id);
     res.json(atualizada);
   } catch (err) {
-    handleServiceError(err, res);
+    mapServiceError(err);
   }
 }
 
 async function cancelar(req: Request, res: Response): Promise<void> {
-  const id = Array.isArray(req.params["id"]) ? req.params["id"][0] : req.params["id"];
-  if (!id) {
-    res.status(400).json({ error: "ID da solicitação obrigatório" });
-    return;
-  }
-
+  const id = requireParam(req, "id", "ID da solicitação obrigatório");
   const session = res.locals["session"] as Session;
 
   try {
     const atualizada = await solicitacoesService.cancelar(id, session.user.id);
     res.json(atualizada);
   } catch (err) {
-    handleServiceError(err, res);
+    mapServiceError(err);
   }
 }
 

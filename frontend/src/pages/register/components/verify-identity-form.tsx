@@ -11,6 +11,7 @@ import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
 import { authClient } from "@/api/auth";
+import { uploadDocument } from "@/api/documents";
 import { Button } from "@/components/ui/button";
 
 import type { RegisterStep1Data } from "../types";
@@ -35,7 +36,9 @@ export function VerifyIdentityForm({
   const canSubmit = idDoc !== null && selfie !== null && !isSubmitting;
 
   async function handleSubmit() {
-    if (!canSubmit) return;
+    if (idDoc === null || selfie === null || isSubmitting) return;
+    const doc = idDoc;
+    const selfieDoc = selfie;
     setIsSubmitting(true);
     try {
       await authClient.signUp.email(
@@ -43,10 +46,22 @@ export function VerifyIdentityForm({
           name: basicData.name,
           email: basicData.email,
           password: basicData.password,
+          gender: basicData.gender,
+          phone: basicData.phone,
+          emergencyContactName: basicData.emergencyContactName,
+          emergencyContactPhone: basicData.emergencyContactPhone,
         },
         {
-          onSuccess: () => {
-            toast.success("Conta criada. Verificação enviada para análise.");
+          onSuccess: async () => {
+            try {
+              await uploadDocument(doc);
+              await uploadDocument(selfieDoc);
+              toast.success("Conta criada. Verificação enviada para análise.");
+            } catch {
+              toast.warning(
+                "Conta criada, mas o envio dos documentos falhou. Tente novamente mais tarde.",
+              );
+            }
             navigate("/home");
           },
           onError: (error) => {

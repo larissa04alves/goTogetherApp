@@ -19,6 +19,7 @@ type VehicleFormModalProps = {
   submitting?: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (vehicle: VehicleInput) => void;
+  onDelete?: () => void;
 };
 
 type FormState = {
@@ -54,6 +55,7 @@ export function VehicleFormModal({
   submitting = false,
   onOpenChange,
   onSubmit,
+  onDelete,
 }: VehicleFormModalProps) {
   const isEditing = initialVehicle !== null;
   const [values, setValues] = useState<FormState>(() =>
@@ -180,6 +182,17 @@ export function VehicleFormModal({
               {isEditing ? "Salvar" : "Cadastrar"}
             </Button>
           </div>
+
+          {isEditing && onDelete ? (
+            <button
+              type="button"
+              onClick={onDelete}
+              disabled={submitting}
+              className="text-[13px] font-bold text-red-600 transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
+            >
+              Remover veículo
+            </button>
+          ) : null}
         </form>
       </DialogContent>
     </Dialog>

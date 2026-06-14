@@ -4,9 +4,10 @@ import { type ReactNode, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { toast } from "sonner";
 
+import { createCarona } from "@/api/caronas";
 import { fetchVehicles, type Vehicle } from "@/api/vehicles";
-import { loadJSON, saveJSON } from "@/lib/storage";
-import type { Hub, HubMode } from "@/pages/history/types";
+import { loadJSON } from "@/lib/storage";
+import type { HubMode } from "@/pages/history/types";
 import type { SavedRoute } from "@/pages/route/types";
 
 import { NotesTextarea } from "./components/notes-textarea";
@@ -58,38 +59,32 @@ export default function CreateHubPage() {
   const canSubmit =
     selectedRoute !== null && validPrice && (mode === "app" || vehicle !== null);
 
-  function handleSubmit() {
+  async function handleSubmit() {
     if (!selectedRoute || !canSubmit) return;
+    if (mode === "carona" && !vehicle) return;
     const departureTime = useSavedTime
       ? selectedRoute.departureTime
       : customTime;
-    const base = {
-      id: crypto.randomUUID(),
-      routeId: selectedRoute.id,
-      departureTime,
-      seats,
-      createdAt: new Date().toISOString(),
-    };
-    let hub: Hub;
-    if (mode === "carona") {
-      if (!vehicle) return;
-      hub = {
-        ...base,
-        mode: "carona",
-        priceBRL: priceValue,
-        vehicle,
-      };
-    } else {
-      hub = {
-        ...base,
-        mode: "app",
-        notes: notes.trim() || undefined,
-      };
+
+    try {
+      await createCarona({
+        tipo: mode === "carona" ? "carro_proprio" : "rachar_app",
+        rotaId: selectedRoute.id,
+        origemLabel: selectedRoute.origin.label,
+        origemEndereco: selectedRoute.origin.address,
+        destinoLabel: selectedRoute.destination.label,
+        destinoEndereco: selectedRoute.destination.address,
+        horarioSaida: departureTime,
+        vagasMax: seats,
+        valorPorPessoa: mode === "carona" ? Math.round(priceValue * 100) : null,
+        soMulheres: false,
+        veiculoId: mode === "carona" ? (vehicle?.id ?? null) : null,
+      });
+      toast.success("Carona criada");
+      void navigate("/historico");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao criar carona");
     }
-    const current = loadJSON<Hub[]>("hubs", []);
-    saveJSON("hubs", [...current, hub]);
-    toast.success("Carona criada");
-    void navigate("/historico");
   }
 
   return (

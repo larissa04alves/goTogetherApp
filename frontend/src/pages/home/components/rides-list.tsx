@@ -7,6 +7,7 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
+import { entrarCarona } from "@/api/caronas";
 import { joinHubChannel } from "@/api/chat";
 import { RideDetailModal } from "@/components/ride-detail-modal";
 import type { HubDetail } from "@/components/ride-detail-modal";
@@ -61,6 +62,7 @@ export function RidesList({ rides }: RidesListProps) {
   async function handleEnterHub(hubId: string) {
     setJoining(true);
     try {
+      await entrarCarona(hubId);
       const name = selectedRide
         ? `Carona de ${selectedRide.driver.name}`
         : undefined;
