@@ -2,7 +2,13 @@ import cors from "cors";
 import express from "express";
 
 import { env } from "@/env";
+import { errorMiddleware } from "@/middlewares/error.middleware";
 import authRoutes, { registerAuthRoutes } from "@/routes/auth.routes";
+import { registerAvaliacoesRoutes } from "@/routes/avaliacoes.routes";
+import { registerChatRoutes } from "@/routes/chat.routes";
+import { registerDocumentsRoutes } from "@/routes/documents.routes";
+import { registerSolicitacoesRoutes } from "@/routes/solicitacoes.routes";
+import { registerVeiculosRoutes } from "@/routes/veiculos.routes";
 
 
 const app = express();

@@ -40,7 +40,7 @@ async function solicitar(caronaId: string, solicitanteId: string) {
       where: eq(user.id, solicitanteId),
     });
 
-    if (!solicitante || solicitante.genero !== "feminino") {
+    if (!solicitante || solicitante.gender !== "feminino") {
       throw new Error("GENERO_NAO_PERMITIDO");
     }
   }

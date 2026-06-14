@@ -70,7 +70,7 @@ export async function seedUsers() {
         id: u.id,
         name: u.name,
         email: u.email,
-        genero: u.genero,
+        gender: u.genero,
         emailVerified: u.emailVerified,
         createdAt: new Date(),
         updatedAt: new Date(),
