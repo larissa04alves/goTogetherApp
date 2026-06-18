@@ -146,7 +146,7 @@ export function MinhaCaronaCard({
             />
             <CardButton
               icon={Cancel01Icon}
-              label="Cancelar hub"
+              label="Cancelar"
               destructive
               onClick={() => onCancel(hub.id)}
             />
