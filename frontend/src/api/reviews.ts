@@ -25,6 +25,10 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     throw new Error(await extractErrorMessage(response));
   }
 
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
   return (await response.json()) as T;
 }
 
@@ -37,6 +41,29 @@ async function extractErrorMessage(response: Response): Promise<string> {
   }
 }
 
+export type PendingReview = {
+  caronaId: string;
+  usuario: { id: string; name: string; email: string };
+};
+
+export type CriarAvaliacaoInput = {
+  carona_id: string;
+  avaliado_id: string;
+  nota: number;
+  comentario?: string;
+};
+
 export function fetchReceivedReviews(userId: string): Promise<ReceivedReview[]> {
   return request<ReceivedReview[]>(`/perfil/${userId}/avaliacoes`);
+}
+
+export function fetchAvaliacoesPendentes(): Promise<PendingReview[]> {
+  return request<PendingReview[]>("/avaliacoes/pendentes");
+}
+
+export function createAvaliacao(input: CriarAvaliacaoInput): Promise<unknown> {
+  return request("/avaliacoes", {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
 }
