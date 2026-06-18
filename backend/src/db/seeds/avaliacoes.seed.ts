@@ -12,38 +12,78 @@ type SeedAvaliacao = {
   comentario: string | null;
 };
 
+// IMPORTANTE: a demo NÃO avalia ninguém aqui — ela recebe 4 avaliações
+// (perfil com nota boa) e fica com 4 pendências pra demonstrar ao vivo:
+//   - na carona concluída como ofertante: avaliar Maria e Ana
+//   - na carona concluída como passageira: avaliar João e Carlos
 const avaliacoes: SeedAvaliacao[] = [
+  // demoConcluidaOfertante — demo recebe de Maria e Ana
   {
-    id: "seed-avaliacao-joao-carlos",
-    caronaId: CARONA_IDS.joaoConcluida,
-    avaliadorId: USER_IDS.joao,
-    avaliadoId: USER_IDS.carlos,
+    id: "seed-aval-maria-demo",
+    caronaId: CARONA_IDS.demoConcluidaOfertante,
+    avaliadorId: USER_IDS.maria,
+    avaliadoId: USER_IDS.demo,
     nota: 5,
-    comentario: "Passageiro pontual e tranquilo, recomendo!",
+    comentario: "Motorista super atenciosa, dirige com cuidado!",
   },
   {
-    id: "seed-avaliacao-joao-ana",
-    caronaId: CARONA_IDS.joaoConcluida,
-    avaliadorId: USER_IDS.joao,
+    id: "seed-aval-ana-demo",
+    caronaId: CARONA_IDS.demoConcluidaOfertante,
+    avaliadorId: USER_IDS.ana,
+    avaliadoId: USER_IDS.demo,
+    nota: 4,
+    comentario: "Carona tranquila, chegamos no horário.",
+  },
+  // entre passageiras (popula os perfis de Maria e Ana)
+  {
+    id: "seed-aval-ana-maria",
+    caronaId: CARONA_IDS.demoConcluidaOfertante,
+    avaliadorId: USER_IDS.ana,
+    avaliadoId: USER_IDS.maria,
+    nota: 5,
+    comentario: "Companhia agradável na viagem.",
+  },
+  {
+    id: "seed-aval-maria-ana",
+    caronaId: CARONA_IDS.demoConcluidaOfertante,
+    avaliadorId: USER_IDS.maria,
     avaliadoId: USER_IDS.ana,
     nota: 4,
-    comentario: "Tudo certo na viagem.",
+    comentario: "Pontual e simpática.",
+  },
+  // joaoConcluidaDemoPassageira — demo recebe de João e Carlos
+  {
+    id: "seed-aval-joao-demo",
+    caronaId: CARONA_IDS.joaoConcluidaDemoPassageira,
+    avaliadorId: USER_IDS.joao,
+    avaliadoId: USER_IDS.demo,
+    nota: 5,
+    comentario: "Passageira pontual, recomendo!",
   },
   {
-    id: "seed-avaliacao-carlos-joao",
-    caronaId: CARONA_IDS.joaoConcluida,
+    id: "seed-aval-carlos-demo",
+    caronaId: CARONA_IDS.joaoConcluidaDemoPassageira,
+    avaliadorId: USER_IDS.carlos,
+    avaliadoId: USER_IDS.demo,
+    nota: 5,
+    comentario: "Ótima companhia de viagem.",
+  },
+  // entre João e Carlos (popula os perfis deles)
+  {
+    id: "seed-aval-carlos-joao",
+    caronaId: CARONA_IDS.joaoConcluidaDemoPassageira,
     avaliadorId: USER_IDS.carlos,
     avaliadoId: USER_IDS.joao,
     nota: 5,
-    comentario: "Motorista atencioso e dirige super bem.",
+    comentario: "Motorista nota 10, dirige muito bem.",
   },
   {
-    id: "seed-avaliacao-ana-joao",
-    caronaId: CARONA_IDS.joaoConcluida,
-    avaliadorId: USER_IDS.ana,
-    avaliadoId: USER_IDS.joao,
+    id: "seed-aval-joao-carlos",
+    caronaId: CARONA_IDS.joaoConcluidaDemoPassageira,
+    avaliadorId: USER_IDS.joao,
+    avaliadoId: USER_IDS.carlos,
     nota: 5,
-    comentario: "Carona confortável, chegamos no horário.",
+    comentario: "Tranquilo e pontual.",
   },
 ];
 
@@ -63,7 +103,5 @@ export async function seedAvaliacoes() {
       .onConflictDoNothing();
   }
 
-  console.log(
-    `Seed de avaliações concluído (${avaliacoes.length} avaliações).`,
-  );
+  console.log(`Seed de avaliações concluído (${avaliacoes.length} avaliações).`);
 }
