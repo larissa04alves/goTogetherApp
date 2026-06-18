@@ -9,6 +9,7 @@ import { registerChatRoutes } from "@/routes/chat.routes";
 import { registerDocumentsRoutes } from "@/routes/documents.routes";
 import { registerHubMembrosRoutes } from "@/routes/hub-membros.routes";
 import { registerHubsRoutes } from "@/routes/hubs.routes";
+import { registerPerfilRoutes } from "@/routes/perfil.routes";
 import { registerSolicitacoesRoutes } from "@/routes/solicitacoes.routes";
 import { registerVeiculosRoutes } from "@/routes/veiculos.routes";
 import { registerRotasRoutes } from "@/routes/rotas.routes";
@@ -39,6 +40,7 @@ registerVeiculosRoutes(app);
 registerRotasRoutes(app);
 registerHubsRoutes(app);
 registerHubMembrosRoutes(app);
+registerPerfilRoutes(app);
 registerChatRoutes(app);
 registerDocumentsRoutes(app);
 
