@@ -24,6 +24,7 @@ function toRide(h: Hub): Ride {
   return {
     id: h.id,
     driver: {
+      id: h.ofertante.id,
       initials: initialsFrom(h.ofertante.name),
       name: h.ofertante.name,
       rating: 0,

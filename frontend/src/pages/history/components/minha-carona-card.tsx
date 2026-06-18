@@ -5,11 +5,13 @@ import {
   CheckmarkBadge01Icon,
   Logout03Icon,
   SmartPhone01Icon,
+  StarIcon,
   UserGroupIcon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
 import type { CaronaStatus, MeuHub } from "@/api/hubs";
+import type { PendingReview } from "@/api/reviews";
 
 const STATUS_LABEL: Record<CaronaStatus, string> = {
   aberta: "Aberta",
@@ -21,21 +23,27 @@ const STATUS_LABEL: Record<CaronaStatus, string> = {
 type MinhaCaronaCardProps = {
   hub: MeuHub;
   currentUserId: string | undefined;
+  pendentes: PendingReview[];
   onOpenChat: (id: string) => void;
   onKick: (hubId: string, membroId: string) => void;
   onLeave: (hubId: string) => void;
   onComplete: (hubId: string) => void;
   onCancel: (hubId: string) => void;
+  onRate: (caronaId: string, avaliado: { id: string; name: string }) => void;
+  onOpenProfile: (userId: string) => void;
 };
 
 export function MinhaCaronaCard({
   hub,
   currentUserId,
+  pendentes,
   onOpenChat,
   onKick,
   onLeave,
   onComplete,
   onCancel,
+  onRate,
+  onOpenProfile,
 }: MinhaCaronaCardProps) {
   const isCarona = hub.tipo === "carro_proprio";
   const ModeIcon = isCarona ? Car03Icon : SmartPhone01Icon;
@@ -89,7 +97,13 @@ export function MinhaCaronaCard({
                   key={m.userId}
                   className="flex items-center justify-between gap-2 text-xs text-foreground"
                 >
-                  <span className="truncate">{m.user.name}</span>
+                  <button
+                    type="button"
+                    onClick={() => onOpenProfile(m.userId)}
+                    className="truncate text-left hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    {m.user.name}
+                  </button>
                   <span className="flex shrink-0 items-center gap-2">
                     <span className="text-[11px] font-bold text-muted-foreground">
                       {m.role === "motorista" ? "Motorista" : "Passageiro"}
@@ -148,6 +162,24 @@ export function MinhaCaronaCard({
           />
         ) : null}
       </div>
+
+      {hub.status === "concluida" && pendentes.length > 0 ? (
+        <div className="flex flex-col gap-2 border-t border-border pt-3">
+          <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">
+            Avaliações pendentes
+          </span>
+          {pendentes.map((p) => (
+            <CardButton
+              key={p.usuario.id}
+              icon={StarIcon}
+              label={`Avaliar ${p.usuario.name}`}
+              onClick={() =>
+                onRate(hub.id, { id: p.usuario.id, name: p.usuario.name })
+              }
+            />
+          ))}
+        </div>
+      ) : null}
     </article>
   );
 }

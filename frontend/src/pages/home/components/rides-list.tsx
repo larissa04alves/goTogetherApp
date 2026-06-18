@@ -23,6 +23,7 @@ function toHubDetail(ride: Ride): HubDetail {
     seatsTotal: ride.seatsTotal,
     priceBRL: ride.priceBRL,
     driver: {
+      id: ride.driver.id,
       initials: ride.driver.initials,
       name: ride.driver.name,
       rating: ride.driver.rating,
@@ -202,6 +203,7 @@ export function RidesList({ rides }: RidesListProps) {
         }}
         actionLabel="Entrar no hub"
         onAction={handleEnterHub}
+        onViewProfile={(userId) => navigate(`/perfil/${userId}`)}
         actionPending={joining}
       />
     </section>
