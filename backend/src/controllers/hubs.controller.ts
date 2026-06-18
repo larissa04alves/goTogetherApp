@@ -93,4 +93,16 @@ async function cancelar(req: Request, res: Response): Promise<void> {
   }
 }
 
-export const hubsController = { criar, listar, buscar, listarMeus, cancelar };
+async function concluir(req: Request, res: Response): Promise<void> {
+  const id = requireParam(req, "id", "ID do hub obrigatório");
+  const session = res.locals["session"] as Session;
+
+  try {
+    const hub = await hubsService.concluir(id, session.user.id);
+    res.json(hub);
+  } catch (err) {
+    mapServiceError(err);
+  }
+}
+
+export const hubsController = { criar, listar, buscar, listarMeus, cancelar, concluir };
