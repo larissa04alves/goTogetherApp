@@ -27,8 +27,3 @@ export type Ride = {
     destination: { label: string; address: string };
   };
 };
-
-export type Route = {
-  origin: string;
-  destination: string;
-};

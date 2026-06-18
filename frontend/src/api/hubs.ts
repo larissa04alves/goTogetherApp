@@ -16,11 +16,11 @@ export type HubRota = {
 };
 
 export type HubVeiculo = {
-  id: string | null;
-  marca: string | null;
-  modelo: string | null;
-  cor: string | null;
-  placa: string | null;
+  id: string;
+  marca: string;
+  modelo: string;
+  cor: string;
+  placa: string;
 };
 
 export type Hub = {
@@ -35,7 +35,7 @@ export type Hub = {
   criadoEm: string;
   ofertante: HubOfertante;
   rota: HubRota;
-  veiculo: HubVeiculo;
+  veiculo: HubVeiculo | null;
 };
 
 export type HubMembro = {
@@ -59,11 +59,11 @@ export type MeuHub = {
   papel: "motorista" | "passageiro";
   rota: { id: string; origemNome: string; destinoNome: string };
   veiculo: {
-    id: string | null;
-    marca: string | null;
-    modelo: string | null;
-    placa: string | null;
-  };
+    id: string;
+    marca: string;
+    modelo: string;
+    placa: string;
+  } | null;
   membros: HubMembro[];
 };
 
