@@ -4,6 +4,7 @@ export type Modality = "app" | "carro";
 export type Ride = {
   id: string;
   driver: {
+    id: string;
     initials: string;
     name: string;
     rating: number;

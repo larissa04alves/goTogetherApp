@@ -11,21 +11,30 @@ import {
   sairHub,
   type MeuHub,
 } from "@/api/hubs";
+import { fetchAvaliacoesPendentes, type PendingReview } from "@/api/reviews";
 import { BottomNav } from "@/components/bottom-nav";
 
 import { EmptyHubs } from "./components/empty-hubs";
 import { MinhaCaronaCard } from "./components/minha-carona-card";
+import { ReviewModal, type ReviewTarget } from "./components/review-modal";
 
 export default function HistoryPage() {
   const navigate = useNavigate();
   const { data } = authClient.useSession();
   const currentUserId = data?.user?.id;
   const [hubs, setHubs] = useState<MeuHub[]>([]);
+  const [pendentes, setPendentes] = useState<PendingReview[]>([]);
+  const [reviewTarget, setReviewTarget] = useState<ReviewTarget | null>(null);
   const [loading, setLoading] = useState(true);
 
   async function load() {
     try {
-      setHubs(await fetchMeusHubs());
+      const [list, pend] = await Promise.all([
+        fetchMeusHubs(),
+        fetchAvaliacoesPendentes(),
+      ]);
+      setHubs(list);
+      setPendentes(pend);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Erro ao carregar caronas");
     }
@@ -33,9 +42,12 @@ export default function HistoryPage() {
 
   useEffect(() => {
     let active = true;
-    fetchMeusHubs()
-      .then((list) => {
-        if (active) setHubs(list);
+    Promise.all([fetchMeusHubs(), fetchAvaliacoesPendentes()])
+      .then(([list, pend]) => {
+        if (active) {
+          setHubs(list);
+          setPendentes(pend);
+        }
       })
       .catch((err) => {
         if (active) {
@@ -90,6 +102,11 @@ export default function HistoryPage() {
                 key={hub.id}
                 hub={hub}
                 currentUserId={currentUserId}
+                pendentes={pendentes.filter((p) => p.caronaId === hub.id)}
+                onRate={(caronaId, avaliado) =>
+                  setReviewTarget({ caronaId, avaliado })
+                }
+                onOpenProfile={(userId) => navigate(`/perfil/${userId}`)}
                 onOpenChat={(id) => navigate(`/chat/${id}`)}
                 onKick={(hubId, membroId) =>
                   withRefresh(
@@ -111,6 +128,16 @@ export default function HistoryPage() {
           </section>
         )}
       </div>
+
+      <ReviewModal
+        target={reviewTarget}
+        onOpenChange={(open) => {
+          if (!open) setReviewTarget(null);
+        }}
+        onSubmitted={() => {
+          void load();
+        }}
+      />
 
       <BottomNav active="history" />
     </main>

@@ -29,6 +29,7 @@ export type HubDetail = {
   seatsTotal: number;
   priceBRL?: number;
   driver?: {
+    id: string;
     initials: string;
     name: string;
     rating: number;
@@ -56,6 +57,7 @@ type RideDetailModalProps = {
   onOpenChange: (open: boolean) => void;
   actionLabel: string;
   onAction: (hubId: string) => void;
+  onViewProfile?: (userId: string) => void;
   actionPending?: boolean;
 };
 
@@ -90,9 +92,11 @@ export function RideDetailModal({
   onOpenChange,
   actionLabel,
   onAction,
+  onViewProfile,
   actionPending = false,
 }: RideDetailModalProps) {
   if (!detail) return null;
+  const driver = detail.driver;
   const sim = detail.similarity
     ? similarityBanner[detail.similarity.kind]
     : null;
@@ -249,10 +253,11 @@ export function RideDetailModal({
           )}
 
           <div className="flex gap-2 pt-1">
-            {detail.driver && (
+            {driver && onViewProfile && (
               <Button
                 type="button"
                 variant="outline"
+                onClick={() => onViewProfile(driver.id)}
                 className="h-11 flex-1 rounded-full text-[13px] font-bold"
               >
                 Ver perfil
