@@ -4,10 +4,11 @@ import { type ReactNode, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { toast } from "sonner";
 
-import { createCarona } from "@/api/caronas";
+import { createHub } from "@/api/hubs";
+import { fetchRotas } from "@/api/rotas";
 import { fetchVehicles, type Vehicle } from "@/api/vehicles";
-import { loadJSON } from "@/lib/storage";
 import type { HubMode } from "@/pages/history/types";
+import { rotaToSavedRoute } from "@/pages/route/map";
 import type { SavedRoute } from "@/pages/route/types";
 
 import { NotesTextarea } from "./components/notes-textarea";
@@ -27,13 +28,19 @@ export default function CreateHubPage() {
   const [searchParams] = useSearchParams();
   const mode = parseMode(searchParams.get("modo"));
 
-  const [routes] = useState<SavedRoute[]>(() =>
-    loadJSON<SavedRoute[]>("routes", []),
-  );
+  const [routes, setRoutes] = useState<SavedRoute[]>([]);
   const [vehicle, setVehicle] = useState<Vehicle | null>(null);
 
   useEffect(() => {
     let active = true;
+    fetchRotas()
+      .then((list) => {
+        if (active) setRoutes(list.map(rotaToSavedRoute));
+      })
+      .catch((err) => {
+        if (active)
+          toast.error(err instanceof Error ? err.message : "Erro ao carregar rotas");
+      });
     fetchVehicles()
       .then((list) => {
         if (active) setVehicle(list[0] ?? null);
@@ -67,19 +74,26 @@ export default function CreateHubPage() {
       : customTime;
 
     try {
-      await createCarona({
-        tipo: mode === "carona" ? "carro_proprio" : "rachar_app",
-        rotaId: selectedRoute.id,
-        origemLabel: selectedRoute.origin.label,
-        origemEndereco: selectedRoute.origin.address,
-        destinoLabel: selectedRoute.destination.label,
-        destinoEndereco: selectedRoute.destination.address,
-        horarioSaida: departureTime,
-        vagasMax: seats,
-        valorPorPessoa: mode === "carona" ? Math.round(priceValue * 100) : null,
-        soMulheres: false,
-        veiculoId: mode === "carona" ? (vehicle?.id ?? null) : null,
-      });
+      if (mode === "carona") {
+        if (!vehicle) return;
+        await createHub({
+          tipo: "carro_proprio",
+          rota_id: selectedRoute.id,
+          horario_saida: departureTime,
+          vagas_max: seats,
+          so_mulheres: false,
+          veiculo_id: vehicle.id,
+          valor_por_pessoa: Math.round(priceValue * 100),
+        });
+      } else {
+        await createHub({
+          tipo: "rachar_app",
+          rota_id: selectedRoute.id,
+          horario_saida: departureTime,
+          vagas_max: seats,
+          so_mulheres: false,
+        });
+      }
       toast.success("Carona criada");
       void navigate("/historico");
     } catch (err) {
