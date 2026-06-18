@@ -1,0 +1,55 @@
+import type { Request, Response } from "express";
+
+import { hubMembrosService } from "@/services/hub-membros.service";
+import { AppError } from "@/utils/app-error";
+
+type Session = { user: { id: string } };
+
+const SERVICE_ERRORS: Record<string, { status: number; message: string }> = {
+  HUB_NAO_ENCONTRADO: { status: 404, message: "Hub não encontrado" },
+  NAO_AUTORIZADO: { status: 403, message: "Apenas o criador do hub pode realizar esta ação" },
+  AUTO_EXPULSAO: { status: 422, message: "O criador do hub não pode expulsar a si mesmo" },
+  MEMBRO_NAO_ENCONTRADO: { status: 404, message: "Membro não encontrado neste hub" },
+  MEMBRO_NAO_ATIVO: { status: 422, message: "Membro já foi removido ou expulso" },
+};
+
+function mapServiceError(err: unknown): never {
+  const key = err instanceof Error ? err.message : "";
+  const mapped = SERVICE_ERRORS[key];
+  if (mapped) throw new AppError(mapped.status, mapped.message);
+  throw err;
+}
+
+function requireParam(req: Request, name: string, message: string): string {
+  const raw = req.params[name];
+  const value = Array.isArray(raw) ? raw[0] : raw;
+  if (!value) throw new AppError(400, message);
+  return value;
+}
+
+async function listarMembros(req: Request, res: Response): Promise<void> {
+  const hubId = requireParam(req, "id", "ID do hub obrigatório");
+  const session = res.locals["session"] as Session;
+
+  try {
+    const membros = await hubMembrosService.listarMembros(hubId, session.user.id);
+    res.json(membros);
+  } catch (err) {
+    mapServiceError(err);
+  }
+}
+
+async function expulsar(req: Request, res: Response): Promise<void> {
+  const hubId = requireParam(req, "hubId", "ID do hub obrigatório");
+  const membroId = requireParam(req, "membroId", "ID do membro obrigatório");
+  const session = res.locals["session"] as Session;
+
+  try {
+    const hubAtualizado = await hubMembrosService.expulsar(hubId, membroId, session.user.id);
+    res.json({ message: "Membro expulso com sucesso", hub: hubAtualizado });
+  } catch (err) {
+    mapServiceError(err);
+  }
+}
+
+export const hubMembrosController = { listarMembros, expulsar };
