@@ -9,6 +9,7 @@ import { registerChatRoutes } from "@/routes/chat.routes";
 import { registerDocumentsRoutes } from "@/routes/documents.routes";
 import { registerSolicitacoesRoutes } from "@/routes/solicitacoes.routes";
 import { registerVeiculosRoutes } from "@/routes/veiculos.routes";
+import { registerRotasRoutes } from "@/routes/rotas.routes";
 
 
 const app = express();
@@ -33,6 +34,7 @@ app.get("/", (_req, res) => {
 registerAvaliacoesRoutes(app);
 registerSolicitacoesRoutes(app);
 registerVeiculosRoutes(app);
+registerRotasRoutes(app);
 registerChatRoutes(app);
 registerDocumentsRoutes(app);
 
