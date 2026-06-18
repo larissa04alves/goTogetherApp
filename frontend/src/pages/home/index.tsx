@@ -38,6 +38,7 @@ function toRide(h: Hub): Ride {
     similarity: "alta",
     similarityMatchPct: 100,
     modality: h.tipo === "carro_proprio" ? "carro" : "app",
+    womenOnly: h.soMulheres,
     time: h.horarioSaida,
     seatsTaken: h.vagasMax - h.vagasDisponiveis,
     seatsTotal: h.vagasMax,
@@ -97,7 +98,10 @@ export default function HomePage() {
           selected={selectedRoute}
           onSelect={setSelectedRoute}
         />
-        <RidesList rides={rides} />
+        <RidesList
+          rides={rides}
+          showWomenOnly={data?.user?.gender === "feminino"}
+        />
       </div>
       <BottomNav active="hubs" />
     </main>

@@ -12,13 +12,19 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+import type { RouteFormValues } from "../map";
 import type { SavedRoute } from "../types";
 
-type RouteFormValues = {
-  originLabel: string;
-  originAddress: string;
-  destinationLabel: string;
-  destinationAddress: string;
+type EndpointForm = {
+  label: string;
+  rua: string;
+  numero: string;
+  bairro: string;
+};
+
+type FormState = {
+  origin: EndpointForm;
+  destination: EndpointForm;
   departureTime: string;
 };
 
@@ -29,23 +35,60 @@ type RouteFormModalProps = {
   onSubmit: (values: RouteFormValues) => void;
 };
 
-const emptyValues: RouteFormValues = {
-  originLabel: "",
-  originAddress: "",
-  destinationLabel: "",
-  destinationAddress: "",
-  departureTime: "",
+const emptyEndpoint: EndpointForm = {
+  label: "",
+  rua: "",
+  numero: "",
+  bairro: "",
 };
 
-function toFormValues(route: SavedRoute | null): RouteFormValues {
-  if (!route) return emptyValues;
+// Endereço é guardado como uma string única no backend ("rua, número, bairro").
+// Aqui quebramos/recompomos para preencher os campos separados.
+function parseAddress(address: string): {
+  rua: string;
+  numero: string;
+  bairro: string;
+} {
+  const parts = address.split(",").map((p) => p.trim());
   return {
-    originLabel: route.origin.label,
-    originAddress: route.origin.address,
-    destinationLabel: route.destination.label,
-    destinationAddress: route.destination.address,
+    rua: parts[0] ?? "",
+    numero: parts[1] ?? "",
+    bairro: parts[2] ?? "",
+  };
+}
+
+function composeAddress(e: EndpointForm): string {
+  return [e.rua, e.numero, e.bairro]
+    .map((p) => p.trim())
+    .filter((p) => p !== "")
+    .join(", ");
+}
+
+function toFormState(route: SavedRoute | null): FormState {
+  if (!route) {
+    return {
+      origin: { ...emptyEndpoint },
+      destination: { ...emptyEndpoint },
+      departureTime: "",
+    };
+  }
+  return {
+    origin: { label: route.origin.label, ...parseAddress(route.origin.address) },
+    destination: {
+      label: route.destination.label,
+      ...parseAddress(route.destination.address),
+    },
     departureTime: route.departureTime,
   };
+}
+
+function isEndpointComplete(e: EndpointForm): boolean {
+  return (
+    e.label.trim() !== "" &&
+    e.rua.trim() !== "" &&
+    e.numero.trim() !== "" &&
+    e.bairro.trim() !== ""
+  );
 }
 
 export function RouteFormModal({
@@ -55,40 +98,48 @@ export function RouteFormModal({
   onSubmit,
 }: RouteFormModalProps) {
   const isEditing = initialRoute !== null;
-  const [values, setValues] = useState<RouteFormValues>(() =>
-    toFormValues(initialRoute),
+  const [state, setState] = useState<FormState>(() =>
+    toFormState(initialRoute),
   );
 
   useEffect(() => {
-    if (open) setValues(toFormValues(initialRoute));
+    if (open) setState(toFormState(initialRoute));
   }, [open, initialRoute]);
 
-  function update<K extends keyof RouteFormValues>(
-    key: K,
-    value: RouteFormValues[K],
+  function updateEndpoint(
+    which: "origin" | "destination",
+    field: keyof EndpointForm,
+    value: string,
   ) {
-    setValues((curr) => ({ ...curr, [key]: value }));
+    setState((curr) => ({
+      ...curr,
+      [which]: { ...curr[which], [field]: value },
+    }));
   }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    onSubmit(values);
+    onSubmit({
+      originLabel: state.origin.label,
+      originAddress: composeAddress(state.origin),
+      destinationLabel: state.destination.label,
+      destinationAddress: composeAddress(state.destination),
+      departureTime: state.departureTime,
+    });
   }
 
   const canSubmit =
-    values.originLabel.trim() !== "" &&
-    values.originAddress.trim() !== "" &&
-    values.destinationLabel.trim() !== "" &&
-    values.destinationAddress.trim() !== "" &&
-    values.departureTime.trim() !== "";
+    isEndpointComplete(state.origin) &&
+    isEndpointComplete(state.destination) &&
+    state.departureTime.trim() !== "";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className="max-w-80! rounded-3xl bg-card p-0 ring-0"
+        className="max-h-[90svh] max-w-80! overflow-y-auto rounded-3xl bg-card p-0 ring-0"
       >
-        <header className="flex items-center justify-between border-b border-border px-4 py-3">
+        <header className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-card px-4 py-3">
           <DialogClose
             render={
               <button
@@ -114,24 +165,20 @@ export function RouteFormModal({
           <EndpointFields
             title="Endereço 1"
             dotClassName="bg-primary"
-            label={values.originLabel}
-            address={values.originAddress}
-            onLabelChange={(v) => update("originLabel", v)}
-            onAddressChange={(v) => update("originAddress", v)}
+            endpoint={state.origin}
             labelPlaceholder="Ex.: Trabalho"
-            addressPlaceholder="Rua Imaculada Conceição, 155"
+            onChange={(field, value) => updateEndpoint("origin", field, value)}
             idPrefix="origin"
           />
 
           <EndpointFields
             title="Endereço 2"
             dotClassName="bg-slate-400"
-            label={values.destinationLabel}
-            address={values.destinationAddress}
-            onLabelChange={(v) => update("destinationLabel", v)}
-            onAddressChange={(v) => update("destinationAddress", v)}
+            endpoint={state.destination}
             labelPlaceholder="Ex.: Casa"
-            addressPlaceholder="Av. Comendador Araújo, 250"
+            onChange={(field, value) =>
+              updateEndpoint("destination", field, value)
+            }
             idPrefix="destination"
           />
 
@@ -148,8 +195,10 @@ export function RouteFormModal({
               type="time"
               lang="pt-BR"
               step={60}
-              value={values.departureTime}
-              onChange={(e) => update("departureTime", e.target.value)}
+              value={state.departureTime}
+              onChange={(e) =>
+                setState((curr) => ({ ...curr, departureTime: e.target.value }))
+              }
               className="h-11 rounded-lg border-border bg-card text-sm text-foreground"
             />
           </div>
@@ -183,28 +232,22 @@ export function RouteFormModal({
 type EndpointFieldsProps = {
   title: string;
   dotClassName: string;
-  label: string;
-  address: string;
+  endpoint: EndpointForm;
   labelPlaceholder: string;
-  addressPlaceholder: string;
   idPrefix: string;
-  onLabelChange: (value: string) => void;
-  onAddressChange: (value: string) => void;
+  onChange: (field: keyof EndpointForm, value: string) => void;
 };
 
 function EndpointFields({
   title,
   dotClassName,
-  label,
-  address,
+  endpoint,
   labelPlaceholder,
-  addressPlaceholder,
   idPrefix,
-  onLabelChange,
-  onAddressChange,
+  onChange,
 }: EndpointFieldsProps) {
-  const labelId = `${idPrefix}Label`;
-  const addressId = `${idPrefix}Address`;
+  const showDetails = endpoint.rua.trim() !== "";
+
   return (
     <section className="flex flex-col gap-2 rounded-2xl border border-border bg-card p-3">
       <div className="flex items-center gap-2">
@@ -218,31 +261,65 @@ function EndpointFields({
       </div>
 
       <div className="flex flex-col gap-2">
-        <Label htmlFor={labelId} className="sr-only">
+        <Label htmlFor={`${idPrefix}Label`} className="sr-only">
           Nome do {title.toLowerCase()}
         </Label>
         <Input
-          id={labelId}
-          name={labelId}
+          id={`${idPrefix}Label`}
+          name={`${idPrefix}Label`}
           type="text"
-          value={label}
-          onChange={(e) => onLabelChange(e.target.value)}
+          value={endpoint.label}
+          onChange={(e) => onChange("label", e.target.value)}
           placeholder={labelPlaceholder}
           className="h-10 rounded-lg border-border bg-card text-sm font-bold text-foreground"
         />
 
-        <Label htmlFor={addressId} className="sr-only">
-          Endereço do {title.toLowerCase()}
+        <Label htmlFor={`${idPrefix}Rua`} className="sr-only">
+          Rua
         </Label>
         <Input
-          id={addressId}
-          name={addressId}
+          id={`${idPrefix}Rua`}
+          name={`${idPrefix}Rua`}
           type="text"
-          value={address}
-          onChange={(e) => onAddressChange(e.target.value)}
-          placeholder={addressPlaceholder}
-          className="h-10 rounded-lg border-border bg-card text-sm text-muted-foreground"
+          value={endpoint.rua}
+          onChange={(e) => onChange("rua", e.target.value)}
+          placeholder="Nome da rua"
+          className="h-10 rounded-lg border-border bg-card text-sm text-foreground"
         />
+
+        {showDetails ? (
+          <div className="flex gap-2">
+            <div className="flex w-24 shrink-0 flex-col gap-1">
+              <Label htmlFor={`${idPrefix}Numero`} className="sr-only">
+                Número
+              </Label>
+              <Input
+                id={`${idPrefix}Numero`}
+                name={`${idPrefix}Numero`}
+                type="text"
+                inputMode="numeric"
+                value={endpoint.numero}
+                onChange={(e) => onChange("numero", e.target.value)}
+                placeholder="Nº"
+                className="h-10 rounded-lg border-border bg-card text-sm text-foreground"
+              />
+            </div>
+            <div className="flex flex-1 flex-col gap-1">
+              <Label htmlFor={`${idPrefix}Bairro`} className="sr-only">
+                Bairro
+              </Label>
+              <Input
+                id={`${idPrefix}Bairro`}
+                name={`${idPrefix}Bairro`}
+                type="text"
+                value={endpoint.bairro}
+                onChange={(e) => onChange("bairro", e.target.value)}
+                placeholder="Bairro"
+                className="h-10 rounded-lg border-border bg-card text-sm text-foreground"
+              />
+            </div>
+          </div>
+        ) : null}
       </div>
     </section>
   );

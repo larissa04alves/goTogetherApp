@@ -19,6 +19,7 @@ export type Ride = {
   similarity: Similarity;
   similarityMatchPct: number;
   modality: Modality;
+  womenOnly: boolean;
   time: string;
   seatsTaken: number;
   seatsTotal: number;

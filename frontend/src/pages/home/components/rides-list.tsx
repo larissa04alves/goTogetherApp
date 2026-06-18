@@ -39,6 +39,7 @@ function toHubDetail(ride: Ride): HubDetail {
 
 type RidesListProps = {
   rides: Ride[];
+  showWomenOnly: boolean;
 };
 
 const similarityOptions: { value: Similarity; label: string }[] = [
@@ -52,11 +53,12 @@ const modalityOptions: { value: Modality; label: string }[] = [
   { value: "carro", label: "Carro" },
 ];
 
-export function RidesList({ rides }: RidesListProps) {
+export function RidesList({ rides, showWomenOnly }: RidesListProps) {
   const navigate = useNavigate();
   const [filterOpen, setFilterOpen] = useState(false);
   const [similarities, setSimilarities] = useState<Similarity[]>([]);
   const [modalities, setModalities] = useState<Modality[]>([]);
+  const [womenOnly, setWomenOnly] = useState(false);
   const [selectedRide, setSelectedRide] = useState<Ride | null>(null);
   const [joining, setJoining] = useState(false);
 
@@ -85,11 +87,15 @@ export function RidesList({ rides }: RidesListProps) {
       if (modalities.length > 0 && !modalities.includes(r.modality)) {
         return false;
       }
+      if (womenOnly && !r.womenOnly) {
+        return false;
+      }
       return true;
     });
-  }, [rides, similarities, modalities]);
+  }, [rides, similarities, modalities, womenOnly]);
 
-  const activeCount = similarities.length + modalities.length;
+  const activeCount =
+    similarities.length + modalities.length + (womenOnly ? 1 : 0);
   const hasFilters = activeCount > 0;
 
   function toggleSimilarity(value: Similarity) {
@@ -107,6 +113,7 @@ export function RidesList({ rides }: RidesListProps) {
   function clearFilters() {
     setSimilarities([]);
     setModalities([]);
+    setWomenOnly(false);
   }
 
   return (
@@ -165,6 +172,16 @@ export function RidesList({ rides }: RidesListProps) {
               />
             ))}
           </FilterGroup>
+
+          {showWomenOnly && (
+            <FilterGroup label="Exclusividade">
+              <FilterPill
+                label="Só mulheres"
+                active={womenOnly}
+                onClick={() => setWomenOnly((v) => !v)}
+              />
+            </FilterGroup>
+          )}
 
           {hasFilters && (
             <button
