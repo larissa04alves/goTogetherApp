@@ -15,6 +15,15 @@ type SeedVeiculo = {
 
 const veiculos: SeedVeiculo[] = [
   {
+    id: VEICULO_IDS.demo,
+    userId: USER_IDS.demo,
+    marca: "Chevrolet",
+    modelo: "Onix",
+    placa: "DMO1A23",
+    cor: "Branco",
+    capacidade: 4,
+  },
+  {
     id: VEICULO_IDS.joao,
     userId: USER_IDS.joao,
     marca: "Honda",
@@ -31,15 +40,6 @@ const veiculos: SeedVeiculo[] = [
     placa: "DEF4G56",
     cor: "Prata",
     capacidade: 4,
-  },
-  {
-    id: VEICULO_IDS.luana,
-    userId: USER_IDS.luana,
-    marca: "Toyota",
-    modelo: "Corolla",
-    placa: "GHI7J89",
-    cor: "Preto",
-    capacidade: 5,
   },
   {
     id: VEICULO_IDS.ramon,

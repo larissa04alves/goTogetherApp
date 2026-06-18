@@ -7,6 +7,7 @@ export default [
   layout("pages/protected-layout.tsx", [
     route("home", "pages/home/index.tsx"),
     route("perfil", "pages/profile/index.tsx"),
+    route("perfil/:id", "pages/profile/index.tsx", { id: "perfil-publico" }),
     route("rotas", "pages/route/index.tsx"),
     route("historico", "pages/history/index.tsx"),
     route("hubs/novo", "pages/create-hub/index.tsx"),

@@ -9,4 +9,5 @@ export function registerHubsRoutes(app: Express) {
   app.get("/hubs/me", authMiddleware, hubsController.listarMeus);
   app.get("/hubs/:id", authMiddleware, hubsController.buscar);
   app.patch("/hubs/:id/cancelar", authMiddleware, hubsController.cancelar);
+  app.patch("/hubs/:id/concluir", authMiddleware, hubsController.concluir);
 }

@@ -7,7 +7,7 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
-import { entrarCarona } from "@/api/caronas";
+import { entrarHub } from "@/api/hubs";
 import { joinHubChannel } from "@/api/chat";
 import { RideDetailModal } from "@/components/ride-detail-modal";
 import type { HubDetail } from "@/components/ride-detail-modal";
@@ -23,6 +23,7 @@ function toHubDetail(ride: Ride): HubDetail {
     seatsTotal: ride.seatsTotal,
     priceBRL: ride.priceBRL,
     driver: {
+      id: ride.driver.id,
       initials: ride.driver.initials,
       name: ride.driver.name,
       rating: ride.driver.rating,
@@ -38,6 +39,7 @@ function toHubDetail(ride: Ride): HubDetail {
 
 type RidesListProps = {
   rides: Ride[];
+  showWomenOnly: boolean;
 };
 
 const similarityOptions: { value: Similarity; label: string }[] = [
@@ -51,18 +53,19 @@ const modalityOptions: { value: Modality; label: string }[] = [
   { value: "carro", label: "Carro" },
 ];
 
-export function RidesList({ rides }: RidesListProps) {
+export function RidesList({ rides, showWomenOnly }: RidesListProps) {
   const navigate = useNavigate();
   const [filterOpen, setFilterOpen] = useState(false);
   const [similarities, setSimilarities] = useState<Similarity[]>([]);
   const [modalities, setModalities] = useState<Modality[]>([]);
+  const [womenOnly, setWomenOnly] = useState(false);
   const [selectedRide, setSelectedRide] = useState<Ride | null>(null);
   const [joining, setJoining] = useState(false);
 
   async function handleEnterHub(hubId: string) {
     setJoining(true);
     try {
-      await entrarCarona(hubId);
+      await entrarHub(hubId);
       const name = selectedRide
         ? `Carona de ${selectedRide.driver.name}`
         : undefined;
@@ -84,11 +87,15 @@ export function RidesList({ rides }: RidesListProps) {
       if (modalities.length > 0 && !modalities.includes(r.modality)) {
         return false;
       }
+      if (womenOnly && !r.womenOnly) {
+        return false;
+      }
       return true;
     });
-  }, [rides, similarities, modalities]);
+  }, [rides, similarities, modalities, womenOnly]);
 
-  const activeCount = similarities.length + modalities.length;
+  const activeCount =
+    similarities.length + modalities.length + (womenOnly ? 1 : 0);
   const hasFilters = activeCount > 0;
 
   function toggleSimilarity(value: Similarity) {
@@ -106,6 +113,7 @@ export function RidesList({ rides }: RidesListProps) {
   function clearFilters() {
     setSimilarities([]);
     setModalities([]);
+    setWomenOnly(false);
   }
 
   return (
@@ -165,6 +173,16 @@ export function RidesList({ rides }: RidesListProps) {
             ))}
           </FilterGroup>
 
+          {showWomenOnly && (
+            <FilterGroup label="Exclusividade">
+              <FilterPill
+                label="Só mulheres"
+                active={womenOnly}
+                onClick={() => setWomenOnly((v) => !v)}
+              />
+            </FilterGroup>
+          )}
+
           {hasFilters && (
             <button
               type="button"
@@ -202,6 +220,7 @@ export function RidesList({ rides }: RidesListProps) {
         }}
         actionLabel="Entrar no hub"
         onAction={handleEnterHub}
+        onViewProfile={(userId) => navigate(`/perfil/${userId}`)}
         actionPending={joining}
       />
     </section>

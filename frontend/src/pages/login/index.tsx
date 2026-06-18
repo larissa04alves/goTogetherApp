@@ -1,13 +1,16 @@
+import { Navigate } from "react-router";
+
 import { authClient } from "@/api/auth";
-import Loader from "@/components/loader";
 
 import { LoginForm } from "./components/login-form";
 
 export default function LoginPage() {
-  const { isPending } = authClient.useSession();
+  const { data } = authClient.useSession();
 
-  if (isPending) {
-    return <Loader />;
+  // Já autenticado (inclusive logo após o login, mesmo que o ProtectedLayout
+  // tenha quicado pra cá por causa do refetch de sessão): vai pra home.
+  if (data) {
+    return <Navigate to="/home" replace />;
   }
 
   return (

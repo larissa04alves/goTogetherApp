@@ -4,6 +4,7 @@ export type Modality = "app" | "carro";
 export type Ride = {
   id: string;
   driver: {
+    id: string;
     initials: string;
     name: string;
     rating: number;
@@ -18,6 +19,7 @@ export type Ride = {
   similarity: Similarity;
   similarityMatchPct: number;
   modality: Modality;
+  womenOnly: boolean;
   time: string;
   seatsTaken: number;
   seatsTotal: number;
@@ -26,9 +28,4 @@ export type Ride = {
     origin: { label: string; address: string };
     destination: { label: string; address: string };
   };
-};
-
-export type Route = {
-  origin: string;
-  destination: string;
 };

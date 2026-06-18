@@ -1,4 +1,4 @@
-import { and, desc, eq, gt } from "drizzle-orm";
+import { and, desc, eq, gt, inArray } from "drizzle-orm";
 
 import { db } from "@/db/client";
 import { user } from "@/db/schema/auth";
@@ -109,7 +109,19 @@ async function criar(userId: string, data: CriarHubInput) {
     values.valorPorPessoa = data.valor_por_pessoa;
   }
 
-  const [hub] = await db.insert(carona).values(values).returning();
+  const hub = await db.transaction(async (tx) => {
+    const [novoHub] = await tx.insert(carona).values(values).returning();
+    if (!novoHub) throw new Error("HUB_NAO_ENCONTRADO");
+
+    await tx.insert(caronaMembro).values({
+      caronaId: novoHub.id,
+      userId,
+      role: "motorista",
+      status: "ativo",
+    });
+
+    return novoHub;
+  });
 
   return hub;
 }
@@ -257,7 +269,17 @@ async function buscar(hubId: string, userId: string) {
 }
 
 async function listarMeus(userId: string) {
-  return db
+  const vinculos = await db
+    .select({ caronaId: caronaMembro.caronaId, role: caronaMembro.role })
+    .from(caronaMembro)
+    .where(and(eq(caronaMembro.userId, userId), eq(caronaMembro.status, "ativo")));
+
+  if (vinculos.length === 0) return [];
+
+  const ids = vinculos.map((v) => v.caronaId);
+  const papelPorHub = new Map(vinculos.map((v) => [v.caronaId, v.role]));
+
+  const hubs = await db
     .select({
       id: carona.id,
       tipo: carona.tipo,
@@ -283,8 +305,26 @@ async function listarMeus(userId: string) {
     .from(carona)
     .innerJoin(rota, eq(rota.id, carona.rotaId))
     .leftJoin(veiculo, eq(veiculo.id, carona.veiculoId))
-    .where(eq(carona.ofertanteId, userId))
+    .where(inArray(carona.id, ids))
     .orderBy(desc(carona.criadoEm));
+
+  const membros = await db
+    .select({
+      caronaId: caronaMembro.caronaId,
+      userId: caronaMembro.userId,
+      role: caronaMembro.role,
+      status: caronaMembro.status,
+      user: { id: user.id, name: user.name, image: user.image },
+    })
+    .from(caronaMembro)
+    .innerJoin(user, eq(user.id, caronaMembro.userId))
+    .where(and(inArray(caronaMembro.caronaId, ids), eq(caronaMembro.status, "ativo")));
+
+  return hubs.map((h) => ({
+    ...h,
+    papel: papelPorHub.get(h.id) ?? "passageiro",
+    membros: membros.filter((m) => m.caronaId === h.id),
+  }));
 }
 
 async function cancelar(hubId: string, userId: string) {
@@ -305,4 +345,19 @@ async function cancelar(hubId: string, userId: string) {
   return atualizado;
 }
 
-export const hubsService = { criar, listar, buscar, listarMeus, cancelar };
+async function concluir(hubId: string, userId: string) {
+  const hub = await db.query.carona.findFirst({ where: eq(carona.id, hubId) });
+  if (!hub) throw new Error("HUB_NAO_ENCONTRADO");
+  if (hub.ofertanteId !== userId) throw new Error("NAO_AUTORIZADO");
+  if (hub.status !== "aberta") throw new Error("HUB_NAO_ABERTO");
+
+  const [atualizado] = await db
+    .update(carona)
+    .set({ status: "concluida" })
+    .where(eq(carona.id, hubId))
+    .returning();
+
+  return atualizado;
+}
+
+export const hubsService = { criar, listar, buscar, listarMeus, cancelar, concluir };
