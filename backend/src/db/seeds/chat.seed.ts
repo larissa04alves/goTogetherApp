@@ -11,48 +11,45 @@ type SeedConversation = {
 };
 
 const PARTICIPANTS = {
+  demo: { id: USER_IDS.demo, name: "Demo" },
   joao: { id: USER_IDS.joao, name: "João Teste" },
   maria: { id: USER_IDS.maria, name: "Maria Teste" },
   carlos: { id: USER_IDS.carlos, name: "Carlos Souza" },
-  ana: { id: USER_IDS.ana, name: "Ana Paula" },
 } as const;
 
 const conversations: SeedConversation[] = [
   {
-    caronaId: CARONA_IDS.joaoAberta,
-    participants: [PARTICIPANTS.joao, PARTICIPANTS.maria],
+    // hub aberto da demo (ela é motorista) com Maria e Carlos
+    caronaId: CARONA_IDS.demoGerencia,
+    participants: [PARTICIPANTS.demo, PARTICIPANTS.maria, PARTICIPANTS.carlos],
     messages: [
       {
-        userId: USER_IDS.joao,
-        text: "Oi Maria! Confirmando a carona de hoje às 23h?",
+        userId: USER_IDS.demo,
+        text: "Oi pessoal! Saída às 8h na portaria, combinado?",
+      },
+      { userId: USER_IDS.maria, text: "Combinado! Já estou a caminho 🙂" },
+      {
+        userId: USER_IDS.carlos,
+        text: "Perfeito, chego em 5 min. Obrigado pela carona!",
       },
       {
-        userId: USER_IDS.maria,
-        text: "Oi João! Confirmado, te encontro na portaria 🙂",
+        userId: USER_IDS.demo,
+        text: "Estou em um Onix branco bem na frente 🚗",
       },
-      {
-        userId: USER_IDS.joao,
-        text: "Perfeito, estou em um Fit branco. Até mais tarde 🚗",
-      },
-      { userId: USER_IDS.maria, text: "Combinado, obrigada!" },
     ],
   },
   {
-    caronaId: CARONA_IDS.joaoConcluida,
-    participants: [PARTICIPANTS.joao, PARTICIPANTS.carlos, PARTICIPANTS.ana],
+    // carona concluída onde a demo foi passageira do João
+    caronaId: CARONA_IDS.joaoConcluidaDemoPassageira,
+    participants: [PARTICIPANTS.joao, PARTICIPANTS.demo, PARTICIPANTS.carlos],
     messages: [
       {
         userId: USER_IDS.joao,
         text: "Pessoal, saída às 23h na frente da PUC, combinado?",
       },
-      { userId: USER_IDS.carlos, text: "Combinado! Já estou descendo." },
-      {
-        userId: USER_IDS.ana,
-        text: "Cheguei no ponto, tô de casaco vermelho 👋",
-      },
-      { userId: USER_IDS.joao, text: "Te vi, Ana. Carlos, falta você." },
-      { userId: USER_IDS.carlos, text: "Chegando em 2 min!" },
-      { userId: USER_IDS.ana, text: "Valeu pela carona, João! 🙏" },
+      { userId: USER_IDS.demo, text: "Confirmado! Já estou descendo." },
+      { userId: USER_IDS.carlos, text: "Cheguei no ponto 👋" },
+      { userId: USER_IDS.demo, text: "Valeu pela carona, João! 🙏" },
     ],
   },
 ];

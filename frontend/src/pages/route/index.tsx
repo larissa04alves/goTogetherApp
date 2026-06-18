@@ -1,34 +1,47 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { loadJSON, saveJSON } from "@/lib/storage";
+import { createRota, deleteRota, fetchRotas, updateRota } from "@/api/rotas";
+import { ConfirmDialog } from "@/components/confirm-dialog";
+
 import { BottomNav } from "../../components/bottom-nav";
 import { EmptyRouteCard } from "./components/empty-route-card";
 import { RotasHeader } from "./components/rotas-header";
 import { RouteCard } from "./components/route-card";
 import { RouteFormModal } from "./components/route-form-modal";
-import { mockSavedRoutes } from "./mock";
-import type { Endpoint, SavedRoute } from "./types";
-
-const STORAGE_KEY = "routes";
+import { formToRotaInput, rotaToSavedRoute, type RouteFormValues } from "./map";
+import type { SavedRoute } from "./types";
 
 type ModalState =
   | { mode: "closed" }
   | { mode: "create" }
   | { mode: "edit"; route: SavedRoute };
 
-function inferKind(label: string, fallback: Endpoint["kind"]): Endpoint["kind"] {
-  const normalized = label.trim().toLowerCase();
-  if (normalized === "casa") return "home";
-  if (normalized === "trabalho") return "work";
-  return fallback;
-}
-
 export default function RoutePage() {
-  const [routes, setRoutes] = useState<SavedRoute[]>(() => loadJSON<SavedRoute[]>(STORAGE_KEY, mockSavedRoutes));
+  const [routes, setRoutes] = useState<SavedRoute[]>([]);
+  const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState<ModalState>({ mode: "closed" });
+  const [pendingDelete, setPendingDelete] = useState<SavedRoute | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
-  useEffect(() => { saveJSON(STORAGE_KEY, routes); }, [routes]);
+  useEffect(() => {
+    let active = true;
+    fetchRotas()
+      .then((list) => {
+        if (active) setRoutes(list.map(rotaToSavedRoute));
+      })
+      .catch((err) => {
+        if (active) {
+          toast.error(err instanceof Error ? err.message : "Erro ao carregar rotas");
+        }
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   function handleAdd() {
     setModal({ mode: "create" });
@@ -42,55 +55,39 @@ export default function RoutePage() {
     setModal({ mode: "closed" });
   }
 
-  function handleSubmit(values: {
-    originLabel: string;
-    originAddress: string;
-    destinationLabel: string;
-    destinationAddress: string;
-    departureTime: string;
-  }) {
-    if (modal.mode === "create") {
-      const newRoute: SavedRoute = {
-        id: crypto.randomUUID(),
-        origin: {
-          label: values.originLabel,
-          address: values.originAddress,
-          kind: "origin",
-        },
-        destination: {
-          label: values.destinationLabel,
-          address: values.destinationAddress,
-          kind: inferKind(values.destinationLabel, "home"),
-        },
-        departureTime: values.departureTime,
-      };
-      setRoutes((curr) => [...curr, newRoute]);
-      toast.success("Rota criada");
-    } else if (modal.mode === "edit") {
-      setRoutes((curr) =>
-        curr.map((r) =>
-          r.id === modal.route.id
-            ? {
-                ...r,
-                origin: {
-                  ...r.origin,
-                  label: values.originLabel,
-                  address: values.originAddress,
-                },
-                destination: {
-                  ...r.destination,
-                  label: values.destinationLabel,
-                  address: values.destinationAddress,
-                  kind: inferKind(values.destinationLabel, r.destination.kind),
-                },
-                departureTime: values.departureTime,
-              }
-            : r,
-        ),
-      );
-      toast.success("Rota atualizada");
+  async function handleSubmit(values: RouteFormValues) {
+    const input = formToRotaInput(values);
+    try {
+      if (modal.mode === "create") {
+        const created = await createRota(input);
+        setRoutes((curr) => [...curr, rotaToSavedRoute(created)]);
+        toast.success("Rota criada");
+      } else if (modal.mode === "edit") {
+        const updated = await updateRota(modal.route.id, input);
+        setRoutes((curr) =>
+          curr.map((r) => (r.id === updated.id ? rotaToSavedRoute(updated) : r)),
+        );
+        toast.success("Rota atualizada");
+      }
+      handleClose();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao salvar rota");
     }
-    handleClose();
+  }
+
+  async function handleConfirmDelete() {
+    if (!pendingDelete) return;
+    setDeleting(true);
+    try {
+      await deleteRota(pendingDelete.id);
+      setRoutes((curr) => curr.filter((r) => r.id !== pendingDelete.id));
+      toast.success("Rota removida");
+      setPendingDelete(null);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao remover rota");
+    } finally {
+      setDeleting(false);
+    }
   }
 
   return (
@@ -98,7 +95,7 @@ export default function RoutePage() {
       <div className="mx-auto flex w-full max-w-100 flex-1 flex-col gap-4 px-5 pb-24 pt-8">
         <RotasHeader onAdd={handleAdd} />
         <p className="text-[11px] font-bold uppercase tracking-wide text-slate-400">
-          {routes.length} rotas salvas
+          {loading ? "Carregando…" : `${routes.length} rotas salvas`}
         </p>
 
         <section className="flex flex-col gap-3">
@@ -107,9 +104,10 @@ export default function RoutePage() {
               key={route.id}
               route={route}
               onEdit={() => handleEdit(route)}
+              onDelete={() => setPendingDelete(route)}
             />
           ))}
-          <EmptyRouteCard onAdd={handleAdd} />
+          {!loading ? <EmptyRouteCard onAdd={handleAdd} /> : null}
         </section>
       </div>
       <BottomNav active="routes" />
@@ -121,6 +119,23 @@ export default function RoutePage() {
           if (!open) handleClose();
         }}
         onSubmit={handleSubmit}
+      />
+
+      <ConfirmDialog
+        open={pendingDelete !== null}
+        title="Remover rota"
+        description={
+          pendingDelete
+            ? `Remover a rota ${pendingDelete.origin.label} → ${pendingDelete.destination.label}? Essa ação não pode ser desfeita.`
+            : ""
+        }
+        destructive
+        confirmLabel="Remover"
+        loading={deleting}
+        onOpenChange={(open) => {
+          if (!open) setPendingDelete(null);
+        }}
+        onConfirm={handleConfirmDelete}
       />
     </main>
   );

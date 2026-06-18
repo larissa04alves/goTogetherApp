@@ -4,10 +4,12 @@ import { type ReactNode, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { toast } from "sonner";
 
-import { createCarona } from "@/api/caronas";
+import { authClient } from "@/api/auth";
+import { createHub } from "@/api/hubs";
+import { fetchRotas } from "@/api/rotas";
 import { fetchVehicles, type Vehicle } from "@/api/vehicles";
-import { loadJSON } from "@/lib/storage";
 import type { HubMode } from "@/pages/history/types";
+import { rotaToSavedRoute } from "@/pages/route/map";
 import type { SavedRoute } from "@/pages/route/types";
 
 import { NotesTextarea } from "./components/notes-textarea";
@@ -27,13 +29,19 @@ export default function CreateHubPage() {
   const [searchParams] = useSearchParams();
   const mode = parseMode(searchParams.get("modo"));
 
-  const [routes] = useState<SavedRoute[]>(() =>
-    loadJSON<SavedRoute[]>("routes", []),
-  );
+  const [routes, setRoutes] = useState<SavedRoute[]>([]);
   const [vehicle, setVehicle] = useState<Vehicle | null>(null);
 
   useEffect(() => {
     let active = true;
+    fetchRotas()
+      .then((list) => {
+        if (active) setRoutes(list.map(rotaToSavedRoute));
+      })
+      .catch((err) => {
+        if (active)
+          toast.error(err instanceof Error ? err.message : "Erro ao carregar rotas");
+      });
     fetchVehicles()
       .then((list) => {
         if (active) setVehicle(list[0] ?? null);
@@ -52,6 +60,10 @@ export default function CreateHubPage() {
   const [seats, setSeats] = useState(3);
   const [price, setPrice] = useState("");
   const [notes, setNotes] = useState("");
+  const [womenOnly, setWomenOnly] = useState(false);
+
+  const { data } = authClient.useSession();
+  const isFeminino = data?.user?.gender === "feminino";
 
   const hasRoutes = routes.length > 0;
   const priceValue = Number(price.replace(",", "."));
@@ -67,19 +79,26 @@ export default function CreateHubPage() {
       : customTime;
 
     try {
-      await createCarona({
-        tipo: mode === "carona" ? "carro_proprio" : "rachar_app",
-        rotaId: selectedRoute.id,
-        origemLabel: selectedRoute.origin.label,
-        origemEndereco: selectedRoute.origin.address,
-        destinoLabel: selectedRoute.destination.label,
-        destinoEndereco: selectedRoute.destination.address,
-        horarioSaida: departureTime,
-        vagasMax: seats,
-        valorPorPessoa: mode === "carona" ? Math.round(priceValue * 100) : null,
-        soMulheres: false,
-        veiculoId: mode === "carona" ? (vehicle?.id ?? null) : null,
-      });
+      if (mode === "carona") {
+        if (!vehicle) return;
+        await createHub({
+          tipo: "carro_proprio",
+          rota_id: selectedRoute.id,
+          horario_saida: departureTime,
+          vagas_max: seats,
+          so_mulheres: isFeminino ? womenOnly : false,
+          veiculo_id: vehicle.id,
+          valor_por_pessoa: Math.round(priceValue * 100),
+        });
+      } else {
+        await createHub({
+          tipo: "rachar_app",
+          rota_id: selectedRoute.id,
+          horario_saida: departureTime,
+          vagas_max: seats,
+          so_mulheres: isFeminino ? womenOnly : false,
+        });
+      }
       toast.success("Carona criada");
       void navigate("/historico");
     } catch (err) {
@@ -173,6 +192,40 @@ export default function CreateHubPage() {
             <NotesTextarea value={notes} onChange={setNotes} />
           </section>
         )}
+
+        {isFeminino ? (
+          <section className="flex flex-col gap-2">
+            <Label>Exclusividade</Label>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={womenOnly}
+              onClick={() => setWomenOnly((v) => !v)}
+              className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-card p-4 text-left transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <span className="flex flex-col gap-0.5">
+                <span className="text-sm font-bold text-foreground">
+                  Apenas mulheres
+                </span>
+                <span className="text-[11px] text-muted-foreground">
+                  Só passageiras com gênero feminino podem entrar
+                </span>
+              </span>
+              <span
+                aria-hidden="true"
+                className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${
+                  womenOnly ? "bg-primary" : "bg-slate-300"
+                }`}
+              >
+                <span
+                  className={`absolute top-0.5 size-5 rounded-full bg-white transition-transform ${
+                    womenOnly ? "translate-x-5" : "translate-x-0.5"
+                  }`}
+                />
+              </span>
+            </button>
+          </section>
+        ) : null}
 
         <button
           type="button"

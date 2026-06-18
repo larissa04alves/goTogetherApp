@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { useParams } from "react-router";
 import { toast } from "sonner";
 
 import { authClient } from "@/api/auth";
+import { fetchPerfilPublico, type PerfilPublico } from "@/api/perfil";
 import { fetchReceivedReviews } from "@/api/reviews";
 import { formatRelativeTime } from "@/lib/format-relative-time";
 
@@ -19,14 +21,19 @@ function getInitials(name: string): string {
 }
 
 export default function ProfilePage() {
+  const { id } = useParams();
   const { data } = authClient.useSession();
-  const userId = data?.user?.id;
+  const ownId = data?.user?.id;
+  const isOwn = !id || id === ownId;
+  const targetId = id ?? ownId;
+
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [publicProfile, setPublicProfile] = useState<PerfilPublico | null>(null);
 
   useEffect(() => {
-    if (!userId) return;
+    if (!targetId) return;
     let active = true;
-    fetchReceivedReviews(userId)
+    fetchReceivedReviews(targetId)
       .then((received) => {
         if (!active) return;
         setReviews(
@@ -52,27 +59,58 @@ export default function ProfilePage() {
     return () => {
       active = false;
     };
-  }, [userId]);
+  }, [targetId]);
 
-  const rating =
+  useEffect(() => {
+    if (isOwn || !id) {
+      setPublicProfile(null);
+      return;
+    }
+    let active = true;
+    fetchPerfilPublico(id)
+      .then((perfil) => {
+        if (active) setPublicProfile(perfil);
+      })
+      .catch((err) => {
+        if (active)
+          toast.error(
+            err instanceof Error ? err.message : "Erro ao carregar perfil",
+          );
+      });
+    return () => {
+      active = false;
+    };
+  }, [id, isOwn]);
+
+  const computedRating =
     reviews.length > 0
       ? Math.round(
           (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length) * 10,
         ) / 10
       : null;
 
-  const name = data?.user?.name ?? "Visitante";
+  const name = isOwn
+    ? (data?.user?.name ?? "Visitante")
+    : (publicProfile?.name ?? "Usuário");
+  const imageUrl = isOwn
+    ? (data?.user?.image ?? undefined)
+    : (publicProfile?.image ?? undefined);
+  const gender = isOwn ? data?.user?.gender : publicProfile?.gender;
+  const identityVerified = isOwn
+    ? (data?.user?.identityVerified ?? false)
+    : (publicProfile?.identityVerified ?? false);
+  const rating = isOwn ? computedRating : (publicProfile?.avaliacaoMedia ?? null);
 
   return (
     <main className="bg-background flex min-h-svh w-full flex-col">
       <div className="mx-auto flex w-full max-w-100 flex-1 flex-col gap-5 px-5 pb-24 pt-8">
-        <ProfileHeader />
+        <ProfileHeader isOwn={isOwn} />
         <ProfileCard
           name={name}
           initials={getInitials(name)}
-          imageUrl={data?.user?.image ?? undefined}
-          gender={data?.user?.gender}
-          identityVerified={data?.user?.identityVerified ?? false}
+          imageUrl={imageUrl}
+          gender={gender}
+          identityVerified={identityVerified}
           rating={rating}
           reviewCount={reviews.length}
         />

@@ -1,5 +1,6 @@
 import {
   Clock01Icon,
+  Delete02Icon,
   Edit02Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -9,6 +10,7 @@ import type { Endpoint, SavedRoute } from "../types";
 type RouteCardProps = {
   route: SavedRoute;
   onEdit: () => void;
+  onDelete: () => void;
 };
 
 const endpointColor: Record<Endpoint["kind"], string> = {
@@ -17,7 +19,7 @@ const endpointColor: Record<Endpoint["kind"], string> = {
   work: "bg-amber-500",
 };
 
-export function RouteCard({ route, onEdit }: RouteCardProps) {
+export function RouteCard({ route, onEdit, onDelete }: RouteCardProps) {
   return (
     <article className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4">
       <div className="flex items-start gap-3">
@@ -32,14 +34,24 @@ export function RouteCard({ route, onEdit }: RouteCardProps) {
           <EndpointRow endpoint={route.destination} />
         </div>
 
-        <button
-          type="button"
-          aria-label={`Editar rota ${route.origin.label} para ${route.destination.label}`}
-          onClick={onEdit}
-          className="flex size-8 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          <HugeiconsIcon icon={Edit02Icon} size={16} strokeWidth={1.75} />
-        </button>
+        <div className="flex shrink-0 flex-col gap-1">
+          <button
+            type="button"
+            aria-label={`Editar rota ${route.origin.label} para ${route.destination.label}`}
+            onClick={onEdit}
+            className="flex size-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <HugeiconsIcon icon={Edit02Icon} size={16} strokeWidth={1.75} />
+          </button>
+          <button
+            type="button"
+            aria-label={`Remover rota ${route.origin.label} para ${route.destination.label}`}
+            onClick={onDelete}
+            className="flex size-8 items-center justify-center rounded-full text-rose-500 transition-colors hover:bg-rose-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <HugeiconsIcon icon={Delete02Icon} size={16} strokeWidth={1.75} />
+          </button>
+        </div>
       </div>
 
       <footer className="flex items-center gap-4 border-t border-border pt-3 text-[11px] text-muted-foreground">
