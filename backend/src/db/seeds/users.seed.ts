@@ -5,7 +5,8 @@ import { account, user } from "@/db/schema";
 
 import { USER_IDS } from "./constants";
 
-const DEV_PASSWORD = "senha123";
+// Senha única para todas as contas seed (incluindo a demo).
+const SEED_PASSWORD = "demo1234";
 
 type SeedUser = {
   id: string;
@@ -13,15 +14,25 @@ type SeedUser = {
   email: string;
   genero: "feminino" | "masculino" | "outro" | "prefiro nao dizer";
   emailVerified: boolean;
+  identityVerified: boolean;
 };
 
 const users: SeedUser[] = [
+  {
+    id: USER_IDS.demo,
+    name: "Demo",
+    email: "demo@gotogether.com",
+    genero: "feminino",
+    emailVerified: true,
+    identityVerified: true,
+  },
   {
     id: USER_IDS.joao,
     name: "João Teste",
     email: "joao.teste@email.com",
     genero: "masculino",
     emailVerified: true,
+    identityVerified: true,
   },
   {
     id: USER_IDS.maria,
@@ -29,6 +40,7 @@ const users: SeedUser[] = [
     email: "maria.teste@email.com",
     genero: "feminino",
     emailVerified: true,
+    identityVerified: true,
   },
   {
     id: USER_IDS.carlos,
@@ -36,6 +48,7 @@ const users: SeedUser[] = [
     email: "carlos.teste@email.com",
     genero: "masculino",
     emailVerified: true,
+    identityVerified: true,
   },
   {
     id: USER_IDS.luana,
@@ -43,6 +56,7 @@ const users: SeedUser[] = [
     email: "luana.teste@email.com",
     genero: "feminino",
     emailVerified: true,
+    identityVerified: true,
   },
   {
     id: USER_IDS.ramon,
@@ -50,6 +64,7 @@ const users: SeedUser[] = [
     email: "ramon.teste@email.com",
     genero: "masculino",
     emailVerified: false,
+    identityVerified: false,
   },
   {
     id: USER_IDS.ana,
@@ -57,11 +72,12 @@ const users: SeedUser[] = [
     email: "ana.teste@email.com",
     genero: "feminino",
     emailVerified: true,
+    identityVerified: true,
   },
 ];
 
 export async function seedUsers() {
-  const hashedPassword = await hash(DEV_PASSWORD, 12);
+  const hashedPassword = await hash(SEED_PASSWORD, 12);
 
   for (const u of users) {
     await db
@@ -72,6 +88,7 @@ export async function seedUsers() {
         email: u.email,
         gender: u.genero,
         emailVerified: u.emailVerified,
+        identityVerified: u.identityVerified,
         createdAt: new Date(),
         updatedAt: new Date(),
       })
@@ -91,5 +108,7 @@ export async function seedUsers() {
       .onConflictDoNothing();
   }
 
-  console.log(`Seed de usuários concluído (${users.length} usuários).`);
+  console.log(
+    `Seed de usuários concluído (${users.length} usuários, senha: ${SEED_PASSWORD}).`,
+  );
 }
