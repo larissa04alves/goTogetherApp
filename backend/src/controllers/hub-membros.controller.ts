@@ -1,9 +1,9 @@
 import type { Request, Response } from "express";
 
+import type { Session } from "@/middlewares/auth.middleware";
 import { hubMembrosService } from "@/services/hub-membros.service";
-import { AppError } from "@/utils/app-error";
-
-type Session = { user: { id: string } };
+import { requireParam } from "@/utils/require-param";
+import { createServiceErrorMapper } from "@/utils/service-error";
 
 const SERVICE_ERRORS: Record<string, { status: number; message: string }> = {
   HUB_NAO_ENCONTRADO: { status: 404, message: "Hub não encontrado" },
@@ -19,19 +19,7 @@ const SERVICE_ERRORS: Record<string, { status: number; message: string }> = {
   OFERTANTE_NAO_SAI: { status: 422, message: "O criador do hub não pode sair; cancele o hub" },
 };
 
-function mapServiceError(err: unknown): never {
-  const key = err instanceof Error ? err.message : "";
-  const mapped = SERVICE_ERRORS[key];
-  if (mapped) throw new AppError(mapped.status, mapped.message);
-  throw err;
-}
-
-function requireParam(req: Request, name: string, message: string): string {
-  const raw = req.params[name];
-  const value = Array.isArray(raw) ? raw[0] : raw;
-  if (!value) throw new AppError(400, message);
-  return value;
-}
+const mapServiceError = createServiceErrorMapper(SERVICE_ERRORS);
 
 async function listarMembros(req: Request, res: Response): Promise<void> {
   const hubId = requireParam(req, "id", "ID do hub obrigatório");

@@ -54,14 +54,14 @@ async function listar(userId: string) {
 }
 
 async function buscar(rotaId: string, userId: string) {
-  const r = await db.query.rota.findFirst({
+  const rotaEncontrada = await db.query.rota.findFirst({
     where: eq(rota.id, rotaId),
   });
 
-  if (!r) throw new Error("ROTA_NAO_ENCONTRADA");
-  if (r.userId !== userId) throw new Error("NAO_AUTORIZADO");
+  if (!rotaEncontrada) throw new Error("ROTA_NAO_ENCONTRADA");
+  if (rotaEncontrada.userId !== userId) throw new Error("NAO_AUTORIZADO");
 
-  return r;
+  return rotaEncontrada;
 }
 
 async function criar(userId: string, data: CriarRotaInput) {
@@ -78,12 +78,12 @@ async function atualizar(
   userId: string,
   data: AtualizarRotaInput,
 ) {
-  const r = await db.query.rota.findFirst({
+  const rotaEncontrada = await db.query.rota.findFirst({
     where: eq(rota.id, rotaId),
   });
 
-  if (!r) throw new Error("ROTA_NAO_ENCONTRADA");
-  if (r.userId !== userId) throw new Error("NAO_AUTORIZADO");
+  if (!rotaEncontrada) throw new Error("ROTA_NAO_ENCONTRADA");
+  if (rotaEncontrada.userId !== userId) throw new Error("NAO_AUTORIZADO");
 
   const [atualizada] = await db
     .update(rota)
@@ -95,12 +95,12 @@ async function atualizar(
 }
 
 async function excluir(rotaId: string, userId: string) {
-  const r = await db.query.rota.findFirst({
+  const rotaEncontrada = await db.query.rota.findFirst({
     where: eq(rota.id, rotaId),
   });
 
-  if (!r) throw new Error("ROTA_NAO_ENCONTRADA");
-  if (r.userId !== userId) throw new Error("NAO_AUTORIZADO");
+  if (!rotaEncontrada) throw new Error("ROTA_NAO_ENCONTRADA");
+  if (rotaEncontrada.userId !== userId) throw new Error("NAO_AUTORIZADO");
 
   await db.delete(rota).where(eq(rota.id, rotaId));
 }

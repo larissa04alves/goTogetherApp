@@ -1,7 +1,7 @@
 import type { Express } from "express";
 
-import { authMiddleware } from "@/middlewares/auth.middleware";
 import { rotasController } from "@/controllers/rotas.controller";
+import { authMiddleware } from "@/middlewares/auth.middleware";
 
 export function registerRotasRoutes(app: Express) {
   app.get("/rotas", authMiddleware, rotasController.listar);

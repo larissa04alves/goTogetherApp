@@ -13,7 +13,7 @@ import {
 
 import { joinHubChannel } from "@/api/chat";
 import { useChatClient } from "@/components/chat-provider";
-import Loader from "@/components/loader";
+import { Loader } from "@/components/loader";
 
 export default function ChatPage() {
   const { hubId } = useParams();

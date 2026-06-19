@@ -18,6 +18,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { RouteMap } from "@/components/route-map";
+import { formatPrice } from "@/lib/format-currency";
 
 export type HubDetailSimilarity = "alta" | "media" | "baixa";
 
@@ -78,13 +79,6 @@ const similarityBanner: Record<
     className: "border-rose-200 bg-rose-50 text-rose-700",
   },
 };
-
-function formatPrice(brl: number): string {
-  return brl.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  });
-}
 
 export function RideDetailModal({
   detail,

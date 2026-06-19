@@ -1,7 +1,7 @@
 import type { Express } from "express";
 
-import { authMiddleware } from "@/middlewares/auth.middleware";
 import { documentsController, upload } from "@/controllers/documents.controller";
+import { authMiddleware } from "@/middlewares/auth.middleware";
 
 export function registerDocumentsRoutes(app: Express) {
   app.post(

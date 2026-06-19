@@ -14,6 +14,7 @@ type ConfirmDialogProps = {
   description: string;
   confirmLabel?: string;
   cancelLabel?: string;
+  loadingLabel?: string;
   destructive?: boolean;
   loading?: boolean;
   onOpenChange: (open: boolean) => void;
@@ -26,6 +27,7 @@ export function ConfirmDialog({
   description,
   confirmLabel = "Confirmar",
   cancelLabel = "Cancelar",
+  loadingLabel = "Removendo…",
   destructive = false,
   loading = false,
   onOpenChange,
@@ -68,7 +70,7 @@ export function ConfirmDialog({
                   : undefined,
               )}
             >
-              {loading ? "Removendo…" : confirmLabel}
+              {loading ? loadingLabel : confirmLabel}
             </Button>
           </div>
         </div>

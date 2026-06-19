@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import type { RouteFormValues } from "../map";
+import type { RouteFormValues } from "../route-adapters";
 import type { SavedRoute } from "../types";
 
 type EndpointForm = {
