@@ -44,8 +44,18 @@ function toRide(h: Hub): Ride {
     seatsTotal: h.vagasMax,
     priceBRL: h.valorPorPessoa != null ? h.valorPorPessoa / 100 : 0,
     route: {
-      origin: { label: h.rota.origemNome, address: h.rota.origemNome },
-      destination: { label: h.rota.destinoNome, address: h.rota.destinoNome },
+      origin: {
+        label: h.rota.origemNome,
+        address: h.rota.origemNome,
+        lat: h.rota.origemLat,
+        lng: h.rota.origemLng,
+      },
+      destination: {
+        label: h.rota.destinoNome,
+        address: h.rota.destinoNome,
+        lat: h.rota.destinoLat,
+        lng: h.rota.destinoLng,
+      },
     },
   };
 }

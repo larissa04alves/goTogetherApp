@@ -20,6 +20,8 @@ type EndpointForm = {
   rua: string;
   numero: string;
   bairro: string;
+  cep: string;
+  cidade: string;
 };
 
 type FormState = {
@@ -40,25 +42,32 @@ const emptyEndpoint: EndpointForm = {
   rua: "",
   numero: "",
   bairro: "",
+  cep: "",
+  cidade: "Curitiba",
 };
 
-// Endereço é guardado como uma string única no backend ("rua, número, bairro").
-// Aqui quebramos/recompomos para preencher os campos separados.
+// Endereço é guardado como uma string única no backend
+// ("rua, número, bairro, cep, cidade"). A cidade é essencial para o geocoding
+// não cair em outra cidade do país. Aqui quebramos/recompomos os campos separados.
 function parseAddress(address: string): {
   rua: string;
   numero: string;
   bairro: string;
+  cep: string;
+  cidade: string;
 } {
   const parts = address.split(",").map((p) => p.trim());
   return {
     rua: parts[0] ?? "",
     numero: parts[1] ?? "",
     bairro: parts[2] ?? "",
+    cep: parts[3] ?? "",
+    cidade: parts[4] ?? "",
   };
 }
 
 function composeAddress(e: EndpointForm): string {
-  return [e.rua, e.numero, e.bairro]
+  return [e.rua, e.numero, e.bairro, e.cep, e.cidade]
     .map((p) => p.trim())
     .filter((p) => p !== "")
     .join(", ");
@@ -87,7 +96,9 @@ function isEndpointComplete(e: EndpointForm): boolean {
     e.label.trim() !== "" &&
     e.rua.trim() !== "" &&
     e.numero.trim() !== "" &&
-    e.bairro.trim() !== ""
+    e.bairro.trim() !== "" &&
+    e.cep.trim() !== "" &&
+    e.cidade.trim() !== ""
   );
 }
 
@@ -315,6 +326,40 @@ function EndpointFields({
                 value={endpoint.bairro}
                 onChange={(e) => onChange("bairro", e.target.value)}
                 placeholder="Bairro"
+                className="h-10 rounded-lg border-border bg-card text-sm text-foreground"
+              />
+            </div>
+          </div>
+        ) : null}
+
+        {showDetails ? (
+          <div className="flex gap-2">
+            <div className="flex w-28 shrink-0 flex-col gap-1">
+              <Label htmlFor={`${idPrefix}Cep`} className="sr-only">
+                CEP
+              </Label>
+              <Input
+                id={`${idPrefix}Cep`}
+                name={`${idPrefix}Cep`}
+                type="text"
+                inputMode="numeric"
+                value={endpoint.cep}
+                onChange={(e) => onChange("cep", e.target.value)}
+                placeholder="CEP"
+                className="h-10 rounded-lg border-border bg-card text-sm text-foreground"
+              />
+            </div>
+            <div className="flex flex-1 flex-col gap-1">
+              <Label htmlFor={`${idPrefix}Cidade`} className="sr-only">
+                Cidade
+              </Label>
+              <Input
+                id={`${idPrefix}Cidade`}
+                name={`${idPrefix}Cidade`}
+                type="text"
+                value={endpoint.cidade}
+                onChange={(e) => onChange("cidade", e.target.value)}
+                placeholder="Cidade"
                 className="h-10 rounded-lg border-border bg-card text-sm text-foreground"
               />
             </div>
