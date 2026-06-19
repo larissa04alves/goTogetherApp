@@ -14,7 +14,6 @@ import { registerSolicitacoesRoutes } from "@/routes/solicitacoes.routes";
 import { registerVeiculosRoutes } from "@/routes/veiculos.routes";
 import { registerRotasRoutes } from "@/routes/rotas.routes";
 
-
 const app = express();
 
 app.use(
@@ -49,5 +48,3 @@ app.use(errorMiddleware);
 app.listen(3000, () => {
   console.log("Server is running on http://localhost:3000");
 });
-
-

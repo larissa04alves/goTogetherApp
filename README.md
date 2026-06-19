@@ -1,106 +1,190 @@
-# 🚗 goTogetherApp
+# goTogetherApp
 
-Aplicação full-stack em monorepo TypeScript, com **backend/** em Express + Drizzle + PostgreSQL + Better-Auth e **frontend/** em React Router 7 + Tailwind 4 + shadcn/ui + PWA.
+Plataforma de **caronas universitárias compartilhadas** — conecta estudantes que fazem trajetos parecimentos para dividir caronas com segurança. Aplicação full-stack em monorepo TypeScript: **backend** em Express + Drizzle + PostgreSQL + Better-Auth e **frontend** em React Router 7 + Tailwind 4 + shadcn/ui, instalável como PWA.
 
-## 🚀 Subindo o projeto local
+## Sobre o projeto
 
-Para iniciar o ambiente local completo, rode na raiz do projeto:
+Trabalho acadêmico desenvolvido na **PUCPR**.
+
+- **Disciplina:** _(a preencher)_
+- **Semestre/Período:** _(a preencher)_
+- **Professor(a):** _(a preencher)_
+
+O objetivo é oferecer um app onde estudantes cadastram suas rotas habituais, criam ou entram em "hubs" de carona (grupos de viagem para um mesmo trajeto/horário), conversam por chat e avaliam uns aos outros após a viagem.
+
+## Autores
+
+| Nome | GitHub |
+|---|---|
+| Larissa Alves | — |
+| Breno P. | [@brenop2](https://github.com/brenop2) |
+| Vinícius H. B. C. | [@viniciushbc](https://github.com/viniciushbc) |
+
+## Funcionalidades
+
+- **Autenticação** — cadastro, login e sessão via Better-Auth (e-mail/senha).
+- **Perfil** — dados do estudante, verificação de identidade e upload de documentos.
+- **Veículos** — cadastro e gestão dos veículos do usuário.
+- **Rotas** — cadastro de trajetos habituais (origem/destino) com mapa interativo (MapLibre GL).
+- **Hubs de carona** — criação, listagem, entrada/saída, membros e solicitações de participação; suporte a hubs exclusivos para mulheres.
+- **Chat em tempo real** — conversa entre participantes de um hub (Stream Chat).
+- **Avaliações** — avaliação mútua entre participantes após a carona.
+- **Histórico** — caronas oferecidas e tomadas.
+- **PWA** — instalável em dispositivos móveis.
+
+## Tecnologias
+
+### Backend (`backend/`)
+
+| Ferramenta | Para quê |
+|---|---|
+| Express 5 | Servidor HTTP / API REST |
+| Drizzle ORM | Schema, migrations e queries tipadas |
+| PostgreSQL 16 | Banco de dados (via Docker) |
+| Better-Auth | Autenticação e sessões |
+| Zod | Validação de entrada (boundary) |
+| Multer | Upload de arquivos (documentos) |
+| Stream Chat | Backend do chat em tempo real |
+| @t3-oss/env-core | Validação de variáveis de ambiente |
+
+### Frontend (`frontend/`)
+
+| Ferramenta | Para quê |
+|---|---|
+| React 19 | Biblioteca de UI |
+| React Router 7 | Roteamento file-based em modo SPA |
+| Tailwind CSS 4 | Estilização |
+| shadcn/ui | Componentes de UI |
+| MapLibre GL | Mapas interativos |
+| Stream Chat React | UI do chat em tempo real |
+| @tanstack/react-form | Formulários |
+| vite-plugin-pwa | Suporte a PWA |
+| Better-Auth (client) | Cliente de autenticação |
+
+## Pré-requisitos
+
+- **Node.js 20+**
+- **Docker** (para o PostgreSQL via Docker Compose)
+- **Git**
+
+> O projeto usa **npm workspaces**. Os comandos abaixo usam `npm` — basta tê-lo (vem com o Node).
+
+## Como rodar (passo a passo)
+
+A partir da raiz do projeto:
 
 ```bash
-npm start
+# 1. Instalar as dependências dos dois workspaces (backend + frontend)
+npm install
+
+# 2. Criar os arquivos de ambiente a partir dos exemplos
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env
+#   No backend/.env, defina BETTER_AUTH_SECRET com uma string aleatória de 32+ caracteres.
+
+# 3. Subir o PostgreSQL (Docker)
+npm run db:start
+
+# 4. Aplicar o schema no banco (primeira vez)
+npm run db:push
+
+# 5. (Opcional) Popular o banco com dados de demonstração
+npm run db:seed --workspace backend
+
+# 6. Subir backend + frontend em modo desenvolvimento
+npm run dev
 ```
 
-Esse comando faz duas coisas:
+Depois que tudo iniciar:
 
-- 🐳 sobe o PostgreSQL pelo Docker Compose;
-- ⚡ inicia backend e frontend em modo desenvolvimento.
+- **Frontend:** http://localhost:5173
+- **API (backend):** http://localhost:3000
+- **PostgreSQL:** `localhost:5432`
 
-Depois que os serviços iniciarem:
+> Atalho: `npm start` sobe o Docker e o dev de uma vez (passos 3 + 6). Nas primeiras execuções, ainda é preciso fazer os passos 2 e 4 manualmente.
 
-- 🌐 Frontend: [http://localhost:5173](http://localhost:5173)
-- 🔌 Backend: [http://localhost:3000](http://localhost:3000)
+### Usuários de demonstração
 
-## 🧩 O que tem no projeto
+Se você rodou o seed (passo 5), há usuários prontos para login. Exemplo:
 
-- 🟦 **TypeScript** em todo o stack
-- ⚛️ **React Router 7** no frontend em modo SPA
-- 🎨 **Tailwind CSS 4** para estilos
-- 🧱 **shadcn/ui** em `frontend/src/components/ui/`
-- 🚀 **Express 5** no backend
-- 🐘 **PostgreSQL** com Docker Compose
-- 🌿 **Drizzle ORM** para schema, migrations e queries
-- 🔐 **Better-Auth** para autenticação
-- 📱 **PWA** com `vite-plugin-pwa`
+- **E-mail:** `demo@gotogether.com`
+- **Senha:** `demo1234`
 
-## 🐳 Banco de dados
+## Variáveis de ambiente
 
-O PostgreSQL local roda via Docker Compose.
+Os arquivos `.env` são git-ignored; use os `.env.example` como base.
 
-Scripts úteis:
+**`backend/.env`:**
+
+| Variável | Descrição |
+|---|---|
+| `DATABASE_URL` | Conexão Postgres (padrão local: `postgresql://postgres:admin@localhost:5432/goTogetherDb`) |
+| `BETTER_AUTH_SECRET` | Secret do Better-Auth (mín. 32 caracteres) |
+| `BETTER_AUTH_URL` | URL base do backend (`http://localhost:3000`) |
+| `CORS_ORIGIN` | Origem permitida para CORS (`http://localhost:5173`) |
+
+**`frontend/.env`:**
+
+| Variável | Descrição |
+|---|---|
+| `VITE_SERVER_URL` | URL da API (`http://localhost:3000`) |
+
+## Scripts
+
+Rodados a partir da raiz:
 
 | Script | O que faz |
 |---|---|
+| `npm install` | Instala dependências dos dois workspaces |
+| `npm start` | Sobe Docker + backend + frontend |
+| `npm run dev` | Sobe backend e frontend (sem Docker) |
+| `npm run dev:backend` | Sobe apenas a API (porta 3000) |
+| `npm run dev:frontend` | Sobe apenas o frontend (porta 5173) |
+| `npm run build` | Build de produção dos dois workspaces |
+| `npm run check-types` | Checagem TypeScript nos dois workspaces |
 | `npm run db:start` | Sobe o PostgreSQL em background |
-| `npm run db:watch` | Sobe o PostgreSQL mostrando logs no terminal |
-| `npm run db:stop` | Para o container, mantendo os dados |
+| `npm run db:watch` | Sobe o PostgreSQL mostrando logs |
+| `npm run db:stop` | Para o container (mantém os dados) |
 | `npm run db:down` | Remove o container |
-| `npm run db:push` | Aplica o schema atual no banco de dev |
+| `npm run db:push` | Aplica o schema no banco (dev) |
 | `npm run db:generate` | Gera uma migration a partir do schema |
 | `npm run db:migrate` | Aplica migrations pendentes |
 | `npm run db:studio` | Abre o Drizzle Studio |
+| `npm run db:seed --workspace backend` | Popula o banco com dados de demonstração |
 
-Variáveis do backend ficam em `backend/.env`. Para desenvolvimento local, confira principalmente:
-
-- `DATABASE_URL`
-- `BETTER_AUTH_SECRET`
-- `BETTER_AUTH_URL`
-
-Variáveis do frontend ficam em `frontend/.env`, sempre com prefixo `VITE_`.
-
-## 🛠️ Scripts principais
-
-| Script | O que faz |
-|---|---|
-| `npm start` | Sobe Docker, backend e frontend |
-| `npm run dev` | Sobe backend e frontend, sem mexer no Docker |
-| `npm run dev:backend` | Sobe apenas a API Express na porta 3000 |
-| `npm run dev:frontend` | Sobe apenas o frontend na porta 5173 |
-| `npm run build` | Gera build de produção dos dois workspaces |
-| `npm run check-types` | Roda checagem TypeScript nos dois workspaces |
-| `cd frontend && npm run generate-pwa-assets` | Gera os assets da PWA |
-
-## 📁 Estrutura do projeto
+## Estrutura do projeto
 
 ```text
 goTogetherApp/
 ├── backend/                    # API Express
 │   ├── src/
 │   │   ├── index.ts            # bootstrap da API
-│   │   ├── routes/             # rotas HTTP
-│   │   ├── controllers/        # request/response
-│   │   ├── db/
-│   │   │   ├── client.ts       # conexão Drizzle
-│   │   │   ├── schema/         # tabelas Drizzle
-│   │   │   ├── migrations/     # migrations geradas
-│   │   │   └── seeds/          # seeds SQL
-│   │   ├── auth/               # Better-Auth no servidor
-│   │   └── env.ts              # env vars validadas
+│   │   ├── env.ts              # variáveis de ambiente validadas
+│   │   ├── routes/             # declaração das rotas HTTP
+│   │   ├── controllers/        # parse de request / resposta
+│   │   ├── services/           # regras de negócio
+│   │   ├── validators/         # schemas Zod de entrada
+│   │   ├── middlewares/        # auth e tratamento de erro
+│   │   ├── utils/              # helpers compartilhados
+│   │   ├── auth/               # configuração do Better-Auth
+│   │   └── db/
+│   │       ├── client.ts       # conexão Drizzle
+│   │       ├── schema/         # tabelas, agrupadas por domínio
+│   │       └── seeds/          # dados de demonstração
 │   ├── drizzle.config.ts
 │   └── .env
-├── frontend/                   # App React
+├── frontend/                   # App React (SPA + PWA)
 │   ├── src/
 │   │   ├── root.tsx            # shell da aplicação
-│   │   ├── routes.ts           # configuração de rotas
-│   │   ├── routes/             # arquivos de rota
-│   │   ├── pages/              # telas por feature
-│   │   ├── api/                # clientes HTTP e auth-client
+│   │   ├── routes.ts           # configuração de rotas (file-based)
+│   │   ├── pages/              # telas organizadas por feature
+│   │   ├── api/                # clientes HTTP + auth-client
 │   │   ├── components/
 │   │   │   ├── ui/             # primitives shadcn/ui
 │   │   │   └── *.tsx           # componentes compartilhados
-│   │   ├── lib/                # utilitários
-│   │   ├── styles/             # CSS global
-│   │   ├── assets/
-│   │   └── env.ts              # env vars do client
+│   │   ├── lib/                # utilitários puros
+│   │   ├── styles/             # CSS global (Tailwind)
+│   │   └── env.ts              # variáveis de ambiente do client
 │   ├── components.json         # config shadcn
 │   ├── vite.config.ts
 │   ├── react-router.config.ts
@@ -112,32 +196,14 @@ goTogetherApp/
 
 O alias `@/*` aponta para `src/*` tanto no backend quanto no frontend.
 
-## 🎨 UI e shadcn
+## Convenções de código
 
-Os componentes shadcn ficam em `frontend/src/components/ui/`.
+- **TypeScript strict** em todo o stack, ESM, apenas named exports.
+- **Backend** com nomes de domínio em português; **frontend** em inglês.
+- Validação de entrada com **Zod** apenas no boundary (controllers); internamente, confia-se nos tipos.
+- Variáveis de ambiente só são lidas via `env.ts` (nunca `process.env`/`import.meta.env` diretos).
 
-Para adicionar novos componentes:
+## Observações
 
-```bash
-cd frontend && npx shadcn@latest add accordion dialog popover sheet
-```
-
-Exemplo de import:
-
-```tsx
-import { Button } from "@/components/ui/button";
-```
-
-## 📱 PWA + React Router 7
-
-Existe um issue conhecido de compatibilidade entre VitePWA e React Router 7:
-
-https://github.com/vite-pwa/vite-plugin-pwa/issues/809
-
-## 🧯 Problemas comuns
-
-Se `npm start` falhar porque a porta do banco já está ocupada, verifique se outro PostgreSQL está rodando localmente na porta `5432`.
-
-Se o backend reclamar de env vars, confira `backend/.env`.
-
-Se o frontend não conseguir falar com a API, confira `frontend/.env` e o valor de `VITE_SERVER_URL`.
+- O **PostgreSQL precisa estar no ar** antes de qualquer comando `db:*` (`npm run db:start`).
+- Há um issue conhecido de compatibilidade entre `vite-plugin-pwa` e React Router 7: https://github.com/vite-pwa/vite-plugin-pwa/issues/809

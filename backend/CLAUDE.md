@@ -24,15 +24,15 @@ backend/src/
 
 ## Comandos
 
-| Comando | O que faz |
-|---|---|
-| `npm run dev:backend` | `tsx watch src/index.ts` (porta 3000) |
-| `npm run build` | Build via `tsdown` |
-| `npm run check-types` | `tsc --noEmit` |
-| `npm run db:push` | Aplica schema no banco (dev — diff-apply, destrutivo em renames) |
-| `npm run db:generate` | Gera nova migration a partir do schema (versionar no git) |
-| `npm run db:migrate` | Aplica migrations pendentes (usar em prod e CI) |
-| `npm run db:studio` | Abre Drizzle Studio (UI web) |
+| Comando               | O que faz                                                        |
+| --------------------- | ---------------------------------------------------------------- |
+| `npm run dev:backend` | `tsx watch src/index.ts` (porta 3000)                            |
+| `npm run build`       | Build via `tsdown`                                               |
+| `npm run check-types` | `tsc --noEmit`                                                   |
+| `npm run db:push`     | Aplica schema no banco (dev — diff-apply, destrutivo em renames) |
+| `npm run db:generate` | Gera nova migration a partir do schema (versionar no git)        |
+| `npm run db:migrate`  | Aplica migrations pendentes (usar em prod e CI)                  |
+| `npm run db:studio`   | Abre Drizzle Studio (UI web)                                     |
 
 ## Schema (Drizzle)
 
@@ -81,11 +81,11 @@ Drizzle nomeia migrations com timestamp/hash, então conflito de **arquivo** é 
 
 ### Quando usar `db:push` vs `db:generate`
 
-| Cenário | Comando |
-|---|---|
-| Iterar rápido em dev local antes de finalizar uma mudança | `db:push` |
-| Mudança vai entrar em PR / branch compartilhada / prod | `db:generate` + commit |
-| Aplicar migrations em CI ou prod | `db:migrate` |
+| Cenário                                                   | Comando                |
+| --------------------------------------------------------- | ---------------------- |
+| Iterar rápido em dev local antes de finalizar uma mudança | `db:push`              |
+| Mudança vai entrar em PR / branch compartilhada / prod    | `db:generate` + commit |
+| Aplicar migrations em CI ou prod                          | `db:migrate`           |
 
 ## Better-Auth
 

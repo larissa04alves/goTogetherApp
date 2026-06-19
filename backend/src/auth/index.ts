@@ -45,4 +45,4 @@ export function createAuth() {
 }
 
 export const auth = createAuth();
-export { authMiddleware } from "../middlewares/auth.middleware";
+export { authMiddleware } from "@/middlewares/auth.middleware";

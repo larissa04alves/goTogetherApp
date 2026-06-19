@@ -67,7 +67,11 @@ function getUsuario(data: unknown): JsonObject | null {
   return usuario;
 }
 
-function findForbiddenKeys(value: unknown, forbiddenKeys: string[], found = new Set<string>()) {
+function findForbiddenKeys(
+  value: unknown,
+  forbiddenKeys: string[],
+  found = new Set<string>(),
+) {
   if (Array.isArray(value)) {
     for (const item of value) {
       findForbiddenKeys(item, forbiddenKeys, found);
@@ -127,7 +131,13 @@ function assertCreatedUser(result: ApiResult, body: JsonObject) {
     return errors;
   }
 
-  const forbiddenKeys = ["senha", "senha_hash", "password", "passwordHash", "password_hash"];
+  const forbiddenKeys = [
+    "senha",
+    "senha_hash",
+    "password",
+    "passwordHash",
+    "password_hash",
+  ];
   const leakedKeys = Array.from(findForbiddenKeys(result.data, forbiddenKeys));
 
   if (leakedKeys.length > 0) {
@@ -135,26 +145,37 @@ function assertCreatedUser(result: ApiResult, body: JsonObject) {
   }
 
   if (usuario.email !== body.email) {
-    errors.push(`Email retornado diferente. Esperado: ${body.email}. Recebido: ${String(usuario.email)}`);
+    errors.push(
+      `Email retornado diferente. Esperado: ${body.email}. Recebido: ${String(usuario.email)}`,
+    );
   }
 
   if (usuario.cpf !== body.cpf) {
-    errors.push(`CPF retornado diferente. Esperado: ${body.cpf}. Recebido: ${String(usuario.cpf)}`);
+    errors.push(
+      `CPF retornado diferente. Esperado: ${body.cpf}. Recebido: ${String(usuario.cpf)}`,
+    );
   }
 
   if (usuario.role !== "student") {
-    errors.push(`Role incorreta. Esperado: student. Recebido: ${String(usuario.role)}`);
+    errors.push(
+      `Role incorreta. Esperado: student. Recebido: ${String(usuario.role)}`,
+    );
   }
 
   const emailVerified = usuario.emailVerified ?? usuario.email_verificado;
-  const identityVerified = usuario.identityVerified ?? usuario.identidade_verificada;
+  const identityVerified =
+    usuario.identityVerified ?? usuario.identidade_verificada;
 
   if (emailVerified !== false) {
-    errors.push(`emailVerified/email_verificado deveria ser false. Recebido: ${String(emailVerified)}`);
+    errors.push(
+      `emailVerified/email_verificado deveria ser false. Recebido: ${String(emailVerified)}`,
+    );
   }
 
   if (identityVerified !== false) {
-    errors.push(`identityVerified/identidade_verificada deveria ser false. Recebido: ${String(identityVerified)}`);
+    errors.push(
+      `identityVerified/identidade_verificada deveria ser false. Recebido: ${String(identityVerified)}`,
+    );
   }
 
   return errors;
@@ -166,14 +187,18 @@ async function runTest(testCase: TestCase) {
   const errors: string[] = [];
 
   if (result.status !== testCase.expectedStatus) {
-    errors.push(`Status esperado: ${testCase.expectedStatus}. Status recebido: ${result.status}.`);
+    errors.push(
+      `Status esperado: ${testCase.expectedStatus}. Status recebido: ${result.status}.`,
+    );
   }
 
   if (testCase.expectedMessageIncludes) {
     const responseAsText = JSON.stringify(result.data);
 
     if (!responseAsText.includes(testCase.expectedMessageIncludes)) {
-      errors.push(`Resposta deveria conter: "${testCase.expectedMessageIncludes}".`);
+      errors.push(
+        `Resposta deveria conter: "${testCase.expectedMessageIncludes}".`,
+      );
     }
   }
 

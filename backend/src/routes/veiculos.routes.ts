@@ -1,7 +1,7 @@
 import type { Express } from "express";
 
-import { authMiddleware } from "@/middlewares/auth.middleware";
 import { veiculosController } from "@/controllers/veiculos.controller";
+import { authMiddleware } from "@/middlewares/auth.middleware";
 
 export function registerVeiculosRoutes(app: Express) {
   app.get("/veiculos", authMiddleware, veiculosController.listar);

@@ -55,12 +55,12 @@ function calcularSimilaridade(
 }
 
 async function criar(userId: string, data: CriarHubInput) {
-  const r = await db.query.rota.findFirst({
+  const rotaEncontrada = await db.query.rota.findFirst({
     where: eq(rota.id, data.rota_id),
   });
 
-  if (!r) throw new Error("ROTA_NAO_ENCONTRADA");
-  if (r.userId !== userId) throw new Error("ROTA_NAO_PERTENCE");
+  if (!rotaEncontrada) throw new Error("ROTA_NAO_ENCONTRADA");
+  if (rotaEncontrada.userId !== userId) throw new Error("ROTA_NAO_PERTENCE");
 
   const hubDuplicado = await db.query.carona.findFirst({
     where: and(
@@ -83,13 +83,13 @@ async function criar(userId: string, data: CriarHubInput) {
   }
 
   if (data.tipo === "carro_proprio") {
-    const v = await db.query.veiculo.findFirst({
+    const veiculoEncontrado = await db.query.veiculo.findFirst({
       where: eq(veiculo.id, data.veiculo_id),
     });
 
-    if (!v) throw new Error("VEICULO_NAO_ENCONTRADO");
-    if (v.userId !== userId) throw new Error("VEICULO_NAO_PERTENCE");
-    if (data.vagas_max > v.capacidade) throw new Error("VAGAS_EXCEDE_CAPACIDADE");
+    if (!veiculoEncontrado) throw new Error("VEICULO_NAO_ENCONTRADO");
+    if (veiculoEncontrado.userId !== userId) throw new Error("VEICULO_NAO_PERTENCE");
+    if (data.vagas_max > veiculoEncontrado.capacidade) throw new Error("VAGAS_EXCEDE_CAPACIDADE");
   }
 
   const values: typeof carona.$inferInsert = {
@@ -133,11 +133,11 @@ async function listar(userId: string, filtros: ListarFiltros) {
 
   let refRota: typeof rota.$inferSelect | undefined;
   if (filtros.rotaId) {
-    const r = await db.query.rota.findFirst({
+    const rotaEncontrada = await db.query.rota.findFirst({
       where: eq(rota.id, filtros.rotaId),
     });
-    if (!r) throw new Error("ROTA_NAO_ENCONTRADA");
-    refRota = r;
+    if (!rotaEncontrada) throw new Error("ROTA_NAO_ENCONTRADA");
+    refRota = rotaEncontrada;
   }
 
   const isFeminino = usuario?.gender === "feminino";

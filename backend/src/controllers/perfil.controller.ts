@@ -1,29 +1,18 @@
 import type { Request, Response } from "express";
 
+import type { Session } from "@/middlewares/auth.middleware";
 import { perfilService } from "@/services/perfil.service";
 import { AppError } from "@/utils/app-error";
+import { requireParam } from "@/utils/require-param";
+import { createServiceErrorMapper } from "@/utils/service-error";
 import { atualizarPerfilSchema } from "@/validators/perfil.validator";
-
-type Session = { user: { id: string } };
 
 const SERVICE_ERRORS: Record<string, { status: number; message: string }> = {
   USUARIO_NAO_ENCONTRADO: { status: 404, message: "Usuário não encontrado" },
   NENHUM_CAMPO: { status: 400, message: "Nenhum campo para atualizar" },
 };
 
-function mapServiceError(err: unknown): never {
-  const key = err instanceof Error ? err.message : "";
-  const mapped = SERVICE_ERRORS[key];
-  if (mapped) throw new AppError(mapped.status, mapped.message);
-  throw err;
-}
-
-function requireParam(req: Request, name: string, message: string): string {
-  const raw = req.params[name];
-  const value = Array.isArray(raw) ? raw[0] : raw;
-  if (!value) throw new AppError(400, message);
-  return value;
-}
+const mapServiceError = createServiceErrorMapper(SERVICE_ERRORS);
 
 async function buscarMeu(_req: Request, res: Response): Promise<void> {
   const session = res.locals["session"] as Session;
@@ -47,8 +36,13 @@ async function atualizar(req: Request, res: Response): Promise<void> {
 
 async function buscarPublico(req: Request, res: Response): Promise<void> {
   const id = requireParam(req, "id", "ID do usuário obrigatório");
-  const perfil = await perfilService.buscarPublico(id).catch(mapServiceError);
-  res.json(perfil);
+
+  try {
+    const perfil = await perfilService.buscarPublico(id);
+    res.json(perfil);
+  } catch (err) {
+    mapServiceError(err);
+  }
 }
 
 async function listarAvaliacoes(req: Request, res: Response): Promise<void> {

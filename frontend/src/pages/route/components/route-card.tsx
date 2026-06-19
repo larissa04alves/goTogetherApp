@@ -62,28 +62,28 @@ export function RouteCard({ route, onEdit, onDelete }: RouteCardProps) {
       </footer>
     </article>
   );
+}
 
-  function EndpointTrail({
-    originKind,
-    destinationKind,
-  }: {
-    originKind: Endpoint["kind"];
-    destinationKind: Endpoint["kind"];
-  }) {
-    return (
-      <div className="flex flex-col items-center gap-1 pt-1.5">
-        <span
-          aria-hidden="true"
-          className={`size-2.5 rounded-full ${endpointColor[originKind]}`}
-        />
-        <span aria-hidden="true" className="h-8 w-px bg-border" />
-        <span
-          aria-hidden="true"
-          className={`size-2.5 rounded-full ${endpointColor[destinationKind]}`}
-        />
-      </div>
-    );
-  }
+function EndpointTrail({
+  originKind,
+  destinationKind,
+}: {
+  originKind: Endpoint["kind"];
+  destinationKind: Endpoint["kind"];
+}) {
+  return (
+    <div className="flex flex-col items-center gap-1 pt-1.5">
+      <span
+        aria-hidden="true"
+        className={`size-2.5 rounded-full ${endpointColor[originKind]}`}
+      />
+      <span aria-hidden="true" className="h-8 w-px bg-border" />
+      <span
+        aria-hidden="true"
+        className={`size-2.5 rounded-full ${endpointColor[destinationKind]}`}
+      />
+    </div>
+  );
 }
 
 function EndpointRow({ endpoint }: { endpoint: Endpoint }) {

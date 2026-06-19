@@ -6,6 +6,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
+import { formatPrice } from "@/lib/format-currency";
 import type { Modality, Ride, Similarity } from "../types";
 
 type RideCardProps = {
@@ -32,13 +33,6 @@ const modalityStyles: Record<Modality, { label: string; icon: typeof TaxiIcon }>
   app: { label: "App", icon: TaxiIcon },
   carro: { label: "Carro", icon: Car03Icon },
 };
-
-function formatPrice(brl: number): string {
-  return brl.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  });
-}
 
 export function RideCard({ ride, onClick }: RideCardProps) {
   const sim = similarityStyles[ride.similarity];

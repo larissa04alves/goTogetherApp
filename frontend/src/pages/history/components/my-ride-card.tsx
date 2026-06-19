@@ -20,7 +20,7 @@ const STATUS_LABEL: Record<CaronaStatus, string> = {
   concluida: "Concluída",
 };
 
-type MinhaCaronaCardProps = {
+type MyRideCardProps = {
   hub: MeuHub;
   currentUserId: string | undefined;
   pendentes: PendingReview[];
@@ -33,7 +33,7 @@ type MinhaCaronaCardProps = {
   onOpenProfile: (userId: string) => void;
 };
 
-export function MinhaCaronaCard({
+export function MyRideCard({
   hub,
   currentUserId,
   pendentes,
@@ -44,7 +44,7 @@ export function MinhaCaronaCard({
   onCancel,
   onRate,
   onOpenProfile,
-}: MinhaCaronaCardProps) {
+}: MyRideCardProps) {
   const isCarona = hub.tipo === "carro_proprio";
   const ModeIcon = isCarona ? Car03Icon : SmartPhone01Icon;
   const modeLabel = isCarona ? "Carona" : "App de transporte";

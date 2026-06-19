@@ -3,29 +3,23 @@ import { toast } from "sonner";
 
 import { authClient } from "@/api/auth";
 import { fetchHubs, type Hub } from "@/api/hubs";
-import { fetchRotas } from "@/api/rotas";
+import { fetchRotas } from "@/api/routes";
 
-import { BottomNav } from "../../components/bottom-nav";
-import { rotaToSavedRoute } from "../route/map";
-import type { SavedRoute } from "../route/types";
+import { BottomNav } from "@/components/bottom-nav";
+import { getInitials } from "@/lib/get-initials";
+import { rotaToSavedRoute } from "@/pages/route/route-adapters";
+import type { SavedRoute } from "@/pages/route/types";
 import { HomeHeader } from "./components/home-header";
 import { RidesList } from "./components/rides-list";
 import { RouteSelector } from "./components/route-selector";
 import type { Ride } from "./types";
-
-function initialsFrom(name: string): string {
-  const parts = name.trim().split(/\s+/);
-  const first = parts[0]?.[0] ?? "";
-  const last = parts.length > 1 ? (parts[parts.length - 1]?.[0] ?? "") : "";
-  return (first + last).toUpperCase() || "?";
-}
 
 function toRide(h: Hub): Ride {
   return {
     id: h.id,
     driver: {
       id: h.ofertante.id,
-      initials: initialsFrom(h.ofertante.name),
+      initials: getInitials(h.ofertante.name),
       name: h.ofertante.name,
       rating: 0,
       ridesCount: 0,
