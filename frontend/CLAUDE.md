@@ -1,6 +1,6 @@
-# Frontend — React Router 7 + Tailwind 4 + shadcn + PWA
+# Frontend — React Router 7 + Tailwind 4 + shadcn
 
-App React em modo SPA (SSR off). Stack: React, React Router 7 (file-based routing via `flatRoutes()`), Tailwind 4, shadcn/ui, vite-plugin-pwa, Better-Auth client.
+App React em modo SPA (SSR off). Stack: React, React Router 7 (file-based routing via `flatRoutes()`), Tailwind 4, shadcn/ui, Better-Auth client.
 
 Para convenções globais (TS, naming, workflow, AskUserQuestion), veja [`../CLAUDE.md`](../CLAUDE.md).
 
@@ -38,7 +38,6 @@ frontend/src/
 | `npm run build` | Build de produção |
 | `npm run check-types` | `tsc --noEmit` (inclui types do React Router gerados em `.react-router/`) |
 | `cd frontend && npx shadcn@latest add <comp>` | Adiciona componente shadcn em `components/ui/` |
-| `cd frontend && npm run generate-pwa-assets` | Gera ícones e manifesto PWA |
 
 ## React Router 7
 
@@ -81,12 +80,6 @@ frontend/src/
 - Validadas em `src/env.ts` via `@t3-oss/env-core` + Zod. **Nunca** `import.meta.env.X` direto fora desse arquivo.
 - Vars precisam prefixo `VITE_` para serem expostas ao client (regra do Vite).
 - `frontend/.env` é git-ignored. Adicionar var nova = atualizar `env.ts` também.
-
-## PWA
-
-- Configurado via `vite-plugin-pwa` (`vite.config.ts`).
-- Manifest e ícones gerados via `npm run generate-pwa-assets` (no diretório `frontend/`).
-- **Gotcha conhecido:** issue de compatibilidade com React Router 7 — https://github.com/vite-pwa/vite-plugin-pwa/issues/809. Acompanhar antes de mexer no service worker.
 
 ## Gotchas
 

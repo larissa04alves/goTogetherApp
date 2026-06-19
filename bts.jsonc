@@ -19,7 +19,7 @@
   "backend": "express",
   "runtime": "node",
   "frontend": ["react-router"],
-  "addons": ["mcp", "pwa", "skills"],
+  "addons": ["mcp", "skills"],
   "examples": [],
   "auth": "better-auth",
   "payments": "none",

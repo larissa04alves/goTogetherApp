@@ -1,13 +1,13 @@
 # goTogheterApp
 
-Monorepo TypeScript com **backend/** (Express + Drizzle + Postgres + Better-Auth) e **frontend/** (React Router 7 SPA + Tailwind 4 + shadcn/ui + PWA). Para visão geral e setup, veja [README.md](./README.md).
+Monorepo TypeScript com **backend/** (Express + Drizzle + Postgres + Better-Auth) e **frontend/** (React Router 7 SPA + Tailwind 4 + shadcn/ui). Para visão geral e setup, veja [README.md](./README.md).
 
 ## Navegação
 
 | Trabalho em | Leia também |
 |---|---|
 | API, banco, auth server, controllers | [`backend/CLAUDE.md`](./backend/CLAUDE.md) |
-| UI, rotas, componentes, PWA | [`frontend/CLAUDE.md`](./frontend/CLAUDE.md) |
+| UI, rotas, componentes | [`frontend/CLAUDE.md`](./frontend/CLAUDE.md) |
 | Tooling, deps cruzadas, docker, scripts top-level | este arquivo |
 
 Claude auto-carrega o CLAUDE.md do diretório em que está trabalhando — você não precisa importar manualmente os filhos.
@@ -132,7 +132,6 @@ Ambas versionadas no git. Spec é a fonte de verdade da **decisão**; plan é a 
 - **Skills são versionadas no git** (não git-ignored). Clone fresh já tem tudo. Atualizações via `npx skills update` viram diff revisável em PR.
 - **Lock não persiste `agents`** — sempre passe `--agent claude-code` em qualquer `npx skills add` para criar o symlink em `.claude/skills/`. Para Codex, adicionar manualmente: `ln -sf "../../.agents/skills/<name>" ".codex/skills/<name>"`.
 - **Editar skill diretamente:** OK editar `.agents/skills/<name>/SKILL.md` para customizar. Mudanças commitadas sobrevivem — mas serão sobrescritas se essa skill for atualizada via `npx skills update` no futuro.
-- **PWA + React Router 7** tem issue de compatibilidade conhecido: https://github.com/vite-pwa/vite-plugin-pwa/issues/809.
 - **Postgres precisa estar UP** antes de qualquer `db:*` command — sempre `npm run db:start` antes.
 
 ## Não fazer
