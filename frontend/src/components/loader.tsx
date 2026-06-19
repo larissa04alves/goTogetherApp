@@ -1,9 +1,10 @@
-import { Loader2 } from "lucide-react";
+import { Loading03Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 
-export default function Loader() {
+export function Loader() {
   return (
     <div className="flex h-full items-center justify-center pt-8">
-      <Loader2 className="animate-spin" />
+      <HugeiconsIcon icon={Loading03Icon} size={24} className="animate-spin" />
     </div>
   );
 }

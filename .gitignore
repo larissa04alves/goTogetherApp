@@ -3,9 +3,6 @@ node_modules
 .pnp
 .pnp.js
 
-# Agent skills (regenerated from skills-lock.json)
-.agents/skills/
-
 # Build outputs
 dist
 build
@@ -36,6 +33,7 @@ yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
 package-lock.json
+bun.lock
 
 # Turbo
 .turbo

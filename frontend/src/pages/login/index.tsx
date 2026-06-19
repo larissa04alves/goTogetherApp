@@ -1,14 +1,28 @@
-import { useState } from "react";
+import { Navigate } from "react-router";
 
-import SignInForm from "./components/sign-in-form";
-import SignUpForm from "./components/sign-up-form";
+import { authClient } from "@/api/auth";
 
-export default function Login() {
-  const [showSignIn, setShowSignIn] = useState(false);
+import { LoginForm } from "./components/login-form";
 
-  return showSignIn ? (
-    <SignInForm onSwitchToSignUp={() => setShowSignIn(false)} />
-  ) : (
-    <SignUpForm onSwitchToSignIn={() => setShowSignIn(true)} />
+export default function LoginPage() {
+  const { data } = authClient.useSession();
+
+  // Já autenticado (inclusive logo após o login, mesmo que o ProtectedLayout
+  // tenha quicado pra cá por causa do refetch de sessão): vai pra home.
+  if (data) {
+    return <Navigate to="/home" replace />;
+  }
+
+  return (
+    <main className="bg-background flex min-h-svh w-full flex-col px-5 pb-8 pt-16">
+      <div className="flex w-full max-w-100 flex-col gap-20">
+        <img
+          src="/logo-goTogheter.png"
+          alt="goTogether"
+          className="mx-auto h-32 w-auto"
+        />
+        <LoginForm />
+      </div>
+    </main>
   );
 }
