@@ -15,6 +15,8 @@ const PARTICIPANTS = {
   joao: { id: USER_IDS.joao, name: "João Teste" },
   maria: { id: USER_IDS.maria, name: "Maria Teste" },
   carlos: { id: USER_IDS.carlos, name: "Carlos Souza" },
+  ramon: { id: USER_IDS.ramon, name: "Ramon Dino" },
+  ana: { id: USER_IDS.ana, name: "Ana Paula" },
 } as const;
 
 const conversations: SeedConversation[] = [
@@ -50,6 +52,41 @@ const conversations: SeedConversation[] = [
       { userId: USER_IDS.demo, text: "Confirmado! Já estou descendo." },
       { userId: USER_IDS.carlos, text: "Cheguei no ponto 👋" },
       { userId: USER_IDS.demo, text: "Valeu pela carona, João! 🙏" },
+    ],
+  },
+  {
+    // hub aberto do Ramon onde a demo JÁ é passageira (mostra chat + sair)
+    caronaId: CARONA_IDS.ramonComDemo,
+    participants: [PARTICIPANTS.ramon, PARTICIPANTS.demo],
+    messages: [
+      {
+        userId: USER_IDS.ramon,
+        text: "Bom dia! Saída 7h30 lá no Cajuru, pode ser?",
+      },
+      { userId: USER_IDS.demo, text: "Pode sim! Te encontro na esquina 👍" },
+      {
+        userId: USER_IDS.ramon,
+        text: "Show. Tô num Civic preto, placa termina em 42.",
+      },
+      { userId: USER_IDS.demo, text: "Beleza, já tô descendo!" },
+    ],
+  },
+  {
+    // carona concluída onde a demo foi a motorista (Maria e Ana de passageiras)
+    caronaId: CARONA_IDS.demoConcluidaOfertante,
+    participants: [PARTICIPANTS.demo, PARTICIPANTS.maria, PARTICIPANTS.ana],
+    messages: [
+      {
+        userId: USER_IDS.demo,
+        text: "Oi meninas! Saída 19h na frente da PUC 🚗",
+      },
+      { userId: USER_IDS.maria, text: "Perfeito, já estou aqui." },
+      { userId: USER_IDS.ana, text: "Chegando em 2 min!" },
+      {
+        userId: USER_IDS.demo,
+        text: "Obrigada pela companhia, foi ótimo! Até a próxima 💜",
+      },
+      { userId: USER_IDS.ana, text: "Valeu, Demo! Dirige super bem 🙌" },
     ],
   },
 ];
