@@ -3,22 +3,16 @@ import { useParams } from "react-router";
 import { toast } from "sonner";
 
 import { authClient } from "@/api/auth";
-import { fetchPerfilPublico, type PerfilPublico } from "@/api/perfil";
+import { fetchPerfilPublico, type PerfilPublico } from "@/api/profile";
 import { fetchReceivedReviews } from "@/api/reviews";
 import { formatRelativeTime } from "@/lib/format-relative-time";
 
-import { BottomNav } from "../../components/bottom-nav";
+import { BottomNav } from "@/components/bottom-nav";
+import { getInitials } from "@/lib/get-initials";
 import { ProfileCard } from "./components/profile-card";
 import { ProfileHeader } from "./components/profile-header";
 import { ReviewsSection } from "./components/reviews-section";
 import type { Review } from "./types";
-
-function getInitials(name: string): string {
-  const parts = name.trim().split(/\s+/);
-  const first = parts[0]?.[0] ?? "";
-  const last = parts.length > 1 ? (parts[parts.length - 1]?.[0] ?? "") : "";
-  return (first + last).toUpperCase();
-}
 
 export default function ProfilePage() {
   const { id } = useParams();

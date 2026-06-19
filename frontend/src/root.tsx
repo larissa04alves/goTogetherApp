@@ -9,6 +9,7 @@ import {
 
 import { Toaster } from "@/components/ui/sonner";
 
+import { isDev } from "@/env";
 import "stream-chat-react/dist/css/index.css";
 import "./index.css";
 import type { Route } from "./+types/root";
@@ -57,7 +58,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
     message = error.status === 404 ? "404" : "Erro";
     details =
       error.status === 404 ? "A página solicitada não foi encontrada." : error.statusText || details;
-  } else if (import.meta.env.DEV && error && error instanceof Error) {
+  } else if (isDev && error && error instanceof Error) {
     details = error.message;
     stack = error.stack;
   }

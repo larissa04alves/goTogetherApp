@@ -4,7 +4,7 @@ import type { NextFunction, Request, Response } from "express";
 import { auth } from "@/auth";
 import { AppError } from "@/utils/app-error";
 
-type SessionContext = {
+export type Session = {
   user: {
     id: string;
     name: string;
@@ -14,61 +14,7 @@ type SessionContext = {
   };
 };
 
-export type AuthenticatedUser = {
-  id: string;
-  name: string;
-  email: string;
-  cpf: string | null;
-  phone: string | null;
-  gender: string | null;
-  institution: string | null;
-  course: string | null;
-  period: string | null;
-  role: string;
-  emailVerified: boolean;
-  identityVerified: boolean;
-  image: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-};
-
-declare global {
-  namespace Express {
-    interface Request {
-      user?: AuthenticatedUser;
-    }
-  }
-}
-
-function buildLegacyUserFromSession(session: SessionContext): AuthenticatedUser {
-  const now = new Date();
-
-  return {
-    id: session.user.id,
-    name: session.user.name,
-    email: session.user.email,
-    cpf: null,
-    phone: null,
-    gender: null,
-    institution: null,
-    course: null,
-    period: null,
-    role: "student",
-    emailVerified: session.user.emailVerified,
-    identityVerified: false,
-    image: session.user.image ?? null,
-    createdAt: now,
-    updatedAt: now,
-  };
-}
-
-function storeAuthenticatedContext(
-  req: Request,
-  res: Response,
-  user: AuthenticatedUser,
-  session: SessionContext,
-): void {
-  req.user = user;
+function storeAuthenticatedContext(res: Response, session: Session): void {
   res.locals["session"] = session;
 }
 
@@ -82,11 +28,6 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
     return;
   }
 
-  storeAuthenticatedContext(
-    req,
-    res,
-    buildLegacyUserFromSession(betterAuthSession),
-    betterAuthSession,
-  );
+  storeAuthenticatedContext(res, betterAuthSession);
   next();
 }

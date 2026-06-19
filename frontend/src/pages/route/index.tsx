@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { createRota, deleteRota, fetchRotas, updateRota } from "@/api/rotas";
+import { createRota, deleteRota, fetchRotas, updateRota } from "@/api/routes";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 
-import { BottomNav } from "../../components/bottom-nav";
+import { BottomNav } from "@/components/bottom-nav";
 import { EmptyRouteCard } from "./components/empty-route-card";
-import { RotasHeader } from "./components/rotas-header";
+import { RoutesHeader } from "./components/routes-header";
 import { RouteCard } from "./components/route-card";
 import { RouteFormModal } from "./components/route-form-modal";
-import { formToRotaInput, rotaToSavedRoute, type RouteFormValues } from "./map";
+import { formToRotaInput, rotaToSavedRoute, type RouteFormValues } from "./route-adapters";
 import type { SavedRoute } from "./types";
 
 type ModalState =
@@ -93,7 +93,7 @@ export default function RoutePage() {
   return (
     <main className="bg-background flex min-h-svh w-full flex-col">
       <div className="mx-auto flex w-full max-w-100 flex-1 flex-col gap-4 px-5 pb-24 pt-8">
-        <RotasHeader onAdd={handleAdd} />
+        <RoutesHeader onAdd={handleAdd} />
         <p className="text-[11px] font-bold uppercase tracking-wide text-slate-400">
           {loading ? "Carregando…" : `${routes.length} rotas salvas`}
         </p>

@@ -1,10 +1,11 @@
 import type { Request, Response } from "express";
 
+import type { Session } from "@/middlewares/auth.middleware";
 import { hubsService } from "@/services/hubs.service";
 import { AppError } from "@/utils/app-error";
+import { requireParam } from "@/utils/require-param";
+import { createServiceErrorMapper } from "@/utils/service-error";
 import { criarHubSchema } from "@/validators/hubs.validator";
-
-type Session = { user: { id: string } };
 
 const SERVICE_ERRORS: Record<string, { status: number; message: string }> = {
   ROTA_NAO_ENCONTRADA: { status: 404, message: "Rota não encontrada" },
@@ -19,19 +20,7 @@ const SERVICE_ERRORS: Record<string, { status: number; message: string }> = {
   HUB_NAO_ABERTO: { status: 422, message: "Apenas hubs abertos podem ser cancelados" },
 };
 
-function mapServiceError(err: unknown): never {
-  const key = err instanceof Error ? err.message : "";
-  const mapped = SERVICE_ERRORS[key];
-  if (mapped) throw new AppError(mapped.status, mapped.message);
-  throw err;
-}
-
-function requireParam(req: Request, name: string, message: string): string {
-  const raw = req.params[name];
-  const value = Array.isArray(raw) ? raw[0] : raw;
-  if (!value) throw new AppError(400, message);
-  return value;
-}
+const mapServiceError = createServiceErrorMapper(SERVICE_ERRORS);
 
 async function criar(req: Request, res: Response): Promise<void> {
   const parsed = criarHubSchema.safeParse(req.body);

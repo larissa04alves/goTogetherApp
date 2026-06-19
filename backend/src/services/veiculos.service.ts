@@ -16,14 +16,14 @@ async function listar(userId: string) {
 }
 
 async function buscar(veiculoId: string, userId: string) {
-  const v = await db.query.veiculo.findFirst({
+  const veiculoEncontrado = await db.query.veiculo.findFirst({
     where: eq(veiculo.id, veiculoId),
   });
 
-  if (!v) throw new Error("VEICULO_NAO_ENCONTRADO");
-  if (v.userId !== userId) throw new Error("NAO_AUTORIZADO");
+  if (!veiculoEncontrado) throw new Error("VEICULO_NAO_ENCONTRADO");
+  if (veiculoEncontrado.userId !== userId) throw new Error("NAO_AUTORIZADO");
 
-  return v;
+  return veiculoEncontrado;
 }
 
 function isUniqueViolation(err: unknown): boolean {
@@ -50,12 +50,12 @@ async function atualizar(
   userId: string,
   data: AtualizarVeiculoInput,
 ) {
-  const v = await db.query.veiculo.findFirst({
+  const veiculoEncontrado = await db.query.veiculo.findFirst({
     where: eq(veiculo.id, veiculoId),
   });
 
-  if (!v) throw new Error("VEICULO_NAO_ENCONTRADO");
-  if (v.userId !== userId) throw new Error("NAO_AUTORIZADO");
+  if (!veiculoEncontrado) throw new Error("VEICULO_NAO_ENCONTRADO");
+  if (veiculoEncontrado.userId !== userId) throw new Error("NAO_AUTORIZADO");
 
   const [atualizado] = await db
     .update(veiculo)
@@ -67,12 +67,12 @@ async function atualizar(
 }
 
 async function excluir(veiculoId: string, userId: string) {
-  const v = await db.query.veiculo.findFirst({
+  const veiculoEncontrado = await db.query.veiculo.findFirst({
     where: eq(veiculo.id, veiculoId),
   });
 
-  if (!v) throw new Error("VEICULO_NAO_ENCONTRADO");
-  if (v.userId !== userId) throw new Error("NAO_AUTORIZADO");
+  if (!veiculoEncontrado) throw new Error("VEICULO_NAO_ENCONTRADO");
+  if (veiculoEncontrado.userId !== userId) throw new Error("NAO_AUTORIZADO");
 
   const caronaAtiva = await db.query.carona.findFirst({
     where: and(

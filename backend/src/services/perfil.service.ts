@@ -8,41 +8,41 @@ import { caronaMembro } from "@/db/schema/caronas/carona-membro";
 import type { AtualizarPerfilInput } from "@/validators/perfil.validator";
 
 async function buscarMeu(userId: string) {
-  const u = await db.query.user.findFirst({
+  const usuario = await db.query.user.findFirst({
     where: eq(user.id, userId),
   });
 
-  if (!u) throw new Error("USUARIO_NAO_ENCONTRADO");
+  if (!usuario) throw new Error("USUARIO_NAO_ENCONTRADO");
 
   return {
-    id: u.id,
-    name: u.name,
-    email: u.email,
-    cpf: u.cpf,
-    phone: u.phone,
-    gender: u.gender,
-    institution: u.institution,
-    course: u.course,
-    period: u.period,
-    emergencyContactName: u.emergencyContactName,
-    emergencyContactPhone: u.emergencyContactPhone,
-    role: u.role,
-    emailVerified: u.emailVerified,
-    identityVerified: u.identityVerified,
-    image: u.image,
-    createdAt: u.createdAt,
-    updatedAt: u.updatedAt,
+    id: usuario.id,
+    name: usuario.name,
+    email: usuario.email,
+    cpf: usuario.cpf,
+    phone: usuario.phone,
+    gender: usuario.gender,
+    institution: usuario.institution,
+    course: usuario.course,
+    period: usuario.period,
+    emergencyContactName: usuario.emergencyContactName,
+    emergencyContactPhone: usuario.emergencyContactPhone,
+    role: usuario.role,
+    emailVerified: usuario.emailVerified,
+    identityVerified: usuario.identityVerified,
+    image: usuario.image,
+    createdAt: usuario.createdAt,
+    updatedAt: usuario.updatedAt,
   };
 }
 
 async function atualizar(userId: string, data: AtualizarPerfilInput) {
   if (Object.keys(data).length === 0) throw new Error("NENHUM_CAMPO");
 
-  const u = await db.query.user.findFirst({
+  const usuario = await db.query.user.findFirst({
     where: eq(user.id, userId),
   });
 
-  if (!u) throw new Error("USUARIO_NAO_ENCONTRADO");
+  if (!usuario) throw new Error("USUARIO_NAO_ENCONTRADO");
 
   const updateData: Partial<typeof user.$inferInsert> = {};
 
@@ -86,11 +86,11 @@ async function atualizar(userId: string, data: AtualizarPerfilInput) {
 }
 
 async function buscarPublico(perfilId: string) {
-  const u = await db.query.user.findFirst({
+  const usuario = await db.query.user.findFirst({
     where: eq(user.id, perfilId),
   });
 
-  if (!u) throw new Error("USUARIO_NAO_ENCONTRADO");
+  if (!usuario) throw new Error("USUARIO_NAO_ENCONTRADO");
 
   const [mediaResult] = await db
     .select({ media: avg(avaliacao.nota) })
@@ -114,15 +114,15 @@ async function buscarPublico(perfilId: string) {
     );
 
   return {
-    id: u.id,
-    name: u.name,
-    gender: u.gender,
-    institution: u.institution,
-    course: u.course,
-    period: u.period,
-    image: u.image,
-    identityVerified: u.identityVerified,
-    createdAt: u.createdAt,
+    id: usuario.id,
+    name: usuario.name,
+    gender: usuario.gender,
+    institution: usuario.institution,
+    course: usuario.course,
+    period: usuario.period,
+    image: usuario.image,
+    identityVerified: usuario.identityVerified,
+    createdAt: usuario.createdAt,
     avaliacaoMedia: mediaResult?.media ? Number(mediaResult.media) : null,
     caronasOferecidas: oferecidas?.total ?? 0,
     caronasTomadas: tomadas?.total ?? 0,
