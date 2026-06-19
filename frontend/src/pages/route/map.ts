@@ -12,11 +12,19 @@ function inferKind(label: string): Endpoint["kind"] {
 export function rotaToSavedRoute(r: Rota): SavedRoute {
   return {
     id: r.id,
-    origin: { label: r.origemNome, address: r.origemEndereco, kind: "origin" },
+    origin: {
+      label: r.origemNome,
+      address: r.origemEndereco,
+      kind: "origin",
+      lat: r.origemLat,
+      lng: r.origemLng,
+    },
     destination: {
       label: r.destinoNome,
       address: r.destinoEndereco,
       kind: inferKind(r.destinoNome),
+      lat: r.destinoLat,
+      lng: r.destinoLng,
     },
     departureTime: r.horarioPadrao,
   };

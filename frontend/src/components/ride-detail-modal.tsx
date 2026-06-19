@@ -46,8 +46,8 @@ export type HubDetail = {
     matchPct: number;
   };
   route?: {
-    origin: { label: string; address: string };
-    destination: { label: string; address: string };
+    origin: { label: string; address: string; lat: number; lng: number };
+    destination: { label: string; address: string; lat: number; lng: number };
   };
 };
 

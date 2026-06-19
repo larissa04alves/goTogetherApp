@@ -21,7 +21,23 @@ import {
 type Endpoint = {
   label: string;
   address: string;
+  lat?: number;
+  lng?: number;
 };
+
+async function resolveCoord(endpoint: Endpoint): Promise<LngLat | null> {
+  const { lat, lng } = endpoint;
+  if (
+    typeof lat === "number" &&
+    typeof lng === "number" &&
+    Number.isFinite(lat) &&
+    Number.isFinite(lng) &&
+    (lat !== 0 || lng !== 0)
+  ) {
+    return [lng, lat];
+  }
+  return geocodeAddress(endpoint.address);
+}
 
 type RouteMapProps = {
   origin: Endpoint;
@@ -70,8 +86,8 @@ export function RouteMap({ origin, destination, className }: RouteMapProps) {
 
     async function load() {
       const [originCoord, destCoord] = await Promise.all([
-        geocodeAddress(origin.address),
-        geocodeAddress(destination.address),
+        resolveCoord(origin),
+        resolveCoord(destination),
       ]);
       if (cancelled) return;
       if (!originCoord || !destCoord) {
@@ -99,7 +115,14 @@ export function RouteMap({ origin, destination, className }: RouteMapProps) {
     return () => {
       cancelled = true;
     };
-  }, [origin.address, destination.address]);
+  }, [
+    origin.address,
+    destination.address,
+    origin.lat,
+    origin.lng,
+    destination.lat,
+    destination.lng,
+  ]);
 
   if (state.status === "loading") {
     return <Skeleton className={cn(BOX_CLASSES, className)} />;
