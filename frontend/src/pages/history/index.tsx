@@ -15,7 +15,7 @@ import { fetchAvaliacoesPendentes, type PendingReview } from "@/api/reviews";
 import { BottomNav } from "@/components/bottom-nav";
 
 import { EmptyHubs } from "./components/empty-hubs";
-import { MinhaCaronaCard } from "./components/minha-carona-card";
+import { MyRideCard } from "./components/my-ride-card";
 import { ReviewModal, type ReviewTarget } from "./components/review-modal";
 
 export default function HistoryPage() {
@@ -98,7 +98,7 @@ export default function HistoryPage() {
         ) : (
           <section className="flex flex-col gap-3">
             {hubs.map((hub) => (
-              <MinhaCaronaCard
+              <MyRideCard
                 key={hub.id}
                 hub={hub}
                 currentUserId={currentUserId}

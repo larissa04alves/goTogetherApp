@@ -1,11 +1,11 @@
 import { Add01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
-type RotasHeaderProps = {
+type RoutesHeaderProps = {
   onAdd: () => void;
 };
 
-export function RotasHeader({ onAdd }: RotasHeaderProps) {
+export function RoutesHeader({ onAdd }: RoutesHeaderProps) {
   return (
     <header className="flex w-full flex-col gap-1">
       <div className="flex w-full items-center justify-between">

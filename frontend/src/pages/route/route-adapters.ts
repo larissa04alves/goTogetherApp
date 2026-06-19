@@ -1,4 +1,4 @@
-import type { Rota, RotaInput } from "@/api/rotas";
+import type { Rota, RotaInput } from "@/api/routes";
 
 import type { Endpoint, SavedRoute } from "./types";
 

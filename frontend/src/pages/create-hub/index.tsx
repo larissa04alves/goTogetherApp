@@ -6,10 +6,10 @@ import { toast } from "sonner";
 
 import { authClient } from "@/api/auth";
 import { createHub } from "@/api/hubs";
-import { fetchRotas } from "@/api/rotas";
+import { fetchRotas } from "@/api/routes";
 import { fetchVehicles, type Vehicle } from "@/api/vehicles";
 import type { HubMode } from "@/pages/history/types";
-import { rotaToSavedRoute } from "@/pages/route/map";
+import { rotaToSavedRoute } from "@/pages/route/route-adapters";
 import type { SavedRoute } from "@/pages/route/types";
 
 import { NotesTextarea } from "./components/notes-textarea";
@@ -100,7 +100,7 @@ export default function CreateHubPage() {
         });
       }
       toast.success("Carona criada");
-      void navigate("/historico");
+      navigate("/historico");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Erro ao criar carona");
     }
@@ -112,7 +112,7 @@ export default function CreateHubPage() {
         <header className="flex items-start gap-3">
           <button
             type="button"
-            onClick={() => void navigate(-1)}
+            onClick={() => navigate(-1)}
             aria-label="Voltar"
             className="flex size-10 items-center justify-center rounded-lg border border-border bg-card text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
@@ -145,7 +145,7 @@ export default function CreateHubPage() {
             <EmptyDataMessage
               message="Nenhuma rota cadastrada"
               ctaLabel="Criar rota"
-              onClick={() => void navigate("/rotas")}
+              onClick={() => navigate("/rotas")}
             />
           )}
         </section>
@@ -181,7 +181,7 @@ export default function CreateHubPage() {
                 <EmptyDataMessage
                   message="Nenhum veículo cadastrado"
                   ctaLabel="Cadastrar veículo"
-                  onClick={() => void navigate("/configuracoes")}
+                  onClick={() => navigate("/configuracoes")}
                 />
               )}
             </section>
